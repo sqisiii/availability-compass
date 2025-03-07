@@ -1,0 +1,30 @@
+﻿<Application x:Class="AvailabilityCompass.WpfClient.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:vms="clr-namespace:AvailabilityCompass.Core.Features;assembly=AvailabilityCompass.Core"
+             xmlns:views="clr-namespace:AvailabilityCompass.WpfClient.Pages"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Application.Resources>
+        <ResourceDictionary x:Key="MaterialDesignResources">
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/materialdesign3.defaults.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/primary/MaterialDesignColor.DeepPurple.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/secondary/MaterialDesignColor.Lime.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <DataTemplate DataType="{x:Type vms:ManageCalendars.ManageCalendarsViewModel}">
+                <views:ManageCalendarsView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:SelectCriteria.SelectCriteriaViewModel}">
+                <views:SelectCriteria />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:ManageSettings.ManageSettingsViewModel}">
+                <views:ManageSettingsView />
+            </DataTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+
+</Application>
