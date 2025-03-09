@@ -25,7 +25,7 @@ public partial class SourceViewModel : ObservableObject, IDisposable
         _timer.Start();
     }
 
-    public DateTime ChangeAt { get; init; }
+    public DateTime? ChangeAt { get; init; }
 
     public string LastUpdated => GetRelativeTime(ChangeAt);
 
@@ -41,16 +41,32 @@ public partial class SourceViewModel : ObservableObject, IDisposable
     }
 
 
-    private static string GetRelativeTime(DateTime dateTime)
+    private static string GetRelativeTime(DateTime? dateTime)
     {
+        if (dateTime is null)
+        {
+            return "N/A";
+        }
+
         var timeSpan = DateTime.Now - dateTime;
 
-        if (timeSpan.TotalMinutes < 1)
-            return "Just now";
-        if (timeSpan.TotalMinutes < 60)
-            return $"{(int)timeSpan.TotalMinutes} minutes ago";
-        if (timeSpan.TotalHours < 24)
-            return $"{(int)timeSpan.TotalHours} hours ago";
-        return $"{(int)timeSpan.TotalDays} days ago";
+        switch (timeSpan.Value.TotalMinutes)
+        {
+            case < 1:
+                return "Just now";
+            case < 60:
+                return $"{(int)timeSpan.Value.TotalMinutes} minutes ago";
+            default:
+            {
+                if (timeSpan.Value.TotalHours < 24)
+                {
+                    return $"{(int)timeSpan.Value.TotalHours} hours ago";
+                }
+
+                break;
+            }
+        }
+
+        return $"{(int)timeSpan.Value.TotalDays} days ago";
     }
 }

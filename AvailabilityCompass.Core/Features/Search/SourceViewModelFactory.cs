@@ -1,10 +1,10 @@
-﻿using AvailabilityCompass.Core.Features.Search.Queries.GetSourcesQuery;
+﻿using AvailabilityCompass.Core.Features.Search.Queries.GetSources;
 
 namespace AvailabilityCompass.Core.Features.Search;
 
 public class SourceViewModelFactory : ISourceViewModelFactory
 {
-    public SourceViewModel Create(GetSourcesResponse.Source getSourcesResponse)
+    public SourceViewModel Create(GetSourcesForFilteringResponse.Source getSourcesResponse)
     {
         return new SourceViewModel
         {

@@ -1,8 +1,8 @@
-﻿using AvailabilityCompass.Core.Features.Search.Queries.GetSourcesQuery;
+﻿using AvailabilityCompass.Core.Features.Search.Queries.GetSources;
 
 namespace AvailabilityCompass.Core.Features.Search;
 
 public interface ISourceViewModelFactory
 {
-    SourceViewModel Create(GetSourcesResponse.Source getSourcesResponse);
+    SourceViewModel Create(GetSourcesForFilteringResponse.Source getSourcesResponse);
 }
