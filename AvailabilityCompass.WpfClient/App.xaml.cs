@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Windows;
-using AvailabilityCompass.WpfClient.Application.DepedencyInjection;
+using AvailabilityCompass.Core.Application.DependencyInjection;
+using AvailabilityCompass.WpfClient.Application.DependencyInjection;
 using AvailabilityCompass.WpfClient.Application.Initialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,9 +25,13 @@ public partial class App
             .UseDefaultServiceProvider((_, options) => { options.ValidateScopes = true; })
             .ConfigureServices((_, services) =>
             {
-                services.AddViewModels();
-                services.AddNavigation();
+                services.AddCore();
+                services.AddCalendar();
                 services.AddMainWindow();
+                services.AddNavigation();
+                services.AddSearch();
+                services.AddSettings();
+                services.AddSource();
                 services.AddSingleton(
                     Log.Logger = new LoggerConfiguration()
                         .MinimumLevel.Information()

@@ -4,7 +4,7 @@ using AvailabilityCompass.WpfClient.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-namespace AvailabilityCompass.WpfClient.Pages;
+namespace AvailabilityCompass.WpfClient;
 
 public partial class MainViewModel : ObservableObject
 {

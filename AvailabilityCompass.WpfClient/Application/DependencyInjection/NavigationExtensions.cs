@@ -1,7 +1,7 @@
 ﻿using AvailabilityCompass.WpfClient.Navigation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AvailabilityCompass.WpfClient.Application.DepedencyInjection;
+namespace AvailabilityCompass.WpfClient.Application.DependencyInjection;
 
 public static class NavigationExtensions
 {

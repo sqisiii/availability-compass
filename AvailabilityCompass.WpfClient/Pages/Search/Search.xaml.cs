@@ -3,9 +3,9 @@
 // ReSharper disable once CheckNamespace
 namespace AvailabilityCompass.WpfClient.Pages;
 
-public partial class SelectCriteria : UserControl
+public partial class Search : UserControl
 {
-    public SelectCriteria()
+    public Search()
     {
         InitializeComponent();
     }

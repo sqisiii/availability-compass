@@ -1,7 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using AvailabilityCompass.Core.Features.ManageCalendars;
 using AvailabilityCompass.Core.Features.ManageSettings;
-using AvailabilityCompass.Core.Features.SelectCriteria;
+using AvailabilityCompass.Core.Features.ManageSources;
+using AvailabilityCompass.Core.Features.Search;
 
 namespace AvailabilityCompass.WpfClient.Navigation;
 
@@ -9,25 +10,29 @@ public class NavigationTabFactory : INavigationTabFactory
 {
     private readonly ManageCalendarsViewModel _manageCalendarsViewModel;
     private readonly ManageSettingsViewModel _manageSettingsViewModel;
-    private readonly SelectCriteriaViewModel _selectCriteriaViewModel;
+    private readonly ManageSourcesViewModel _manageSourcesViewModel;
+    private readonly SearchViewModel _searchViewModel;
 
     public NavigationTabFactory(
-        SelectCriteriaViewModel selectCriteriaViewModel,
+        SearchViewModel searchViewModel,
         ManageCalendarsViewModel manageCalendarsViewModel,
-        ManageSettingsViewModel manageSettingsViewModel)
+        ManageSettingsViewModel manageSettingsViewModel,
+        ManageSourcesViewModel manageSourcesViewModel)
     {
-        _selectCriteriaViewModel = selectCriteriaViewModel;
         _manageCalendarsViewModel = manageCalendarsViewModel;
         _manageSettingsViewModel = manageSettingsViewModel;
+        _manageSourcesViewModel = manageSourcesViewModel;
+        _searchViewModel = searchViewModel;
     }
 
     public ObservableCollection<NavigationTabModel> CreateNavigationTabs()
     {
         return
         [
-            new NavigationTabModel(_selectCriteriaViewModel),
+            new NavigationTabModel(_searchViewModel),
             new NavigationTabModel(_manageCalendarsViewModel),
-            new NavigationTabModel(_manageSettingsViewModel),
+            new NavigationTabModel(_manageSourcesViewModel),
+            new NavigationTabModel(_manageSettingsViewModel)
         ];
     }
 }
