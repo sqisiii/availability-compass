@@ -4,18 +4,17 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:views="clr-namespace:AvailabilityCompass.WpfClient.Pages"
     xmlns:vms="clr-namespace:AvailabilityCompass.Core.Features;assembly=AvailabilityCompass.Core"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:search="clr-namespace:AvailabilityCompass.Core.Features.Search;assembly=AvailabilityCompass.Core">
     <Application.Resources>
         <ResourceDictionary x:Key="MaterialDesignResources">
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary
-                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
-                <ResourceDictionary
                     Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/materialdesign3.defaults.xaml" />
-                <ResourceDictionary
-                    Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/primary/materialdesigncolor.Blue.xaml" />
-                <ResourceDictionary
-                    Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/secondary/materialdesigncolor.Amber.xaml" />
+                <materialDesign:BundledTheme
+                    BaseTheme="Light"
+                    PrimaryColor="Indigo"
+                    SecondaryColor="Orange" />
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate DataType="{x:Type vms:ManageCalendars.ManageCalendarsViewModel}">
                 <views:ManageCalendarsView />

@@ -10,6 +10,9 @@
     Title="MainWindow"
     Width="1220"
     Height="780"
+    ResizeMode="CanResizeWithGrip"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None"
     d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
     d:DesignHeight="1920"
     d:DesignWidth="1080"
@@ -19,9 +22,14 @@
             <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
         <!--  - Left navigation rail.  -->
-        <materialDesign:Card Grid.Column="0">
+        <materialDesign:Card Grid.Row="1" Grid.RowSpan="2" Grid.Column="0">
             <TabControl
                 x:Name="MenuTabControl"
                 VerticalContentAlignment="Top"
@@ -56,13 +64,68 @@
             </TabControl>
         </materialDesign:Card>
 
-        <!--  - Main content area.  -->
-        <ContentControl
-            Grid.Column="1"
-            Margin="15,5,15,15"
+        <!--  Header  -->
+        <Grid
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="0,0,5,0"
             Panel.ZIndex="1"
-            Content="{Binding CurrentViewModel}" />
+            Background="Transparent"
+            MouseEnter="ControlBar_MouseEnter"
+            MouseLeftButtonDown="ControlBar_MouseLeftButtonDown">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <!--  Logo  -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
 
+                <Image
+                    Height="30"
+                    Margin="15,0,0,0"
+                    Source="/Images/logo.png" />
+                <TextBlock
+                    Margin="10,14,0,0"
+                    FontSize="16"
+                    Foreground="{DynamicResource TitleBrush}"
+                    Text="Availability Compass" />
+            </StackPanel>
+            <StackPanel
+                Grid.Column="1"
+                Margin="0,0,5,0"
+                Panel.ZIndex="1"
+                Background="Transparent"
+                FlowDirection="RightToLeft"
+                MouseEnter="ControlBar_MouseEnter"
+                MouseLeftButtonDown="ControlBar_MouseLeftButtonDown"
+                Orientation="Horizontal">
+                <Button
+                    Click="BtnClose_Click"
+                    Content="{materialDesign:PackIcon Close}"
+                    Style="{DynamicResource MaterialDesignFlatButton}"
+                    ToolTip="Close" />
+                <Button
+                    x:Name="BtnMaximize"
+                    Click="BtnMaximize_Click"
+                    Command="{Binding MaximizeButtonPressedCommand}"
+                    Content="{Binding MaximizeIcon}"
+                    Style="{DynamicResource MaterialDesignFlatButton}"
+                    ToolTip="{Binding MaximizeToolTip}" />
+                <Button
+                    Click="BtnMinimize_Click"
+                    Content="{materialDesign:PackIcon WindowMinimize}"
+                    Style="{DynamicResource MaterialDesignFlatButton}"
+                    ToolTip="Minimize" />
+            </StackPanel>
+        </Grid>
 
+        <!--  - Main content area.  -->
+        <Grid Grid.Row="1" Grid.Column="1">
+            <ContentControl
+                Margin="15,5,15,15"
+                Panel.ZIndex="1"
+                Content="{Binding CurrentViewModel}" />
+        </Grid>
     </Grid>
 </Window>
