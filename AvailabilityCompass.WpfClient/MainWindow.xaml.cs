@@ -28,11 +28,6 @@ public partial class MainWindow : Window
         DataContext = viewModel;
     }
 
-    private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
-    {
-    }
-
-
     [DllImport("user32.dll")]
     private static extern IntPtr SendMessage(IntPtr hWnd, int wMsg, int wParam, int lParam);
 
@@ -60,11 +55,7 @@ public partial class MainWindow : Window
 
     private void BtnClose_Click(object sender, RoutedEventArgs e)
     {
-        if (DataContext is MainViewModel vm)
-        {
-            Mouse.OverrideCursor = Cursors.Wait;
-        }
-
+        Mouse.OverrideCursor = Cursors.Wait;
         System.Windows.Application.Current.Shutdown();
     }
 
