@@ -12,6 +12,7 @@
     Height="780"
     ResizeMode="CanResizeWithGrip"
     WindowStartupLocation="CenterScreen"
+    Style="{StaticResource MaterialDesignWindow}"
     WindowStyle="None"
     d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
     d:DesignHeight="1920"
