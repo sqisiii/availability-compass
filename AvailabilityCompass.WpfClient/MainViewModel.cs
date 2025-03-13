@@ -14,7 +14,7 @@ public partial class MainViewModel : ObservableObject
 
     [NotifyPropertyChangedFor(nameof(MaximizeToolTip))]
     [ObservableProperty]
-    private PackIcon _maximizeIcon = new PackIcon { Kind = PackIconKind.Maximize };
+    private PackIcon _maximizeIcon = new PackIcon { Kind = PackIconKind.WindowMaximize };
 
     public MainViewModel(
         INavigationTabFactory navigationTabFactory,
@@ -32,7 +32,7 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
-    public string MaximizeToolTip => MaximizeIcon.Kind == PackIconKind.WindowMaximize ? "Maximize" : "Restore";
+    public string MaximizeToolTip => MaximizeIcon.Kind == PackIconKind.WindowMaximize ? "Restore" : "Maximize";
 
     public IPageViewModel? CurrentViewModel => _navigationStore.CurrentViewModel;
 
@@ -54,7 +54,7 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void OnTabChanged(NavigationTabModel? tab)
     {
-        if (tab == null)
+        if (tab is null)
         {
             return;
         }
