@@ -14,6 +14,8 @@
     WindowStartupLocation="CenterScreen"
     Style="{StaticResource MaterialDesignWindow}"
     WindowStyle="None"
+    AllowsTransparency="True"
+
     d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
     d:DesignHeight="1920"
     d:DesignWidth="1080"
@@ -89,7 +91,7 @@
                 <TextBlock
                     Margin="10,14,0,0"
                     FontSize="16"
-                    Foreground="{DynamicResource TitleBrush}"
+                    Foreground="{DynamicResource MaterialDesign.Brush.Primary.Light}"
                     Text="Availability Compass" />
             </StackPanel>
             <StackPanel
