@@ -24,12 +24,17 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Page Update="Pages\MainWindow.xaml">
+        <Page Update="Pages\ManageCalendarsView\ManageCalendarsView.xaml">
             <Generator>MSBuild:Compile</Generator>
             <XamlRuntime>Wpf</XamlRuntime>
             <SubType>Designer</SubType>
         </Page>
-        <Page Update="Pages\ManageCalendarsView\ManageCalendarsView.xaml">
+        <Page Update="MainWindow.xaml">
+            <Generator>MSBuild:Compile</Generator>
+            <XamlRuntime>Wpf</XamlRuntime>
+            <SubType>Designer</SubType>
+        </Page>
+        <Page Update="Pages\SearchRecords\Controls\SelectionCheckBox.xaml">
             <Generator>MSBuild:Compile</Generator>
             <XamlRuntime>Wpf</XamlRuntime>
             <SubType>Designer</SubType>
@@ -44,6 +49,23 @@
 
     <ItemGroup>
         <ProjectReference Include="..\AvailabilityCompass.Core\AvailabilityCompass.Core.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Images\"/>
+    </ItemGroup>
+
+    <PropertyGroup>
+        <ApplicationIcon>Images\logo.ico</ApplicationIcon>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Remove="Images\logo.ico"/>
+        <Resource Include="Images\logo.ico">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Resource>
+        <None Remove="Images\logo.jpg"/>
+        <None Remove="Images\logo.png"/>
+        <Resource Include="Images\logo.png"/>
     </ItemGroup>
 
 </Project>
