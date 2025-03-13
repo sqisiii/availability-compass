@@ -21,7 +21,7 @@
                 <views:ManageCalendarsView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type search:SearchViewModel}">
-                <views:Search />
+                <views:SearchView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vms:ManageSettings.ManageSettingsViewModel}">
                 <views:ManageSettingsView />

@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace AvailabilityCompass.WpfClient.Controls;
+namespace AvailabilityCompass.WpfClient.Pages.SearchRecords.Controls;
 
 public partial class SelectionCheckBox : UserControl
 {
