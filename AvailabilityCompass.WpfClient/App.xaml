@@ -11,10 +11,11 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary
                     Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/materialdesign3.defaults.xaml" />
+
                 <materialDesign:BundledTheme
-                    BaseTheme="Light"
+                    BaseTheme="Dark"
                     PrimaryColor="Indigo"
-                    SecondaryColor="Orange" />
+                    SecondaryColor="Amber" />
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate DataType="{x:Type vms:ManageCalendars.ManageCalendarsViewModel}">
                 <views:ManageCalendarsView />
