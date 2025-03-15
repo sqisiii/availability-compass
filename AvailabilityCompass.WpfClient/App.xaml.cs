@@ -23,12 +23,13 @@ public partial class App
         var serilogOptions = new ConfigurationReaderOptions(typeof(FileLoggerConfigurationExtensions).Assembly, typeof(MapLoggerConfigurationExtensions).Assembly);
         _host = Host.CreateDefaultBuilder()
             .UseDefaultServiceProvider((_, options) => { options.ValidateScopes = true; })
-            .ConfigureServices((_, services) =>
+            .ConfigureServices((context, services) =>
             {
                 services.AddCore();
                 services.AddCalendar();
                 services.AddMainWindow();
                 services.AddNavigation();
+                services.AddDatabase(context.Configuration);
                 services.AddSearch();
                 services.AddSettings();
                 services.AddSource();

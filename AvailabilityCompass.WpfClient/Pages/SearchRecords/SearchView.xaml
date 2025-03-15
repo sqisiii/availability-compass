@@ -19,6 +19,11 @@
         <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
     </UserControl.Resources>
     <StackPanel>
+        <TextBlock
+            Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+            Margin="0,10,0,10"
+            Text="Search"
+            HorizontalAlignment="Center" />
         <!-- Calendars section -->
         <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Calendars" />
         <WrapPanel Margin="0,10,0,0" Orientation="Horizontal">
@@ -205,6 +210,6 @@
             SelectionMode="Single"
             SelectionUnit="FullRow"
             Style="{StaticResource MaterialDesignDataGrid}"
-            VerticalScrollBarVisibility="Visible" />
+            VerticalScrollBarVisibility="Auto" />
     </StackPanel>
 </UserControl>

@@ -1,7 +1,7 @@
 ﻿using AvailabilityCompass.Core.Features.Search.Queries.GetCalendars;
 using MediatR;
 
-namespace AvailabilityCompass.Core.Features.ManageSources.Queries.GetCalendersForFilteringQuery;
+namespace AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetCalendersForFilteringQuery;
 
 public class GetCalendarsForFilteringHandler : IRequestHandler<GetCalendarsForFilteringQuery, IEnumerable<GetCalendarsForFilteringDto>>
 {

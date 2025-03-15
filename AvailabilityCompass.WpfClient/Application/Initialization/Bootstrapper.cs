@@ -1,22 +1,25 @@
 ﻿using System.Runtime.InteropServices;
-using AvailabilityCompass.WpfClient.Pages;
+using AvailabilityCompass.Core.Application.Database;
 using Serilog;
 
 namespace AvailabilityCompass.WpfClient.Application.Initialization;
 
 public class Bootstrapper
 {
+    private readonly IDbInitializer _dbInitializer;
     private readonly MainWindow _mainWindow;
 
-
-    public Bootstrapper(MainWindow mainWindow)
+    public Bootstrapper(MainWindow mainWindow, IDbInitializer dbInitializer)
     {
         _mainWindow = mainWindow;
+        _dbInitializer = dbInitializer;
     }
 
     public void Run()
     {
         Introduce();
+        _dbInitializer.InitializeAsync().Wait();
+
         _mainWindow.Show();
     }
 

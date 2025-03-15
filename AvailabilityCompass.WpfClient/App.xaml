@@ -5,7 +5,8 @@
     xmlns:views="clr-namespace:AvailabilityCompass.WpfClient.Pages"
     xmlns:vms="clr-namespace:AvailabilityCompass.Core.Features;assembly=AvailabilityCompass.Core"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    xmlns:search="clr-namespace:AvailabilityCompass.Core.Features.Search;assembly=AvailabilityCompass.Core">
+    xmlns:search="clr-namespace:AvailabilityCompass.Core.Features.Search;assembly=AvailabilityCompass.Core"
+    xmlns:manageSources="clr-namespace:AvailabilityCompass.Core.Features.ManageSources;assembly=AvailabilityCompass.Core">
     <Application.Resources>
         <ResourceDictionary x:Key="MaterialDesignResources">
             <ResourceDictionary.MergedDictionaries>
@@ -26,6 +27,10 @@
             <DataTemplate DataType="{x:Type vms:ManageSettings.ManageSettingsViewModel}">
                 <views:ManageSettingsView />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type manageSources:ManageSourcesViewModel}">
+                <views:ManageSourcesView />
+            </DataTemplate>
+
         </ResourceDictionary>
     </Application.Resources>
 
