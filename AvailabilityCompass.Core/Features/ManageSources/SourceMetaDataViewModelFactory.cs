@@ -1,5 +1,4 @@
 ﻿using AvailabilityCompass.Core.Features.ManageSources.Queries.GetSourcesMetaDataFromDbQuery;
-using AvailabilityCompass.Core.Features.ManageSources.Sources;
 
 namespace AvailabilityCompass.Core.Features.ManageSources;
 
@@ -14,7 +13,7 @@ public class SourceMetaDataViewModelFactory : ISourceMetaDataViewModelFactory
 
     public IEnumerable<SourceMetaDataViewModel> Create(IEnumerable<GetSourcesMetaDataFromDbDto> sourcesMetaData)
     {
-        var sourcesData = _sourceStore.GetSourceData();
+        var sourcesData = _sourceStore.GetSourceMetaData();
 
         var sourceMetaDataViewModels = new List<SourceMetaDataViewModel>();
         var getSourcesMetaDataFromDbDtos = sourcesMetaData.ToList();

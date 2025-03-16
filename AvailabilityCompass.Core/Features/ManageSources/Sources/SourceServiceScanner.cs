@@ -4,9 +4,9 @@ namespace AvailabilityCompass.Core.Features.ManageSources.Sources;
 
 public class SourceServiceScanner
 {
-    public static IList<SourceData> ScanSourceServices()
+    public static IList<SourceMetaData> ScanSourceServices()
     {
-        var sources = new List<SourceData>();
+        var sourcesMetaData = new List<SourceMetaData>();
 
         var types = AppDomain.CurrentDomain
             .GetAssemblies()
@@ -25,9 +25,9 @@ public class SourceServiceScanner
                 continue;
             }
 
-            sources.Add(new SourceData(attr.Key, attr.Name, attr.IsEnabled));
+            sourcesMetaData.Add(new SourceMetaData(attr.Key, attr.Name, attr.IsEnabled));
         }
 
-        return sources;
+        return sourcesMetaData;
     }
 }

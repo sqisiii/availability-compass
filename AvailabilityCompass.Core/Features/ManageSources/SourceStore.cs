@@ -4,6 +4,6 @@ namespace AvailabilityCompass.Core.Features.ManageSources;
 
 public class SourceStore : ISourceStore
 {
-    private readonly Lazy<IList<SourceData>> _sourceData = new(SourceServiceScanner.ScanSourceServices);
-    public IList<SourceData> GetSourceData() => _sourceData.Value;
+    private readonly Lazy<IList<SourceMetaData>> _sourceMetaData = new(SourceServiceScanner.ScanSourceServices);
+    public IList<SourceMetaData> GetSourceMetaData() => _sourceMetaData.Value;
 }

@@ -21,7 +21,7 @@ public class GetSourcesForFilteringHandler : IRequestHandler<Search.Queries.GetS
     public async Task<GetSourcesForFilteringResponse> Handle(Search.Queries.GetSources.GetSourcesForFilteringQuery request, CancellationToken cancellationToken)
     {
         var response = new GetSourcesForFilteringResponse();
-        var sourcesData = _sourceStore.GetSourceData();
+        var sourcesData = _sourceStore.GetSourceMetaData();
         var sourceChangeAtDates = (await GetSourceChangedAtDatesAsync()).ToList();
 
         foreach (var sourceData in sourcesData.OrderBy(i => i.Name))
