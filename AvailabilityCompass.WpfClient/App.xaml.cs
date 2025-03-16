@@ -33,6 +33,7 @@ public partial class App
                 services.AddSearch();
                 services.AddSettings();
                 services.AddSource();
+                services.AddSourceServices();
                 services.AddSingleton(
                     Log.Logger = new LoggerConfiguration()
                         .MinimumLevel.Information()
