@@ -19,31 +19,13 @@ public class SourceServiceScanner
 
         foreach (var type in types)
         {
-            var sourceIdProperty = type.GetProperty("SourceId", BindingFlags.Public | BindingFlags.Static);
-            if (sourceIdProperty is null || sourceIdProperty.PropertyType != typeof(string))
+            var attr = type.GetCustomAttribute<SourceServiceAttribute>();
+            if (attr is null)
             {
                 continue;
             }
 
-            var sourceId = (string)sourceIdProperty.GetValue(null)!;
-
-            var sourcePropertyName = type.GetProperty("SourceName", BindingFlags.Public | BindingFlags.Static);
-            if (sourcePropertyName is null || sourcePropertyName.PropertyType != typeof(string))
-            {
-                continue;
-            }
-
-            var sourceName = (string)sourcePropertyName.GetValue(null)!;
-
-            var sourceEnabledProperty = type.GetProperty("SourceEnabled", BindingFlags.Public | BindingFlags.Static);
-            if (sourceEnabledProperty is null || sourceEnabledProperty.PropertyType != typeof(bool))
-            {
-                continue;
-            }
-
-            var sourceEnabled = (bool)sourceEnabledProperty.GetValue(null)!;
-
-            sources.Add(new SourceData(sourceId, sourceName, sourceEnabled));
+            sources.Add(new SourceData(attr.Key, attr.Name, attr.IsEnabled));
         }
 
         return sources;

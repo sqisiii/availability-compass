@@ -6,25 +6,20 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Sources.Horyzonty;
 
+[SourceService("Horyzonty", "Horyzonty")]
 public sealed class HoryzontyService : ISourceService
 {
     private readonly HttpClient _httpClient;
     private readonly IMediator _mediator;
+    private readonly string _sourceId;
+
 
     public HoryzontyService(HttpClient httpClient, IMediator mediator)
     {
         _httpClient = httpClient;
         _mediator = mediator;
+        _sourceId = this.GetSourceId() ?? string.Empty;
     }
-
-    //this property is used by Reflection to get the source id
-    public static bool SourceEnabled => true;
-
-    //this property is used by Reflection to get the source name
-    public static string SourceName => "Horyzonty";
-
-    //this property is used by Reflection to get the source id
-    public static string SourceId => "Horyzonty";
 
     public event EventHandler<SourceRefreshProgressEventArgs>? RefreshProgressChanged;
 
@@ -37,7 +32,7 @@ public sealed class HoryzontyService : ISourceService
 
     private void OnRefreshProgressChanged(double progressPercentage)
     {
-        RefreshProgressChanged?.Invoke(this, new SourceRefreshProgressEventArgs(SourceId, progressPercentage));
+        RefreshProgressChanged?.Invoke(this, new SourceRefreshProgressEventArgs(_sourceId, progressPercentage));
     }
 
     private async Task<IReadOnlyCollection<SourceDataItem>> ExtractTripsListAsync(CancellationToken ct)
@@ -124,7 +119,7 @@ public sealed class HoryzontyService : ISourceService
                 counter++;
                 var tour = new SourceDataItem(
                     counter,
-                    SourceId,
+                    _sourceId,
                     title?.InnerText,
                     country,
                     type,
