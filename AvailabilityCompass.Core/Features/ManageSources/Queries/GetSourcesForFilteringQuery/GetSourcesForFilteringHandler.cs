@@ -1,4 +1,4 @@
-﻿using AvailabilityCompass.Core.Features.ManageSources.Integrations;
+﻿using AvailabilityCompass.Core.Features.ManageSources.Sources;
 using AvailabilityCompass.Core.Features.Search.Queries.GetSources;
 using AvailabilityCompass.Core.Shared.Database;
 using Dapper;
@@ -10,35 +10,35 @@ namespace AvailabilityCompass.Core.Features.ManageSources.Queries.GetSourcesForF
 public class GetSourcesForFilteringHandler : IRequestHandler<Search.Queries.GetSources.GetSourcesForFilteringQuery, GetSourcesForFilteringResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;
-    private readonly IIntegrationStore _integrationStore;
+    private readonly ISourceStore _sourceStore;
 
-    public GetSourcesForFilteringHandler(IDbConnectionFactory dbConnectionFactory, IIntegrationStore integrationStore)
+    public GetSourcesForFilteringHandler(IDbConnectionFactory dbConnectionFactory, ISourceStore sourceStore)
     {
         _dbConnectionFactory = dbConnectionFactory;
-        _integrationStore = integrationStore;
+        _sourceStore = sourceStore;
     }
 
     public async Task<GetSourcesForFilteringResponse> Handle(Search.Queries.GetSources.GetSourcesForFilteringQuery request, CancellationToken cancellationToken)
     {
         var response = new GetSourcesForFilteringResponse();
-        var integrationsData = _integrationStore.GetIntegrationsIdAndNames();
-        var integrationChangedAtDates = (await GetIntegrationChangedAtDatesAsync()).ToList();
+        var sourcesData = _sourceStore.GetSourceData();
+        var sourceChangeAtDates = (await GetSourceChangedAtDatesAsync()).ToList();
 
-        foreach (var integrationData in integrationsData.OrderBy(i => i.IntegrationName))
+        foreach (var sourceData in sourcesData.OrderBy(i => i.Name))
         {
-            var integrationChangedAt = integrationChangedAtDates.FirstOrDefault(x => x.IntegrationId == integrationData.IntegrationId).ChangedAt;
+            var sourceChangeAtDate = sourceChangeAtDates.FirstOrDefault(x => x.SourceId == sourceData.Id).ChangedAt;
             response.Sources.Add(new GetSourcesForFilteringResponse.Source
             {
-                Name = integrationData.IntegrationName,
-                ChangedAt = integrationChangedAt,
-                IsEnabled = integrationData.IntegrationEnabled
+                Name = sourceData.Name,
+                ChangedAt = sourceChangeAtDate,
+                IsEnabled = sourceData.IsEnabled
             });
         }
 
         return response;
     }
 
-    private async Task<IEnumerable<(string IntegrationId, DateTime ChangedAt)>> GetIntegrationChangedAtDatesAsync()
+    private async Task<IEnumerable<(string SourceId, DateTime ChangedAt)>> GetSourceChangedAtDatesAsync()
     {
         try
         {
@@ -47,12 +47,12 @@ public class GetSourcesForFilteringHandler : IRequestHandler<Search.Queries.GetS
 
             var query = @"
                         SELECT 
-                            IntegrationId, 
+                            SourceId, 
                             MAX(ChangeDate) AS ChangedAt 
                         FROM Source
-                        GROUP BY IntegrationId;";
+                        GROUP BY SourceId;";
 
-            return await connection.QueryAsync<(string IntegrationId, DateTime ChangedAt)>(query);
+            return await connection.QueryAsync<(string SourceId, DateTime ChangedAt)>(query);
         }
         catch (Exception e)
         {

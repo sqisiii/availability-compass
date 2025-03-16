@@ -4,9 +4,9 @@ using HtmlAgilityPack;
 using MediatR;
 using Serilog;
 
-namespace AvailabilityCompass.Core.Features.ManageSources.Integrations.Horyzonty;
+namespace AvailabilityCompass.Core.Features.ManageSources.Sources.Horyzonty;
 
-public sealed class HoryzontyService : IIntegrationService
+public sealed class HoryzontyService : ISourceService
 {
     private readonly HttpClient _httpClient;
     private readonly IMediator _mediator;
@@ -17,18 +17,18 @@ public sealed class HoryzontyService : IIntegrationService
         _mediator = mediator;
     }
 
-    //this property is used by Reflection to get the integration id
-    public static bool IntegrationEnabled => true;
+    //this property is used by Reflection to get the source id
+    public static bool SourceEnabled => true;
 
-    //this property is used by Reflection to get the integration name
-    public static string IntegrationName => "Horyzonty";
+    //this property is used by Reflection to get the source name
+    public static string SourceName => "Horyzonty";
 
-    //this property is used by Reflection to get the integration id
-    public static string IntegrationId => "Horyzonty";
+    //this property is used by Reflection to get the source id
+    public static string SourceId => "Horyzonty";
 
     public event EventHandler<SourceRefreshProgressEventArgs>? RefreshProgressChanged;
 
-    public async Task<IEnumerable<SourceDataItem>> RefreshIntegrationDataAsync(CancellationToken ct)
+    public async Task<IEnumerable<SourceDataItem>> RefreshSourceDataAsync(CancellationToken ct)
     {
         var trips = await ExtractTripsListAsync(ct);
         await _mediator.Send(new ReplaceSourceDataInDbRequest(trips), ct);
@@ -37,7 +37,7 @@ public sealed class HoryzontyService : IIntegrationService
 
     private void OnRefreshProgressChanged(double progressPercentage)
     {
-        RefreshProgressChanged?.Invoke(this, new SourceRefreshProgressEventArgs(IntegrationId, progressPercentage));
+        RefreshProgressChanged?.Invoke(this, new SourceRefreshProgressEventArgs(SourceId, progressPercentage));
     }
 
     private async Task<IReadOnlyCollection<SourceDataItem>> ExtractTripsListAsync(CancellationToken ct)
@@ -124,7 +124,7 @@ public sealed class HoryzontyService : IIntegrationService
                 counter++;
                 var tour = new SourceDataItem(
                     counter,
-                    IntegrationId,
+                    SourceId,
                     title?.InnerText,
                     country,
                     type,

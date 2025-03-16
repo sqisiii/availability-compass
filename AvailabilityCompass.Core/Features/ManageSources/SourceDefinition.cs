@@ -2,7 +2,7 @@
 
 public class SourceDefinition
 {
-    public string IntegrationId { get; set; } = string.Empty;
+    public string SourceId { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public DateTime? ChangedAt { get; set; }
     public bool IsActive { get; set; } = true;

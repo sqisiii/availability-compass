@@ -8,9 +8,6 @@ public partial class SourceMetaDataViewModel : ObservableObject
     private DateTime? _changedAt;
 
     [ObservableProperty]
-    private string _integrationId = string.Empty;
-
-    [ObservableProperty]
     private bool _isEnabled;
 
     [ObservableProperty]
@@ -19,6 +16,9 @@ public partial class SourceMetaDataViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowProgress))]
     private double _progressPercent;
+
+    [ObservableProperty]
+    private string _sourceId = string.Empty;
 
     [ObservableProperty]
     private int _tripsCount;

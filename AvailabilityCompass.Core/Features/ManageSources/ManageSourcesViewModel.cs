@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
-using AvailabilityCompass.Core.Features.ManageSources.Integrations;
 using AvailabilityCompass.Core.Features.ManageSources.Queries.GetSourcesMetaDataFromDbQuery;
+using AvailabilityCompass.Core.Features.ManageSources.Sources;
 using AvailabilityCompass.Core.Shared;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -11,13 +11,13 @@ namespace AvailabilityCompass.Core.Features.ManageSources;
 public partial class ManageSourcesViewModel : ObservableValidator, IPageViewModel
 {
     private readonly CancellationTokenSource _cancellationTokenSource = new();
-    private readonly IIntegrationServiceFactory _integrationServiceFactory;
     private readonly IMediator _mediator;
     private readonly ISourceMetaDataViewModelFactory _sourceMetaDataViewModelFactory;
+    private readonly ISourceServiceFactory _sourceServiceFactory;
 
-    public ManageSourcesViewModel(IIntegrationServiceFactory integrationServiceFactory, IMediator mediator, ISourceMetaDataViewModelFactory sourceMetaDataViewModelFactory)
+    public ManageSourcesViewModel(ISourceServiceFactory sourceServiceFactory, IMediator mediator, ISourceMetaDataViewModelFactory sourceMetaDataViewModelFactory)
     {
-        _integrationServiceFactory = integrationServiceFactory;
+        _sourceServiceFactory = sourceServiceFactory;
         _mediator = mediator;
         _sourceMetaDataViewModelFactory = sourceMetaDataViewModelFactory;
 
@@ -31,18 +31,18 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
     public string Name => "Data";
 
     [RelayCommand(CanExecute = nameof(CanRefreshSource))]
-    private async Task OnRefreshSource(string integrationId)
+    private async Task OnRefreshSource(string sourceId)
     {
-        var integrationService = _integrationServiceFactory.GetService(integrationId);
-        integrationService.RefreshProgressChanged += IntegrationServiceOnRefreshProgressChanged;
-        var sources = await integrationService.RefreshIntegrationDataAsync(_cancellationTokenSource.Token);
-        integrationService.RefreshProgressChanged -= IntegrationServiceOnRefreshProgressChanged;
+        var sourceService = _sourceServiceFactory.GetService(sourceId);
+        sourceService.RefreshProgressChanged += SourceServiceOnRefreshProgressChanged;
+        var sources = await sourceService.RefreshSourceDataAsync(_cancellationTokenSource.Token);
+        sourceService.RefreshProgressChanged -= SourceServiceOnRefreshProgressChanged;
         await LoadSourcesMetaDataAsync();
     }
 
-    public bool CanRefreshSource(string integrationId)
+    public bool CanRefreshSource(string sourceId)
     {
-        var source = Sources.FirstOrDefault(s => s.IntegrationId == integrationId);
+        var source = Sources.FirstOrDefault(s => s.SourceId == sourceId);
         if (source == null)
         {
             return false;
@@ -51,9 +51,9 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
         return source.IsEnabled;
     }
 
-    private void IntegrationServiceOnRefreshProgressChanged(object? sender, SourceRefreshProgressEventArgs e)
+    private void SourceServiceOnRefreshProgressChanged(object? sender, SourceRefreshProgressEventArgs e)
     {
-        var source = Sources.FirstOrDefault(s => s.IntegrationId == e.IntegrationId);
+        var source = Sources.FirstOrDefault(s => s.SourceId == e.SourceId);
         if (source == null)
         {
             return;

@@ -16,10 +16,10 @@ public class GetSourcesMetaDataFromDbHandler : IRequestHandler<GetSourcesMetaDat
 
     public async Task<IEnumerable<GetSourcesMetaDataFromDbDto>> Handle(GetSourcesMetaDataFromDbQuery request, CancellationToken cancellationToken)
     {
-        return await GetIntegrationSummariesAsync();
+        return await GetSourcesSummariesAsync();
     }
 
-    private async Task<IEnumerable<GetSourcesMetaDataFromDbDto>> GetIntegrationSummariesAsync()
+    private async Task<IEnumerable<GetSourcesMetaDataFromDbDto>> GetSourcesSummariesAsync()
     {
         try
         {
@@ -28,11 +28,11 @@ public class GetSourcesMetaDataFromDbHandler : IRequestHandler<GetSourcesMetaDat
 
             var query = @"
                         SELECT 
-                            IntegrationId, 
+                            SourceId, 
                             MAX(ChangeDate) AS ChangedAt, 
                             COUNT(SeqNo) AS TripsCount
                         FROM Source
-                        GROUP BY IntegrationId;";
+                        GROUP BY SourceId;";
 
             return await connection.QueryAsync<GetSourcesMetaDataFromDbDto>(query);
         }

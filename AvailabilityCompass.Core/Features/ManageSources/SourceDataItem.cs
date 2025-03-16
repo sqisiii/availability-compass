@@ -2,7 +2,7 @@
 
 public record SourceDataItem(
     int SeqNo,
-    string IntegrationId,
+    string SourceId,
     string? Title,
     string? Type,
     string? Country,

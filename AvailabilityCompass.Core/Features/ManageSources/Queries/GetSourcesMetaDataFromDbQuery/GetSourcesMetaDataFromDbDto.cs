@@ -2,7 +2,7 @@
 
 public class GetSourcesMetaDataFromDbDto
 {
-    public string IntegrationId { get; init; } = string.Empty;
+    public string SourceId { get; init; } = string.Empty;
 
     public DateTime? ChangedAt { get; init; }
 

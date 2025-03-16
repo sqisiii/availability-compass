@@ -1,4 +1,4 @@
-﻿using AvailabilityCompass.Core.Features.ManageSources.Integrations.Horyzonty;
+﻿using AvailabilityCompass.Core.Features.ManageSources.Sources.Horyzonty;
 
 namespace AvailabilityCompass.Core.Features.ManageSources;
 
@@ -9,7 +9,7 @@ public class SourceDefinitionFactory
         var sourceDefinition = new SourceDefinition
         {
             Name = "Horyzonty",
-            IntegrationId = HoryzontyService.IntegrationId,
+            SourceId = HoryzontyService.SourceId,
             IsActive = true,
             ChangedAt = DateTime.Now,
             Filters =

@@ -59,7 +59,7 @@
                                     Style="{StaticResource MaterialDesignFlatSecondaryMidBgButton}"
                                     ToolTip="Refresh available trips data"
                                     Command="{Binding DataContext.RefreshSourceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    CommandParameter="{Binding IntegrationId}" />
+                                    CommandParameter="{Binding SourceId}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

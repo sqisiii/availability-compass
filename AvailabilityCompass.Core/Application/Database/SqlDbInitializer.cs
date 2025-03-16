@@ -23,7 +23,7 @@ public class SqlDbInitializer : IDbInitializer
     {
         const string createSourceTables =
             @"CREATE TABLE IF NOT EXISTS Source (
-                IntegrationId TEXT NOT NULL,
+                SourceId TEXT NOT NULL,
                 SeqNo INTEGER,
                 Title TEXT NOT NULL,
                 Type TEXT NOT NULL,
@@ -32,19 +32,19 @@ public class SqlDbInitializer : IDbInitializer
                 EndDate TEXT,
                 Price REAL NOT NULL,
                 ChangeDate TEXT NOT NULL,
-                PRIMARY KEY (IntegrationId, SeqNo)
+                PRIMARY KEY (SourceId, SeqNo)
             );";
-        const string createSourceAdditionalDatatables =
+        const string createSourceAdditionalDataTables =
             @"CREATE TABLE IF NOT EXISTS SourceAdditionalData (
-                IntegrationId TEXT NOT NULL,
+                SourceId TEXT NOT NULL,
                 SourceSeqNo INTEGER NOT NULL,
                 Key TEXT NOT NULL,
                 Value TEXT,
-                PRIMARY KEY (IntegrationId, SourceSeqNo, Key),
-                FOREIGN KEY (IntegrationId, SourceSeqNo) REFERENCES Source(IntegrationId, Id) ON DELETE CASCADE
+                PRIMARY KEY (SourceId, SourceSeqNo, Key),
+                FOREIGN KEY (SourceId, SourceSeqNo) REFERENCES Source(SourceId, Id) ON DELETE CASCADE
             );";
         using var database = _sqliteDbConnectionFactory.Connect();
         await database.ExecuteAsync(createSourceTables);
-        await database.ExecuteAsync(createSourceAdditionalDatatables);
+        await database.ExecuteAsync(createSourceAdditionalDataTables);
     }
 }

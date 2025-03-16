@@ -1,33 +1,33 @@
-﻿using AvailabilityCompass.Core.Features.ManageSources.Integrations;
-using AvailabilityCompass.Core.Features.ManageSources.Queries.GetSourcesMetaDataFromDbQuery;
+﻿using AvailabilityCompass.Core.Features.ManageSources.Queries.GetSourcesMetaDataFromDbQuery;
+using AvailabilityCompass.Core.Features.ManageSources.Sources;
 
 namespace AvailabilityCompass.Core.Features.ManageSources;
 
 public class SourceMetaDataViewModelFactory : ISourceMetaDataViewModelFactory
 {
-    private readonly IIntegrationStore _integrationStore;
+    private readonly ISourceStore _sourceStore;
 
-    public SourceMetaDataViewModelFactory(IIntegrationStore integrationStore)
+    public SourceMetaDataViewModelFactory(ISourceStore sourceStore)
     {
-        _integrationStore = integrationStore;
+        _sourceStore = sourceStore;
     }
 
     public IEnumerable<SourceMetaDataViewModel> Create(IEnumerable<GetSourcesMetaDataFromDbDto> sourcesMetaData)
     {
-        var integrationsData = _integrationStore.GetIntegrationsIdAndNames();
+        var sourcesData = _sourceStore.GetSourceData();
 
         var sourceMetaDataViewModels = new List<SourceMetaDataViewModel>();
         var getSourcesMetaDataFromDbDtos = sourcesMetaData.ToList();
-        foreach (var integrationData in integrationsData.OrderBy(x => x.IntegrationName))
+        foreach (var sourceData in sourcesData.OrderBy(x => x.Name))
         {
-            var sourceMetaData = getSourcesMetaDataFromDbDtos.FirstOrDefault(x => x.IntegrationId == integrationData.IntegrationId);
+            var sourceMetaData = getSourcesMetaDataFromDbDtos.FirstOrDefault(x => x.SourceId == sourceData.Id);
             var sourceMetaDataVm = new SourceMetaDataViewModel()
             {
-                Name = integrationData.IntegrationName,
+                Name = sourceData.Name,
                 ChangedAt = sourceMetaData?.ChangedAt,
-                IntegrationId = integrationData.IntegrationId,
+                SourceId = sourceData.Id,
                 TripsCount = sourceMetaData?.TripsCount ?? 0,
-                IsEnabled = integrationData.IntegrationEnabled,
+                IsEnabled = sourceData.IsEnabled,
             };
             sourceMetaDataViewModels.Add(sourceMetaDataVm);
         }

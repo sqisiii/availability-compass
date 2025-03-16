@@ -2,13 +2,13 @@ namespace AvailabilityCompass.Core.Features.ManageSources;
 
 public class SourceRefreshProgressEventArgs : EventArgs
 {
-    public SourceRefreshProgressEventArgs(string integrationId, double progressPercentage)
+    public SourceRefreshProgressEventArgs(string sourceId, double progressPercentage)
     {
-        IntegrationId = integrationId;
+        SourceId = sourceId;
         ProgressPercentage = progressPercentage;
     }
 
-    public string IntegrationId { get; }
+    public string SourceId { get; }
 
     public double ProgressPercentage { get; }
 }
