@@ -1,4 +1,6 @@
-﻿namespace AvailabilityCompass.Core.Features.ManageSources.Sources;
+﻿using AvailabilityCompass.Core.Features.ManageSources.Sources;
+
+namespace AvailabilityCompass.Core.Features.ManageSources;
 
 public class SourceStore : ISourceStore
 {
