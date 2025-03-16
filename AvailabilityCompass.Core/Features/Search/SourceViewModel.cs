@@ -43,7 +43,7 @@ public partial class SourceViewModel : ObservableObject, IDisposable
 
     private static string GetRelativeTime(DateTime? dateTime)
     {
-        if (dateTime is null)
+        if (dateTime is null || dateTime == DateTime.MinValue)
         {
             return "N/A";
         }
