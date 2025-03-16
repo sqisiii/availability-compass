@@ -18,7 +18,7 @@ public class SourceMetaDataViewModelFactory : ISourceMetaDataViewModelFactory
 
         var sourceMetaDataViewModels = new List<SourceMetaDataViewModel>();
         var getSourcesMetaDataFromDbDtos = sourcesMetaData.ToList();
-        foreach (var integrationData in integrationsData)
+        foreach (var integrationData in integrationsData.OrderBy(x => x.IntegrationName))
         {
             var sourceMetaData = getSourcesMetaDataFromDbDtos.FirstOrDefault(x => x.IntegrationId == integrationData.IntegrationId);
             var sourceMetaDataVm = new SourceMetaDataViewModel()
