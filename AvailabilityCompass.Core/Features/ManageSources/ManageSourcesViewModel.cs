@@ -34,8 +34,21 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
     private async Task OnGetSources(string integrationId)
     {
         var integrationService = _integrationServiceFactory.GetService(integrationId);
+        integrationService.RefreshProgressChanged += IntegrationServiceOnRefreshProgressChanged;
         var sources = await integrationService.RefreshIntegrationDataAsync(_cancellationTokenSource.Token);
+        integrationService.RefreshProgressChanged -= IntegrationServiceOnRefreshProgressChanged;
         await LoadSourcesMetaDataAsync();
+    }
+
+    private void IntegrationServiceOnRefreshProgressChanged(object? sender, SourceRefreshProgressEventArgs e)
+    {
+        var source = Sources.FirstOrDefault(s => s.IntegrationId == e.IntegrationId);
+        if (source == null)
+        {
+            return;
+        }
+
+        source.ProgressPercent = e.ProgressPercentage;
     }
 
     private async Task LoadSourcesMetaDataAsync()

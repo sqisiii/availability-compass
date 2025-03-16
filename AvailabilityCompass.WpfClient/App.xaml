@@ -14,7 +14,7 @@
                     Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/materialdesign3.defaults.xaml" />
 
                 <materialDesign:BundledTheme
-                    BaseTheme="Dark"
+                    BaseTheme="Light"
                     PrimaryColor="Indigo"
                     SecondaryColor="Amber" />
             </ResourceDictionary.MergedDictionaries>

@@ -17,15 +17,23 @@ public class HoryzontyService : IIntegrationService
         _mediator = mediator;
     }
 
+    //this property is used by Reflection to get the integration name
     public static string IntegrationName => "Horyzonty";
 
     public static string IntegrationId => "Horyzonty";
+
+    public event EventHandler<SourceRefreshProgressEventArgs>? RefreshProgressChanged;
 
     public async Task<IEnumerable<SourceDataItem>> RefreshIntegrationDataAsync(CancellationToken ct)
     {
         var trips = await ExtractTripsListAsync(ct);
         await _mediator.Send(new ReplaceSourceDataInDbRequest(trips), ct);
         return trips;
+    }
+
+    protected virtual void OnRefreshProgressChanged(double progressPercentage)
+    {
+        RefreshProgressChanged?.Invoke(this, new SourceRefreshProgressEventArgs(IntegrationId, progressPercentage));
     }
 
     private async Task<IReadOnlyCollection<SourceDataItem>> ExtractTripsListAsync(CancellationToken ct)
@@ -44,10 +52,12 @@ public class HoryzontyService : IIntegrationService
                 .Select(node => node.GetAttributeValue("href", ""))
                 .ToList();
 
-            foreach (var tripUrl in tripUrls)
+            for (var index = 0; index < tripUrls.Count; index++)
             {
+                var tripUrl = tripUrls[index];
                 (var parsedSourceDataItems, counter) = await ExtractTripDataAsync($"https://www.horyzonty.pl/{tripUrl}", counter, ct);
                 sourceDataItems.AddRange(parsedSourceDataItems);
+                OnRefreshProgressChanged((double)index / tripUrls.Count * 100);
             }
         }
         catch (Exception e)
@@ -142,7 +152,7 @@ public class HoryzontyService : IIntegrationService
             return DateOnly.MinValue;
         }
 
-        var parts = text.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+        var parts = text.Split([' ', ','], StringSplitOptions.RemoveEmptyEntries);
         var dateString = $"{parts[2]} {parts[3]} {parts[4]}";
         var culture = new CultureInfo("pl-PL");
         try

@@ -14,5 +14,11 @@ public partial class SourceMetaDataViewModel : ObservableObject
     private string _name = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowProgress))]
+    private double _progressPercent;
+
+    [ObservableProperty]
     private int _tripsCount;
+
+    public bool ShowProgress => ProgressPercent > 0;
 }
