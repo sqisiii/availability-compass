@@ -20,13 +20,14 @@ public class SourceMetaDataViewModelFactory : ISourceMetaDataViewModelFactory
         var getSourcesMetaDataFromDbDtos = sourcesMetaData.ToList();
         foreach (var integrationData in integrationsData)
         {
-            var sourceMetaData = getSourcesMetaDataFromDbDtos.FirstOrDefault(x => x.IntegrationId == integrationData.Key);
+            var sourceMetaData = getSourcesMetaDataFromDbDtos.FirstOrDefault(x => x.IntegrationId == integrationData.IntegrationId);
             var sourceMetaDataVm = new SourceMetaDataViewModel()
             {
-                Name = integrationData.Value,
+                Name = integrationData.IntegrationName,
                 ChangedAt = sourceMetaData?.ChangedAt,
-                IntegrationId = integrationData.Key,
+                IntegrationId = integrationData.IntegrationId,
                 TripsCount = sourceMetaData?.TripsCount ?? 0,
+                IsEnabled = integrationData.IntegrationEnabled,
             };
             sourceMetaDataViewModels.Add(sourceMetaDataVm);
         }

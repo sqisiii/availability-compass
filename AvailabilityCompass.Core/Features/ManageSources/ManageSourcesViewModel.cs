@@ -30,14 +30,25 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
     public string Icon => "DatabaseCogOutline";
     public string Name => "Data";
 
-    [RelayCommand]
-    private async Task OnGetSources(string integrationId)
+    [RelayCommand(CanExecute = nameof(CanRefreshSource))]
+    private async Task OnRefreshSource(string integrationId)
     {
         var integrationService = _integrationServiceFactory.GetService(integrationId);
         integrationService.RefreshProgressChanged += IntegrationServiceOnRefreshProgressChanged;
         var sources = await integrationService.RefreshIntegrationDataAsync(_cancellationTokenSource.Token);
         integrationService.RefreshProgressChanged -= IntegrationServiceOnRefreshProgressChanged;
         await LoadSourcesMetaDataAsync();
+    }
+
+    public bool CanRefreshSource(string integrationId)
+    {
+        var source = Sources.FirstOrDefault(s => s.IntegrationId == integrationId);
+        if (source == null)
+        {
+            return false;
+        }
+
+        return source.IsEnabled;
     }
 
     private void IntegrationServiceOnRefreshProgressChanged(object? sender, SourceRefreshProgressEventArgs e)

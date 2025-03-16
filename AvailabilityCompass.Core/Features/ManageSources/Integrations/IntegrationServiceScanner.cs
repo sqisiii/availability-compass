@@ -4,9 +4,9 @@ namespace AvailabilityCompass.Core.Features.ManageSources.Integrations;
 
 public class IntegrationServiceScanner
 {
-    public static Dictionary<string, string> ScanIntegrationServices()
+    public static IList<IntegrationData> ScanIntegrationServices()
     {
-        var integrations = new Dictionary<string, string>();
+        var integrations = new List<IntegrationData>();
 
         var types = AppDomain.CurrentDomain
             .GetAssemblies()
@@ -20,7 +20,6 @@ public class IntegrationServiceScanner
         foreach (var type in types)
         {
             var integrationIdProperty = type.GetProperty("IntegrationId", BindingFlags.Public | BindingFlags.Static);
-
             if (integrationIdProperty is null || integrationIdProperty.PropertyType != typeof(string))
             {
                 continue;
@@ -29,7 +28,6 @@ public class IntegrationServiceScanner
             var integrationId = (string)integrationIdProperty.GetValue(null)!;
 
             var integrationNameProperty = type.GetProperty("IntegrationName", BindingFlags.Public | BindingFlags.Static);
-
             if (integrationNameProperty is null || integrationNameProperty.PropertyType != typeof(string))
             {
                 continue;
@@ -37,7 +35,15 @@ public class IntegrationServiceScanner
 
             var integrationName = (string)integrationNameProperty.GetValue(null)!;
 
-            integrations.Add(integrationId, integrationName);
+            var integrationEnabledProperty = type.GetProperty("IntegrationEnabled", BindingFlags.Public | BindingFlags.Static);
+            if (integrationEnabledProperty is null || integrationEnabledProperty.PropertyType != typeof(bool))
+            {
+                continue;
+            }
+
+            var integrationEnabled = (bool)integrationEnabledProperty.GetValue(null)!;
+
+            integrations.Add(new IntegrationData(integrationId, integrationName, integrationEnabled));
         }
 
         return integrations;

@@ -6,7 +6,7 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Integrations.Horyzonty;
 
-public class HoryzontyService : IIntegrationService
+public sealed class HoryzontyService : IIntegrationService
 {
     private readonly HttpClient _httpClient;
     private readonly IMediator _mediator;
@@ -17,9 +17,13 @@ public class HoryzontyService : IIntegrationService
         _mediator = mediator;
     }
 
+    //this property is used by Reflection to get the integration id
+    public static bool IntegrationEnabled => true;
+
     //this property is used by Reflection to get the integration name
     public static string IntegrationName => "Horyzonty";
 
+    //this property is used by Reflection to get the integration id
     public static string IntegrationId => "Horyzonty";
 
     public event EventHandler<SourceRefreshProgressEventArgs>? RefreshProgressChanged;
@@ -31,7 +35,7 @@ public class HoryzontyService : IIntegrationService
         return trips;
     }
 
-    protected virtual void OnRefreshProgressChanged(double progressPercentage)
+    private void OnRefreshProgressChanged(double progressPercentage)
     {
         RefreshProgressChanged?.Invoke(this, new SourceRefreshProgressEventArgs(IntegrationId, progressPercentage));
     }

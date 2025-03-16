@@ -11,6 +11,9 @@ public partial class SourceMetaDataViewModel : ObservableObject
     private string _integrationId = string.Empty;
 
     [ObservableProperty]
+    private bool _isEnabled;
+
+    [ObservableProperty]
     private string _name = string.Empty;
 
     [ObservableProperty]

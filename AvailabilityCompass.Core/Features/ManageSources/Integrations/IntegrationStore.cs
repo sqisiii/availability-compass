@@ -2,6 +2,6 @@
 
 public class IntegrationStore : IIntegrationStore
 {
-    private readonly Lazy<Dictionary<string, string>> _integrationsData = new(IntegrationServiceScanner.ScanIntegrationServices);
-    public Dictionary<string, string> GetIntegrationsIdAndNames() => _integrationsData.Value;
+    private readonly Lazy<IList<IntegrationData>> _integrationsData = new(IntegrationServiceScanner.ScanIntegrationServices);
+    public IList<IntegrationData> GetIntegrationsIdAndNames() => _integrationsData.Value;
 }

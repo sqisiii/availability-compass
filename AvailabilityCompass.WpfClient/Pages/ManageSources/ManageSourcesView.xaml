@@ -4,11 +4,26 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:manageSources="clr-namespace:AvailabilityCompass.Core.Features.ManageSources;assembly=AvailabilityCompass.Core"
-             xmlns:pages="clr-namespace:AvailabilityCompass.WpfClient.Pages"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageSources.Converters"
              d:DataContext="{d:DesignInstance manageSources:ManageSourcesViewModel, IsDesignTimeCreatable=True}"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:DoubleToPercentageConverter x:Key="DoubleToPercentageConverter" />
+        <Style x:Key="CenteredVerticallyColumn" TargetType="DataGridCell"
+               BasedOn="{StaticResource {x:Type DataGridCell}}">
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="RefreshHeader" TargetType="DataGridColumnHeader"
+               BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="StatusHeader" TargetType="DataGridColumnHeader"
+               BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+            <Setter Property="Margin" Value="10 0 0 0" />
+        </Style>
+    </UserControl.Resources>
     <StackPanel>
         <TextBlock
             Style="{StaticResource MaterialDesignHeadline6TextBlock}"
@@ -30,17 +45,53 @@
             Style="{StaticResource MaterialDesignDataGrid}"
             VerticalScrollBarVisibility="Auto">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
-                <DataGridTextColumn Header="Updated" Binding="{Binding ChangedAt}" />
-                <DataGridTextColumn Header="Trips Count" Binding="{Binding TripsCount}" />
-                <DataGridTemplateColumn Header="Action">
+                <DataGridTextColumn CellStyle="{StaticResource CenteredVerticallyColumn}"
+                                    Header="Name"
+                                    Binding="{Binding Name}" />
+                <DataGridTextColumn CellStyle="{StaticResource CenteredVerticallyColumn}" Header="Updated"
+                                    Binding="{Binding ChangedAt, StringFormat=yyyy-MM-dd HH:mm:ss, TargetNullValue=N/A}" />
+                <DataGridTextColumn CellStyle="{StaticResource CenteredVerticallyColumn}" Header="Records Count"
+                                    Binding="{Binding TripsCount}" />
+                <DataGridTemplateColumn Header="Refresh?" HeaderStyle="{StaticResource RefreshHeader}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Content="Refresh"
                                     Style="{StaticResource MaterialDesignFlatSecondaryMidBgButton}"
-                                    ToolTip="Update saved trips"
-                                    Command="{Binding DataContext.GetSourcesCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    ToolTip="Refresh available trips data"
+                                    Command="{Binding DataContext.RefreshSourceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     CommandParameter="{Binding IntegrationId}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Status">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <ProgressBar
+                                    Grid.Row="0"
+                                    Width="240"
+                                    Height="{Binding ElementName=ProgressBarTextBlock, Path=ActualHeight}"
+                                    MinHeight="25"
+                                    Background="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
+                                    Foreground="{DynamicResource MaterialDesign.Brush.Secondary.Dark}"
+                                    Visibility="{Binding ShowProgress, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Value="{Binding ProgressPercent, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock
+                                    x:Name="ProgressBarTextBlock"
+                                    Grid.Row="0"
+                                    Width="240"
+                                    MinHeight="20"
+                                    Padding="5"
+                                    TextAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                                    Text="{Binding ProgressPercent, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DoubleToPercentageConverter}}"
+                                    TextWrapping="WrapWithOverflow"
+                                    Visibility="{Binding ShowProgress, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
