@@ -1,4 +1,4 @@
-﻿namespace AvailabilityCompass.Core.Features.ManageSources;
+﻿namespace AvailabilityCompass.Core.Features.ManageSources.Sources;
 
 public class SourceFilter
 {

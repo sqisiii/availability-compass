@@ -4,10 +4,7 @@ public record SourceDataItem(
     int SeqNo,
     string SourceId,
     string? Title,
-    string? Type,
-    string? Country,
     DateOnly StartDate,
     DateOnly EndDate,
-    double? Price,
     DateTime ChangeDate,
     Dictionary<string, object?> AdditionalData);

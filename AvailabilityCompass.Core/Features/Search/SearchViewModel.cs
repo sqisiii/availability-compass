@@ -13,6 +13,9 @@ namespace AvailabilityCompass.Core.Features.Search;
 public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDisposable
 {
     private readonly ICalendarViewModelFactory _calendarViewModelFactory;
+    private readonly IFormElementFactory _formElementFactory;
+
+    private readonly List<FormGroup> _formGroups = [];
     private readonly IMediator _mediator;
     private readonly ISourceViewModelFactory _sourceViewModelFactory;
 
@@ -36,59 +39,15 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     public SearchViewModel(
         IMediator mediator,
         ISourceViewModelFactory sourceViewModelFactory,
-        ICalendarViewModelFactory calendarViewModelFactory)
+        ICalendarViewModelFactory calendarViewModelFactory,
+        IFormElementFactory formElementFactory)
     {
         _mediator = mediator;
         _sourceViewModelFactory = sourceViewModelFactory;
         _calendarViewModelFactory = calendarViewModelFactory;
-        _ = LoadCalendarsAsync();
-        _ = LoadSourcesAsync();
+        _formElementFactory = formElementFactory;
         Calendars.CollectionChanged += CalendarsOnCollectionChanged;
         Sources.CollectionChanged += SourcesOnCollectionChanged;
-
-        FormGroups = new ObservableCollection<FormGroup>
-        {
-            new FormGroup
-            {
-                Title = "Horyzonty",
-                Elements = new ObservableCollection<FormElement>
-                {
-                    new FormElement { Label = "Search", Type = FormElementType.TextBox },
-                    new FormElement { Label = "Available Only?", Type = FormElementType.CheckBox, TextValue = "True" },
-                    new FormElement
-                    {
-                        Label = "Countries:", Type = FormElementType.MultiSelect
-                    },
-                    new FormElement
-                    {
-                        Label = "Typ:", Type = FormElementType.MultiSelect
-                    }
-                }
-            },
-
-            new FormGroup
-            {
-                Title = "Rowerzysta Podróżnik",
-                Elements = new ObservableCollection<FormElement>
-                {
-                    new FormElement { Label = "Search", Type = FormElementType.TextBox },
-                    new FormElement { Label = "Available Only?", Type = FormElementType.CheckBox, TextValue = "True" },
-                    new FormElement
-                    {
-                        Label = "Countries:", Type = FormElementType.MultiSelect
-                    },
-                }
-            }
-        };
-        FormGroups[1].Elements[2].Options.Add(new("England", false));
-        FormGroups[1].Elements[2].Options.Add(new("USA", false));
-        FormGroups[1].Elements[2].Options.Add(new("Italy", false));
-        FormGroups[0].Elements[2].Options.Add(new("England", false));
-        FormGroups[0].Elements[2].Options.Add(new("USA", false));
-        FormGroups[0].Elements[2].Options.Add(new("Italy", false));
-        FormGroups[0].Elements[3].Options.Add(new("Rowery", false));
-        FormGroups[0].Elements[3].Options.Add(new("Góry", false));
-        FormGroups[0].Elements[3].Options.Add(new("Kontynenty", false));
     }
 
 
@@ -96,7 +55,7 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
 
     public FullyObservableCollection<CalendarViewModel> Calendars { get; } = [];
 
-    public ObservableCollection<FormGroup> FormGroups { get; set; }
+    public ObservableCollection<FormGroup> FormGroups { get; set; } = [];
 
     public ObservableCollection<ResultColumnDefinition> Columns { get; } = [];
     public ObservableCollection<Dictionary<string, object>> Results { get; } = [];
@@ -144,7 +103,17 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
 
     private void SourcesOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        UpdateDataGridStructure();
+        LoadFormGroups();
+    }
+
+    private void LoadFormGroups()
+    {
+        FormGroups.Clear();
+        var selectedSources = Sources.Where(x => x.IsSelected).Select(x => x.SourceId).ToList();
+        foreach (var formGroup in _formGroups.Where(f => selectedSources.Contains(f.SourceId)))
+        {
+            FormGroups.Add(formGroup);
+        }
     }
 
     private void UpdateDataGridStructure()
@@ -164,10 +133,13 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     {
         var getSourcesForFilteringDto = await _mediator.Send(new GetSourcesForFilteringQuery());
         Sources.Clear();
+        _formGroups.Clear();
         foreach (var source in getSourcesForFilteringDto.Sources)
         {
             var sourceViewModel = _sourceViewModelFactory.Create(source);
             Sources.Add(sourceViewModel);
+            var filters = _formElementFactory.CreateFormElement(source);
+            _formGroups.Add(filters);
         }
     }
 

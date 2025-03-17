@@ -8,6 +8,7 @@ public class SourceViewModelFactory : ISourceViewModelFactory
     {
         return new SourceViewModel
         {
+            SourceId = getSourcesResponse.SourceId,
             IsActive = getSourcesResponse.IsEnabled,
             IsSelected = false,
             ChangeAt = getSourcesResponse.ChangedAt,

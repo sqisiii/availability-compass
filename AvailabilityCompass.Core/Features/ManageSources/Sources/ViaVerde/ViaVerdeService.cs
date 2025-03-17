@@ -9,4 +9,9 @@ public class ViaVerdeService : ISourceService
     {
         return Task.FromResult(Enumerable.Empty<SourceDataItem>());
     }
+
+    public Task<List<SourceFilter>> GetFilters(CancellationToken ct)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using AvailabilityCompass.Core.Features.ManageSources.Commands.ReplaceSourceDataRequest;
+using AvailabilityCompass.Core.Features.ManageSources.Sources.Horyzonty.Queries.GetHoryzontyFilterOptionsQuery;
 using HtmlAgilityPack;
 using MediatR;
 using Serilog;
@@ -29,6 +30,34 @@ public sealed class HoryzontyService : ISourceService
         await _mediator.Send(new ReplaceSourceDataInDbRequest(trips), ct);
         return trips;
     }
+
+    public async Task<List<SourceFilter>> GetFilters(CancellationToken ct)
+    {
+        var options = await _mediator.Send(new GetHoryzontyFilterOptionsQuery(_sourceId), ct);
+        List<SourceFilter> filters =
+        [
+            new SourceFilter
+            {
+                Label = "Country",
+                Type = SourceFilterType.MultiSelect,
+                Options = options.Countries
+            },
+            new SourceFilter
+            {
+                Label = "Trip Type",
+                Type = SourceFilterType.MultiSelect,
+                Options = options.TripTypes
+            },
+            new SourceFilter
+            {
+                Label = "Availability?",
+                Type = SourceFilterType.MultiSelect,
+                Options = ["", "Normal", "Last places", "Reserve list"]
+            }
+        ];
+        return filters;
+    }
+
 
     private void OnRefreshProgressChanged(double progressPercentage)
     {
@@ -103,11 +132,13 @@ public sealed class HoryzontyService : ISourceService
                     .FirstOrDefault(node => node.GetAttributeValue("class", "").Contains("term__code"))
                     ?.InnerText;
 
+                code = code?.Replace("Kod: ", "");
+
                 var price = label.Descendants("span")
                     .FirstOrDefault(node => node.GetAttributeValue("class", "").Contains("term__price"))
                     ?.InnerText;
 
-                if (!double.TryParse(price, out var priceValue))
+                if (!double.TryParse(price?.Replace("PLN", "").Replace(" ", ""), out var priceValue))
                 {
                     priceValue = -1;
                 }
@@ -121,16 +152,16 @@ public sealed class HoryzontyService : ISourceService
                     counter,
                     _sourceId,
                     title?.InnerText,
-                    country,
-                    type,
                     ExtractDateFromText(startDate),
                     ExtractDateFromText(endDate),
-                    priceValue,
                     DateTime.Now,
                     new Dictionary<string, object?>
                     {
+                        { "Type", type },
+                        { "Country", country },
                         { "Code", code },
-                        { "Modificator", modificator }
+                        { "Status", modificator },
+                        { "Price", priceValue }
                     }
                 );
                 tours.Add(tour);

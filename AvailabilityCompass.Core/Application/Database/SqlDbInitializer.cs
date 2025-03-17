@@ -26,11 +26,8 @@ public class SqlDbInitializer : IDbInitializer
                 SourceId TEXT NOT NULL,
                 SeqNo INTEGER,
                 Title TEXT NOT NULL,
-                Type TEXT NOT NULL,
-                Country TEXT NOT NULL,
                 StartDate TEXT NOT NULL,
                 EndDate TEXT,
-                Price REAL NOT NULL,
                 ChangeDate TEXT NOT NULL,
                 PRIMARY KEY (SourceId, SeqNo)
             );";

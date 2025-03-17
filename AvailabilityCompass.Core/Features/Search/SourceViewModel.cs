@@ -25,6 +25,8 @@ public partial class SourceViewModel : ObservableObject, IDisposable
         _timer.Start();
     }
 
+    public string SourceId { get; init; } = string.Empty;
+
     public DateTime? ChangeAt { get; init; }
 
     public string LastUpdated => GetRelativeTime(ChangeAt);
