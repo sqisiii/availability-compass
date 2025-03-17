@@ -23,6 +23,14 @@ public sealed class FullyObservableCollection<T> : ObservableCollection<T>
         }
     }
 
+    public void AddRange(IEnumerable<T> items)
+    {
+        foreach (var item in items)
+        {
+            Add(item);
+        }
+    }
+
     private void FullObservableCollectionCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (e.NewItems != null)
