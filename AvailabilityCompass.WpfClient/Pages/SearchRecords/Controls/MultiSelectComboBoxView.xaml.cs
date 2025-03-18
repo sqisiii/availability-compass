@@ -100,7 +100,7 @@ public partial class MultiSelectComboBoxView : UserControl
             SelectedItems.Remove(checkBoxContent);
         }
 
-        DisplayValue = CreateLimitedString(SelectedItems.Cast<string>());
+        DisplayValue = CreateLimitedString(SelectedItems);
     }
 
     private string CreateLimitedString(IEnumerable<string> options, int maxLength = 50)
@@ -135,5 +135,13 @@ public partial class MultiSelectComboBoxView : UserControl
             result.Append("...");
 
         return result.ToString();
+    }
+
+    private void MultiSelectComboBoxView_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        if (SelectedItems != null)
+        {
+            DisplayValue = CreateLimitedString(SelectedItems);
+        }
     }
 }

@@ -8,6 +8,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:filterFormElements="clr-namespace:AvailabilityCompass.Core.Features.Search.FilterFormElements;assembly=AvailabilityCompass.Core"
              mc:Ignorable="d"
+             Loaded="MultiSelectComboBoxView_OnLoaded"
              x:Name="Root"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
