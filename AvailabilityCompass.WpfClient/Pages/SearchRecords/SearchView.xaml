@@ -110,12 +110,6 @@
                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                 Text="{Binding SearchPhrase, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                 ToolTip="Phrase to look for." />
-            <CheckBox
-                Content="Available Only?"
-                Margin="15,5,0,0"
-                IsChecked="{Binding AvailableOnly, Converter={StaticResource StringToBoolConverter}, Mode=TwoWay}"
-                Style="{StaticResource MaterialDesignSecondaryCheckBox}"
-                ToolTip="Show only available positions?" />
             <DatePicker
                 Width="120"
                 Margin="15,0,0,0"

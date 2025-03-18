@@ -20,9 +20,6 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     private readonly ISourceViewModelFactory _sourceViewModelFactory;
 
     [ObservableProperty]
-    private bool _availableOnly;
-
-    [ObservableProperty]
     private DateOnly? _endDate;
 
     private bool _isActive;
