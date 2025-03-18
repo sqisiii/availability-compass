@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 using AvailabilityCompass.Core.Features.ManageSources.Commands.ReplaceSourceDataRequest;
-using AvailabilityCompass.Core.Features.ManageSources.Sources.Horyzonty.Queries.GetHoryzontyFilterOptionsQuery;
+using AvailabilityCompass.Core.Features.ManageSources.Queries.GetFilterOptionsQuery;
 using HtmlAgilityPack;
 using MediatR;
 using Serilog;
@@ -33,27 +33,28 @@ public sealed class HoryzontyService : ISourceService
 
     public async Task<List<SourceFilter>> GetFilters(CancellationToken ct)
     {
-        var options = await _mediator.Send(new GetHoryzontyFilterOptionsQuery(_sourceId), ct);
+        List<string> filterFieldNames = ["Country", "Type", "Status"];
+        var options = await _mediator.Send(new GetFilterOptionsQuery(_sourceId, filterFieldNames), ct);
         List<SourceFilter> filters =
         [
             new SourceFilter
             {
                 Label = "Country",
                 Type = SourceFilterType.MultiSelect,
-                Options = options.Countries
+                Options = options.FilterOptions.GetValueOrDefault("Country", new List<string>())
             },
             new SourceFilter
             {
-                Label = "Trip Type",
+                Label = "Type",
                 Type = SourceFilterType.MultiSelect,
-                Options = options.TripTypes
+                Options = options.FilterOptions.GetValueOrDefault("Type", new List<string>())
             },
             new SourceFilter
             {
-                Label = "Availability?",
+                Label = "Status",
                 Type = SourceFilterType.MultiSelect,
-                Options = ["", "Normal", "Last places", "Reserve list"]
-            }
+                Options = options.FilterOptions.GetValueOrDefault("Status", new List<string>())
+            },
         ];
         return filters;
     }
