@@ -116,14 +116,14 @@
                 materialDesign:HintAssist.HelperText="Format: MM/dd/yyyy"
                 materialDesign:HintAssist.Hint="Start Date"
                 Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
-                Text="{Binding StartDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                Text="{Binding StartDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}" />
             <DatePicker
                 Width="120"
                 Margin="15,0,0,0"
                 materialDesign:HintAssist.HelperText="Format: MM/dd/yyyy"
                 materialDesign:HintAssist.Hint="End Date"
                 Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
-                Text="{Binding EndDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                Text="{Binding EndDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}" />
         </StackPanel>
 
         <!-- Source specific filters section -->

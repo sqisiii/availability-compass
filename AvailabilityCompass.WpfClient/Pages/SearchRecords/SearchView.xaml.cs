@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Data;
 using AvailabilityCompass.Core.Features.Search;
+using AvailabilityCompass.Core.Features.Search.FilterFormElements;
 
 // ReSharper disable once CheckNamespace
 namespace AvailabilityCompass.WpfClient.Pages;
@@ -20,18 +21,10 @@ public partial class SearchView : UserControl
             return;
         }
 
-        viewModel.PropertyChanged += (s, e) =>
-        {
-            if (e.PropertyName == nameof(viewModel.Columns))
-            {
-                UpdateDataGridColumns(viewModel);
-            }
-        };
-
-        UpdateDataGridColumns(viewModel);
+        viewModel.ColumnObservable.Subscribe(columns => UpdateDataGridColumns(viewModel, columns));
     }
 
-    private void UpdateDataGridColumns(SearchViewModel viewModel)
+    private void UpdateDataGridColumns(SearchViewModel viewModel, List<ResultColumnDefinition> columns)
     {
         ResultsDataGridView.Columns.Clear();
         foreach (var column in viewModel.Columns)

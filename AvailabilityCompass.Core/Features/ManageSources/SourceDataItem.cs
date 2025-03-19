@@ -7,4 +7,9 @@ public record SourceDataItem(
     DateOnly StartDate,
     DateOnly EndDate,
     DateTime ChangeDate,
-    Dictionary<string, object?> AdditionalData);
+    Dictionary<string, object?> AdditionalData)
+{
+    public SourceDataItem() : this(0, string.Empty, null, new DateOnly(), new DateOnly(), DateTime.MinValue, new Dictionary<string, object?>())
+    {
+    }
+}
