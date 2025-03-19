@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
 using System.Windows;
 using AvailabilityCompass.Core.Application.DependencyInjection;
 using AvailabilityCompass.WpfClient.Application.DependencyInjection;
@@ -20,6 +21,13 @@ public partial class App
 
     public App()
     {
+        var customCulture = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+        customCulture.DateTimeFormat.ShortDatePattern = "yyyy-MM-dd";
+        customCulture.DateTimeFormat.DateSeparator = "-";
+
+        CultureInfo.DefaultThreadCurrentCulture = customCulture;
+        CultureInfo.DefaultThreadCurrentUICulture = customCulture;
+
         var serilogOptions = new ConfigurationReaderOptions(typeof(FileLoggerConfigurationExtensions).Assembly, typeof(MapLoggerConfigurationExtensions).Assembly);
         _host = Host.CreateDefaultBuilder()
             .UseDefaultServiceProvider((_, options) => { options.ValidateScopes = true; })
