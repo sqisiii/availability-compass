@@ -5,8 +5,8 @@
     xmlns:views="clr-namespace:AvailabilityCompass.WpfClient.Pages"
     xmlns:vms="clr-namespace:AvailabilityCompass.Core.Features;assembly=AvailabilityCompass.Core"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    xmlns:search="clr-namespace:AvailabilityCompass.Core.Features.Search;assembly=AvailabilityCompass.Core"
-    xmlns:manageSources="clr-namespace:AvailabilityCompass.Core.Features.ManageSources;assembly=AvailabilityCompass.Core">
+    xmlns:manageSources="clr-namespace:AvailabilityCompass.Core.Features.ManageSources;assembly=AvailabilityCompass.Core"
+    xmlns:searchRecords="clr-namespace:AvailabilityCompass.Core.Features.SearchRecords;assembly=AvailabilityCompass.Core">
     <Application.Resources>
         <ResourceDictionary x:Key="MaterialDesignResources">
             <ResourceDictionary.MergedDictionaries>
@@ -21,7 +21,7 @@
             <DataTemplate DataType="{x:Type vms:ManageCalendars.ManageCalendarsViewModel}">
                 <views:ManageCalendarsView />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type search:SearchViewModel}">
+            <DataTemplate DataType="{x:Type searchRecords:SearchViewModel}">
                 <views:SearchView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vms:ManageSettings.ManageSettingsViewModel}">
