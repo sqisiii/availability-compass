@@ -31,6 +31,11 @@ public partial class MainWindow : Window
     [DllImport("user32.dll")]
     private static extern IntPtr SendMessage(IntPtr hWnd, int wMsg, int wParam, int lParam);
 
+    private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+        HwndSource? source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+        source?.AddHook(WndProc);
+    }
     private void ControlBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (e.ClickCount == 2)
