@@ -44,7 +44,8 @@ public partial class SearchView : UserControl
             ResultsDataGridView.Columns.Add(new DataGridTextColumn
             {
                 Header = column.Header,
-                Binding = new Binding($"[{column.PropertyName}]")
+                Binding = new Binding($"[{column.PropertyName}]"),
+                MaxWidth = 250
             });
         }
     }
