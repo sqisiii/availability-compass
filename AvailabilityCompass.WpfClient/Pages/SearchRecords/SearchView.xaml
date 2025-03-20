@@ -28,194 +28,201 @@
             </TextBlock>
         </DataTemplate>
     </UserControl.Resources>
-    <ScrollViewer>
-        <StackPanel>
-            <TextBlock
-                Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                Margin="0,10,0,10"
-                Text="Search"
-                HorizontalAlignment="Center" />
-            <!-- Calendars section -->
-            <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Calendars" />
-            <WrapPanel Margin="0,10,0,0" Orientation="Horizontal">
-                <ListBox ItemsSource="{Binding Calendars}">
-                    <ListBox.ItemContainerStyle>
-                        <!--  Style to get rid of the selection visual  -->
-                        <Style TargetType="{x:Type ListBoxItem}">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                        <ContentPresenter />
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="Margin" Value="5,0,5,5" />
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                    <ListBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </ListBox.ItemsPanel>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate DataType="{x:Type viewModels:CalendarFilterViewModel}">
-                            <StackPanel>
-                                <controls:SelectionCheckBox
-                                    CheckBoxText="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                    FullMinHeight="30"
-                                    FullWidth="150"
-                                    IsActive="True"
-                                    HeaderText="{Binding Type}"
-                                    IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </WrapPanel>
-
-            <!-- Sources section -->
-            <TextBlock Margin="0,10,0,0" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Sources" />
-            <WrapPanel Margin="0,10,0,0" Orientation="Horizontal">
-                <ListBox ItemsSource="{Binding Sources}">
-                    <ListBox.ItemContainerStyle>
-                        <!--  Style to get rid of the selection visual  -->
-                        <Style TargetType="{x:Type ListBoxItem}">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                        <ContentPresenter />
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="Margin" Value="5,0,5,5" />
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                    <ListBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </ListBox.ItemsPanel>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate DataType="{x:Type viewModels:SourceFilterViewModel}">
-                            <StackPanel>
-                                <controls:SelectionCheckBox
-                                    CheckBoxText="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                    FullMinHeight="30"
-                                    FullWidth="180"
-                                    HeaderText="{Binding LastUpdated}"
-                                    IsActive="{Binding IsActive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                    IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </WrapPanel>
-
-            <!-- Filters section -->
-            <TextBlock Margin="0,10,0,0" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Filters" />
-            <StackPanel Orientation="Horizontal">
-                <TextBox
-                    Width="300"
-                    Margin="15,0,0,0"
-                    materialDesign:HintAssist.Hint="Search phrase"
-                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                    Text="{Binding SearchPhrase, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    ToolTip="Phrase to look for." />
-                <DatePicker
-                    Width="120"
-                    Margin="15,0,0,0"
-                    materialDesign:HintAssist.HelperText="Format: MM/dd/yyyy"
-                    materialDesign:HintAssist.Hint="Start Date"
-                    Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
-                    Text="{Binding StartDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}" />
-                <DatePicker
-                    Width="120"
-                    Margin="15,0,0,0"
-                    materialDesign:HintAssist.HelperText="Format: MM/dd/yyyy"
-                    materialDesign:HintAssist.Hint="End Date"
-                    Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
-                    Text="{Binding EndDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}" />
-            </StackPanel>
-
-            <!-- Source specific filters section -->
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel Margin="10" Orientation="Horizontal">
-                    <ItemsControl ItemsSource="{Binding FormGroups}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Margin="5" Orientation="Vertical">
-                                    <TextBlock Margin="0,10,0,0" Style="{StaticResource MaterialDesignBody2TextBlock}"
-                                               Text="{Binding Title}" />
-                                    <ItemsControl ItemsSource="{Binding Elements}">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <StackPanel Orientation="Horizontal" />
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Margin="15, 5, 5, 5" Orientation="Horizontal">
-                                                    <!-- Show TextBlock -->
-                                                    <TextBox
-                                                        Width="100"
-                                                        materialDesign:HintAssist.Hint="{Binding Label}"
-                                                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                                        Text="{Binding TextValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                                        Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=TextBox}"
-                                                        ToolTip="{Binding Label}" />
-
-                                                    <!-- Show CheckBox -->
-                                                    <CheckBox
-                                                        Content="{Binding Label}"
-                                                        Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=CheckBox}"
-                                                        IsChecked="{Binding TextValue, Converter={StaticResource StringToBoolConverter}, Mode=TwoWay}"
-                                                        Style="{StaticResource MaterialDesignSecondaryCheckBox}"
-                                                        ToolTip="{Binding Label}" />
-
-                                                    <!-- Show MultiSelect ComboBox -->
-                                                    <controls:MultiSelectComboBoxView ItemSource="{Binding Options}"
-                                                        Label="{Binding Label}"
-                                                        SelectedItems="{Binding SelectedOptions}"
-                                                        Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=MultiSelect}" />
-
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
+    <materialDesign:Card
+        Margin="5"
+        Padding="5,5,5,15"
+        materialDesign:ElevationAssist.Elevation="Dp6">
+        <ScrollViewer>
+            <StackPanel>
+                <TextBlock
+                    Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                    Margin="0,10,0,10"
+                    Text="Search"
+                    HorizontalAlignment="Center" />
+                <!-- Calendars section -->
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Calendars" />
+                <WrapPanel Margin="0,10,0,0" Orientation="Horizontal">
+                    <ListBox ItemsSource="{Binding Calendars}">
+                        <ListBox.ItemContainerStyle>
+                            <!--  Style to get rid of the selection visual  -->
+                            <Style TargetType="{x:Type ListBoxItem}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                            <ContentPresenter />
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Margin" Value="5,0,5,5" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:CalendarFilterViewModel}">
+                                <StackPanel>
+                                    <controls:SelectionCheckBox
+                                        CheckBoxText="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        FullMinHeight="30"
+                                        FullWidth="150"
+                                        IsActive="True"
+                                        HeaderText="{Binding Type}"
+                                        IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </StackPanel>
                             </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </WrapPanel>
+
+                <!-- Sources section -->
+                <TextBlock Margin="0,10,0,0" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Sources" />
+                <WrapPanel Margin="0,10,0,0" Orientation="Horizontal">
+                    <ListBox ItemsSource="{Binding Sources}">
+                        <ListBox.ItemContainerStyle>
+                            <!--  Style to get rid of the selection visual  -->
+                            <Style TargetType="{x:Type ListBoxItem}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                            <ContentPresenter />
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Margin" Value="5,0,5,5" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:SourceFilterViewModel}">
+                                <StackPanel>
+                                    <controls:SelectionCheckBox
+                                        CheckBoxText="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        FullMinHeight="30"
+                                        FullWidth="180"
+                                        HeaderText="{Binding LastUpdated}"
+                                        IsActive="{Binding IsActive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </WrapPanel>
+
+                <!-- Filters section -->
+                <TextBlock Margin="0,10,0,0" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Filters" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBox
+                        Width="300"
+                        Margin="15,0,0,0"
+                        materialDesign:HintAssist.Hint="Search phrase"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                        Text="{Binding SearchPhrase, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                        ToolTip="Phrase to look for." />
+                    <DatePicker
+                        Width="120"
+                        Margin="15,0,0,0"
+                        materialDesign:HintAssist.HelperText="Format: MM/dd/yyyy"
+                        materialDesign:HintAssist.Hint="Start Date"
+                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
+                        Text="{Binding StartDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}" />
+                    <DatePicker
+                        Width="120"
+                        Margin="15,0,0,0"
+                        materialDesign:HintAssist.HelperText="Format: MM/dd/yyyy"
+                        materialDesign:HintAssist.Hint="End Date"
+                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
+                        Text="{Binding EndDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}" />
                 </StackPanel>
-            </ScrollViewer>
 
-            <!-- Search button -->
-            <Button
-                Width="200"
-                Command="{Binding SearchCommand}"
-                Content="Search"
-                Margin="10"
-                Style="{StaticResource MaterialDesignRaisedButton}" />
+                <!-- Source specific filters section -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="10" Orientation="Horizontal">
+                        <ItemsControl ItemsSource="{Binding FormGroups}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="5" Orientation="Vertical">
+                                        <TextBlock Margin="0,10,0,0"
+                                                   Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                   Text="{Binding Title}" />
+                                        <ItemsControl ItemsSource="{Binding Elements}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Orientation="Horizontal" />
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Margin="15, 5, 5, 5" Orientation="Horizontal">
+                                                        <!-- Show TextBlock -->
+                                                        <TextBox
+                                                            Width="100"
+                                                            materialDesign:HintAssist.Hint="{Binding Label}"
+                                                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                            Text="{Binding TextValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                            Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=TextBox}"
+                                                            ToolTip="{Binding Label}" />
 
-            <!-- Results section -->
-            <TextBlock Margin="0,10,0,0" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Results" />
-            <DataGrid
-                x:Name="ResultsDataGridView"
-                Height="500"
-                AutoGenerateColumns="False"
-                CanUserAddRows="False"
-                CanUserDeleteRows="False"
-                CanUserReorderColumns="True"
-                CanUserResizeColumns="True"
-                CanUserResizeRows="True"
-                CanUserSortColumns="True"
-                IsReadOnly="True"
-                ItemsSource="{Binding Results}"
-                SelectedItem="{Binding SelectedResult, Mode=TwoWay}"
-                SelectionMode="Single"
-                SelectionUnit="FullRow"
-                Style="{StaticResource MaterialDesignDataGrid}"
-                VerticalScrollBarVisibility="Auto" />
-        </StackPanel>
-    </ScrollViewer>
+                                                        <!-- Show CheckBox -->
+                                                        <CheckBox
+                                                            Content="{Binding Label}"
+                                                            Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=CheckBox}"
+                                                            IsChecked="{Binding TextValue, Converter={StaticResource StringToBoolConverter}, Mode=TwoWay}"
+                                                            Style="{StaticResource MaterialDesignSecondaryCheckBox}"
+                                                            ToolTip="{Binding Label}" />
+
+                                                        <!-- Show MultiSelect ComboBox -->
+                                                        <controls:MultiSelectComboBoxView
+                                                            ItemSource="{Binding Options}"
+                                                            Label="{Binding Label}"
+                                                            SelectedItems="{Binding SelectedOptions}"
+                                                            Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=MultiSelect}" />
+
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Search button -->
+                <Button
+                    Width="200"
+                    Command="{Binding SearchCommand}"
+                    Content="Search"
+                    Margin="10"
+                    Style="{StaticResource MaterialDesignRaisedButton}" />
+
+                <!-- Results section -->
+                <TextBlock Margin="0,10,0,0" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Results" />
+                <DataGrid
+                    x:Name="ResultsDataGridView"
+                    MaxHeight="500"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    CanUserReorderColumns="True"
+                    CanUserResizeColumns="True"
+                    CanUserResizeRows="True"
+                    CanUserSortColumns="True"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding Results}"
+                    SelectedItem="{Binding SelectedResult, Mode=TwoWay}"
+                    SelectionMode="Single"
+                    SelectionUnit="FullRow"
+                    Style="{StaticResource MaterialDesignDataGrid}"
+                    VerticalScrollBarVisibility="Auto" />
+            </StackPanel>
+        </ScrollViewer>
+    </materialDesign:Card>
 </UserControl>
