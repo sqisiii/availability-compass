@@ -3,10 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Pages.SearchRecords.Converters"
              xmlns:controls="clr-namespace:AvailabilityCompass.WpfClient.Pages.SearchRecords.Controls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:filterFormElements="clr-namespace:AvailabilityCompass.Core.Features.Search.FilterFormElements;assembly=AvailabilityCompass.Core"
+             xmlns:filterFormElements1="clr-namespace:AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;assembly=AvailabilityCompass.Core"
              mc:Ignorable="d"
              Loaded="MultiSelectComboBoxView_OnLoaded"
              x:Name="Root"
@@ -24,7 +23,7 @@
                                       Style="{StaticResource MaterialDesignFloatingHintComboBox}">
             <controls:MultiSelectComboBox.Resources>
                 <DataTemplate
-                    DataType="{x:Type filterFormElements:FormElementSelectOption}">
+                    DataType="{x:Type filterFormElements1:FormElementSelectOption}">
                     <CheckBox Content="{Binding Name}"
                               Click="ButtonBase_OnClick"
                               IsChecked="{Binding IsSelected, Mode=TwoWay}" />

@@ -1,4 +1,4 @@
-﻿using AvailabilityCompass.WpfClient.Navigation;
+﻿using AvailabilityCompass.WpfClient.Shared.Navigation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AvailabilityCompass.WpfClient.Application.DependencyInjection;

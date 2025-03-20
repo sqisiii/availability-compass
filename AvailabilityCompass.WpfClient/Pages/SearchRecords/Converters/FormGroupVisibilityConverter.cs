@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
-using AvailabilityCompass.Core.Features.Search.FilterFormElements;
+using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 
 namespace AvailabilityCompass.WpfClient.Pages.SearchRecords.Converters;
 

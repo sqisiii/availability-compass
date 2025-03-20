@@ -2,7 +2,7 @@
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using AvailabilityCompass.Core.Features.Search.FilterFormElements;
+using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 
 namespace AvailabilityCompass.WpfClient.Pages.SearchRecords.Controls;
 

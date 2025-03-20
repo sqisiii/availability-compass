@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using AvailabilityCompass.Core.Features.Search.Queries.SearchSources;
+using AvailabilityCompass.Core.Features.SearchRecords.Queries.SearchSources;
 using AvailabilityCompass.Core.Shared.Database;
 using Dapper;
 using MediatR;
@@ -7,7 +7,7 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Queries.SearchSourcesQuery;
 
-public class SearchSourcesHandler : IRequestHandler<Search.Queries.SearchSources.SearchSourcesQuery, SearchSourcesResponse>
+public class SearchSourcesHandler : IRequestHandler<SearchRecords.Queries.SearchSources.SearchSourcesQuery, SearchSourcesResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;
 
@@ -16,7 +16,7 @@ public class SearchSourcesHandler : IRequestHandler<Search.Queries.SearchSources
         _dbConnectionFactory = dbConnectionFactory;
     }
 
-    public async Task<SearchSourcesResponse> Handle(Search.Queries.SearchSources.SearchSourcesQuery query, CancellationToken cancellationToken)
+    public async Task<SearchSourcesResponse> Handle(SearchRecords.Queries.SearchSources.SearchSourcesQuery query, CancellationToken cancellationToken)
     {
         try
         {

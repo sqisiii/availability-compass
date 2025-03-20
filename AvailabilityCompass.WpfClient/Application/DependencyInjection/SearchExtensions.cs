@@ -1,5 +1,5 @@
-﻿using AvailabilityCompass.Core.Features.Search;
-using AvailabilityCompass.Core.Features.Search.FilterFormElements;
+﻿using AvailabilityCompass.Core.Features.SearchRecords;
+using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AvailabilityCompass.WpfClient.Application.DependencyInjection;

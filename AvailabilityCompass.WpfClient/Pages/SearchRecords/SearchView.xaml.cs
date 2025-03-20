@@ -3,8 +3,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Navigation;
-using AvailabilityCompass.Core.Features.Search;
-using AvailabilityCompass.Core.Features.Search.FilterFormElements;
+using AvailabilityCompass.Core.Features.SearchRecords;
+using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 
 // ReSharper disable once CheckNamespace
 namespace AvailabilityCompass.WpfClient.Pages;

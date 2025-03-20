@@ -1,4 +1,4 @@
-﻿using AvailabilityCompass.Core.Features.Search.Queries.GetCalendars;
+﻿using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetCalendars;
 using MediatR;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetCalendersForFilteringQuery;

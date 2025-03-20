@@ -1,5 +1,5 @@
 ﻿using AvailabilityCompass.Core.Features.ManageSources.Sources;
-using AvailabilityCompass.Core.Features.Search.Queries.GetSources;
+using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetSources;
 using AvailabilityCompass.Core.Shared.Database;
 using Dapper;
 using MediatR;
@@ -8,7 +8,8 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Queries.GetSourcesForFilteringQuery;
 
-public class GetSourcesForFilteringHandler : IRequestHandler<Search.Queries.GetSources.GetSourcesForFilteringQuery, GetSourcesForFilteringResponse>
+public class GetSourcesForFilteringHandler : IRequestHandler<
+    SearchRecords.Queries.GetSources.GetSourcesForFilteringQuery, GetSourcesForFilteringResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;
     private readonly IServiceProvider _serviceProvider;
@@ -21,7 +22,7 @@ public class GetSourcesForFilteringHandler : IRequestHandler<Search.Queries.GetS
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<GetSourcesForFilteringResponse> Handle(Search.Queries.GetSources.GetSourcesForFilteringQuery request, CancellationToken cancellationToken)
+    public async Task<GetSourcesForFilteringResponse> Handle(SearchRecords.Queries.GetSources.GetSourcesForFilteringQuery request, CancellationToken cancellationToken)
     {
         var response = new GetSourcesForFilteringResponse();
         var sourcesData = _sourceStore.GetSourceMetaData();

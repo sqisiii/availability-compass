@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using AvailabilityCompass.Core.Shared;
-using AvailabilityCompass.WpfClient.Navigation;
+using AvailabilityCompass.WpfClient.Shared.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
