@@ -58,6 +58,7 @@ public class ReplaceSourceDataInDbHandler : IRequestHandler<ReplaceSourceDataInD
                     source.SeqNo,
                     source.SourceId,
                     source.Title,
+                    source.Url,
                     source.StartDate,
                     source.EndDate,
                     source.ChangeDate
@@ -77,8 +78,8 @@ public class ReplaceSourceDataInDbHandler : IRequestHandler<ReplaceSourceDataInD
 
             if (sourceInserts.Any())
             {
-                var sourceUpdateSql = @"INSERT INTO Source (SeqNo, SourceId, Title, StartDate, EndDate, ChangeDate) 
-                    VALUES (@SeqNo, @SourceId, @Title, @StartDate, @EndDate, @ChangeDate);";
+                var sourceUpdateSql = @"INSERT INTO Source (SeqNo, SourceId, Title, Url, StartDate, EndDate, ChangeDate) 
+                    VALUES (@SeqNo, @SourceId, @Title, @Url, @StartDate, @EndDate, @ChangeDate);";
                 await connection.ExecuteAsync(sourceUpdateSql, sourceInserts, transaction).ConfigureAwait(false);
             }
 

@@ -17,6 +17,16 @@
     <UserControl.Resources>
         <converters:FormGroupVisibilityConverter x:Key="VisibilityConverter" />
         <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
+        <!-- ReSharper disable once Xaml.RedundantResource -->
+        <DataTemplate x:Key="UrlCellTemplate">
+            <TextBlock>
+                <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                <Hyperlink NavigateUri="{Binding [Url]}" RequestNavigate="Hyperlink_RequestNavigate">
+                    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                    <TextBlock Text="{Binding [Url]}" />
+                </Hyperlink>
+            </TextBlock>
+        </DataTemplate>
     </UserControl.Resources>
     <StackPanel>
         <TextBlock
@@ -189,7 +199,6 @@
         <TextBlock Margin="0,10,0,0" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Results" />
         <DataGrid
             x:Name="ResultsDataGridView"
-            Width="1100"
             Height="500"
             AutoGenerateColumns="False"
             CanUserAddRows="False"

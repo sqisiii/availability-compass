@@ -9,7 +9,7 @@ public class SearchSourcesResponse
         SourceDataItems = sourceDataItems;
     }
 
-    public IReadOnlyCollection<SourceDataItem> SourceDataItems { get; init; }
+    public IReadOnlyCollection<SourceDataItem> SourceDataItems { get; }
 
     public bool IsSuccess { get; init; } = true;
 }

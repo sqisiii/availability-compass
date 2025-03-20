@@ -25,7 +25,7 @@ public class SearchSourcesHandler : IRequestHandler<Search.Queries.SearchSources
 
             const string baseSql = """
                                    SELECT
-                                       s.SourceId, s.SeqNo, s.Title, s.StartDate, s.EndDate, s.ChangeDate, sad.Key, sad.Value
+                                       s.SourceId, s.SeqNo, s.Title, s.Url, s.StartDate, s.EndDate, s.ChangeDate, sad.Key, sad.Value
                                    FROM Source s
                                    LEFT JOIN SourceAdditionalData sad
                                        ON s.SeqNo = sad.SourceSeqNo AND s.SourceId = sad.SourceId

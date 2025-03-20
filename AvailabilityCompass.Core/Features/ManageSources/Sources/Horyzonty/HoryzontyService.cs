@@ -153,6 +153,7 @@ public sealed class HoryzontyService : ISourceService
                     counter,
                     _sourceId,
                     title?.InnerText,
+                    url,
                     ExtractDateFromText(startDate),
                     ExtractDateFromText(endDate),
                     DateTime.Now,

@@ -26,6 +26,7 @@ public class SqlDbInitializer : IDbInitializer
                 SourceId TEXT NOT NULL,
                 SeqNo INTEGER,
                 Title TEXT NOT NULL,
+                Url TEXT NOT NULL,
                 StartDate TEXT NOT NULL,
                 EndDate TEXT,
                 ChangeDate TEXT NOT NULL,

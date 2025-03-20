@@ -108,11 +108,13 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     public string Icon => "SearchWeb";
     public string Name => "Search";
 
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnEndDateChanged(string? value)
     {
         ValidateProperty(StartDate, nameof(StartDate));
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnStartDateChanged(string? value)
     {
         ValidateProperty(EndDate, nameof(EndDate));
@@ -182,10 +184,11 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
 
         if (searchResponse.IsSuccess && searchResponse.SourceDataItems.Any())
         {
-            Columns.Add(new ResultColumnDefinition("Source", $"SourceName"));
-            Columns.Add(new ResultColumnDefinition("Title", $"Title"));
-            Columns.Add(new ResultColumnDefinition("Start Date", $"StartDate"));
-            Columns.Add(new ResultColumnDefinition("End Date", $"EndDate"));
+            Columns.Add(new ResultColumnDefinition("Source", "SourceName"));
+            Columns.Add(new ResultColumnDefinition("Title", "Title"));
+            Columns.Add(new ResultColumnDefinition("Start Date", "StartDate"));
+            Columns.Add(new ResultColumnDefinition("End Date", "EndDate"));
+            Columns.Add(new ResultColumnDefinition("Address", "Url"));
             OnUpdateColumns();
 
             foreach (var sourceDataItem in searchResponse.SourceDataItems)
@@ -198,6 +201,7 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
 
                 singleSourceResults.Add("SourceName", sourceDataItem.SourceId);
                 singleSourceResults.Add("Title", sourceDataItem.Title);
+                singleSourceResults.Add("Url", sourceDataItem.Url ?? string.Empty);
                 singleSourceResults.Add("StartDate", sourceDataItem.StartDate.ToString("yyyy-MM-dd"));
                 singleSourceResults.Add("EndDate", sourceDataItem.EndDate.ToString("yyyy-MM-dd"));
 
