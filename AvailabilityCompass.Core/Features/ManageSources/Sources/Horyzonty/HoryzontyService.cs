@@ -139,11 +139,6 @@ public sealed class HoryzontyService : ISourceService
                     .FirstOrDefault(node => node.GetAttributeValue("class", "").Contains("term__price"))
                     ?.InnerText;
 
-                if (!double.TryParse(price?.Replace("PLN", "").Replace(" ", ""), out var priceValue))
-                {
-                    priceValue = -1;
-                }
-
                 var modificator = label.Descendants("span")
                     .FirstOrDefault(node => node.GetAttributeValue("class", "").Contains("term__last"))
                     ?.InnerText;
@@ -163,7 +158,7 @@ public sealed class HoryzontyService : ISourceService
                         { "Country", country },
                         { "Code", code },
                         { "Status", modificator },
-                        { "Price", priceValue }
+                        { "Price", price }
                     }
                 );
                 tours.Add(tour);
