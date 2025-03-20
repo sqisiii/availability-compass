@@ -188,8 +188,6 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
             Columns.Add(new ResultColumnDefinition("Title", "Title"));
             Columns.Add(new ResultColumnDefinition("Start Date", "StartDate"));
             Columns.Add(new ResultColumnDefinition("End Date", "EndDate"));
-            Columns.Add(new ResultColumnDefinition("Address", "Url"));
-            OnUpdateColumns();
 
             foreach (var sourceDataItem in searchResponse.SourceDataItems)
             {
@@ -205,22 +203,21 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
                 singleSourceResults.Add("StartDate", sourceDataItem.StartDate.ToString("yyyy-MM-dd"));
                 singleSourceResults.Add("EndDate", sourceDataItem.EndDate.ToString("yyyy-MM-dd"));
 
-                // foreach (var additionalData in sourceDataItem.AdditionalData)
-                // {
-                //     var resultRow = new Dictionary<string, object>();
-                //
-                //     foreach (var property in sourceDataItem.AdditionalData)
-                //     {
-                //         if (property.Value != null)
-                //         {
-                //             resultRow[property.Key] = property.Value;
-                //         }
-                //     }
-                //
-                //     Results.Add(resultRow);
-                // }
+                foreach (var (key, value) in sourceDataItem.AdditionalData)
+                {
+                    if (Columns.All(columnDefinition => columnDefinition.PropertyName != key))
+                    {
+                        Columns.Add(new ResultColumnDefinition(key, key));
+                    }
+
+                    singleSourceResults.Add(key, value ?? string.Empty);
+                }
+
                 Results.Add(singleSourceResults);
             }
+
+            Columns.Add(new ResultColumnDefinition("URL", "Url"));
+            OnUpdateColumns();
         }
     }
 
