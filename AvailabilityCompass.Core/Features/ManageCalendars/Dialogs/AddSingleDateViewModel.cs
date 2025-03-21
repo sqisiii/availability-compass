@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarSingleDateRequest;
+using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddSingleDateRequest;
 using AvailabilityCompass.Core.Shared;
 using AvailabilityCompass.Core.Shared.Navigation;
 using AvailabilityCompass.Core.Shared.ValidationAttributes;
@@ -16,13 +16,15 @@ public partial class AddSingleDateViewModel : ObservableValidator, IDialogViewMo
 
     [ObservableProperty]
     [DateValidation]
+    [NotifyCanExecuteChangedFor(nameof(SaveSingleDateCommand))]
+    [Required(ErrorMessage = "Date is required")]
     [NotifyDataErrorInfo]
     private string? _date;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [NotifyCanExecuteChangedFor(nameof(SaveSingleDateCommand))]
-    [Required]
+    [Required(ErrorMessage = "Description is required")]
     private string _description = string.Empty;
 
 
@@ -43,9 +45,11 @@ public partial class AddSingleDateViewModel : ObservableValidator, IDialogViewMo
     }
 
     [RelayCommand(CanExecute = nameof(CanSave))]
-    private async Task OnSaveSingleDate()
+    private async Task OnSaveSingleDate(CancellationToken ct)
     {
-        var result = await _mediator.Send(new AddSingleDateToDbRequest(CalendarId, Description, DateOnly.Parse(Date ?? string.Empty)));
+        var result = await _mediator.Send(new AddSingleDateToDbRequest(CalendarId,
+            Description,
+            DateOnly.Parse(Date ?? string.Empty)), ct);
         if (result.isSuccess)
         {
             _dialogNavigationService.CloseView();

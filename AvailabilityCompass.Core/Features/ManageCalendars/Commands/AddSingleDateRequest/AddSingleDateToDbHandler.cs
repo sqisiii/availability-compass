@@ -4,7 +4,7 @@ using Dapper;
 using MediatR;
 using Serilog;
 
-namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarSingleDateRequest;
+namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddSingleDateRequest;
 
 public class AddSingleDateToDbHandler : IRequestHandler<AddSingleDateToDbRequest, AddSingleDateToDbResponse>
 {
@@ -25,8 +25,8 @@ public class AddSingleDateToDbHandler : IRequestHandler<AddSingleDateToDbRequest
             connection.Open();
             using var transaction = connection.BeginTransaction();
 
-            const string insertSingleDateSql = @"INSERT INTO SingleDate (CalendarId, Id, Date, Description) 
-                                                VALUES (@CalendarId, @Id, @Date, @Description);";
+            const string insertSingleDateSql = @"INSERT INTO SingleDate (CalendarId, Id, Date, Description, ChangeDate) 
+                                                VALUES (@CalendarId, @Id, @Date, @Description, @ChangeDate);";
 
             var id = Guid.NewGuid();
             var changeDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
@@ -36,13 +36,14 @@ public class AddSingleDateToDbHandler : IRequestHandler<AddSingleDateToDbRequest
                     request.CalendarId,
                     Id = id,
                     request.Date,
-                    request.Description
+                    request.Description,
+                    ChangeDate = changeDate
                 }, transaction)
                 .ConfigureAwait(false);
 
             transaction.Commit();
 
-            _eventBus.Publish(new SingleDateAddedEvent());
+            _eventBus.Publish(new SingleDateAddedEvent(request.CalendarId));
             return new AddSingleDateToDbResponse(true);
         }
         catch (Exception ex)

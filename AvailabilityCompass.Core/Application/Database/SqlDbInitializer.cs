@@ -64,6 +64,7 @@ public class SqlDbInitializer : IDbInitializer
                 Id BLOB(16) NOT NULL,
                 Date TEXT NOT NULL,
                 Description TEXT,
+                ChangeDate TEXT NOT NULL,
                 PRIMARY KEY (CalendarId, Id),
                 FOREIGN KEY (CalendarId) REFERENCES Calendar(CalendarId) ON DELETE CASCADE
             );";
@@ -72,8 +73,11 @@ public class SqlDbInitializer : IDbInitializer
                 CalendarId BLOB(16) NOT NULL,
                 Id BLOB(16) NOT NULL,
                 StartDate TEXT NOT NULL,
-                DaysCount INTEGER NOT NULL,
+                Duration INTEGER NOT NULL,
+                RepetitionPeriod INTEGER NOT NULL,
+                NumberOfRepetitions INTEGER NOT NULL,    
                 Description TEXT,
+                ChangeDate TEXT NOT NULL,
                 PRIMARY KEY (CalendarId, Id),
                 FOREIGN KEY (CalendarId) REFERENCES Calendar(CalendarId) ON DELETE CASCADE
             );";

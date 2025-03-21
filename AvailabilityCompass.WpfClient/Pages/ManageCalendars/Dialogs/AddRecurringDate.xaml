@@ -3,10 +3,88 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Dialogs"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:dialogs="clr-namespace:AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;assembly=AvailabilityCompass.Core"
              mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=dialogs:AddRecurringDateViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-        
-    </Grid>
+    <StackPanel Margin="10">
+        <TextBlock
+            Margin="0,10,0,20"
+            HorizontalAlignment="Center"
+            Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+            Text="Add Recurring Date to Calendar" />
+        <TextBox
+            Width="200"
+            Margin="0,0,0,10"
+            HorizontalAlignment="Left"
+            materialDesign:HintAssist.Hint="Short Description"
+            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+            Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"
+            ToolTip="Short description of the selected recurring days" />
+
+        <DatePicker
+            Width="120"
+            Margin="0,0,0,15"
+            HorizontalAlignment="Left"
+            materialDesign:HintAssist.HelperText="Format: yyyy-MM-dd"
+            materialDesign:HintAssist.Hint="Date"
+            Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
+            Text="{Binding StartDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}" />
+
+        <TextBox
+            Width="200"
+            Margin="0,0,0,15"
+            HorizontalAlignment="Left"
+            materialDesign:HintAssist.Hint="Duration"
+            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+            Text="{Binding Duration, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"
+            ToolTip="The number of marked days" />
+
+        <TextBox
+            Width="200"
+            Margin="0,0,0,15"
+            HorizontalAlignment="Left"
+            materialDesign:HintAssist.Hint="Repetition Period"
+            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+            Text="{Binding RepetitionPeriod, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"
+            ToolTip="The number of days " />
+
+        <TextBox
+            Width="200"
+            Margin="0,0,0,15"
+            HorizontalAlignment="Left"
+            materialDesign:HintAssist.Hint="Number of Repetitions"
+            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+            Text="{Binding NumberOfRepetitions, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"
+            ToolTip="Number of the repetitions of the sequence" />
+
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button
+                Margin="0,8,8,0"
+                Command="{Binding SaveRecurringDateCommand}"
+                Content="SAVE"
+                IsDefault="True"
+                Style="{StaticResource MaterialDesignFlatButton}">
+                <Button.CommandParameter>
+                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                        True
+                    </system:Boolean>
+                </Button.CommandParameter>
+            </Button>
+            <Button
+                Margin="0,8,8,0"
+                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                Content="CANCEL"
+                IsCancel="True"
+                Style="{StaticResource MaterialDesignFlatButton}">
+                <Button.CommandParameter>
+                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                        False
+                    </system:Boolean>
+                </Button.CommandParameter>
+            </Button>
+        </StackPanel>
+
+    </StackPanel>
 </UserControl>

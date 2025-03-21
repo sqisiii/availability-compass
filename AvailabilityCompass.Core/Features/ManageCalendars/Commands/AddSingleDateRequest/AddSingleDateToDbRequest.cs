@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarSingleDateRequest;
+namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddSingleDateRequest;
 
 public class AddSingleDateToDbRequest : IRequest<AddSingleDateToDbResponse>
 {

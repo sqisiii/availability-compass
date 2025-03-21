@@ -1,4 +1,4 @@
-﻿namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarSingleDateRequest;
+﻿namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddSingleDateRequest;
 
 public class AddSingleDateToDbResponse
 {
@@ -7,5 +7,5 @@ public class AddSingleDateToDbResponse
         this.isSuccess = isSuccess;
     }
 
-    public bool isSuccess { get; set; }
+    public bool isSuccess { get; }
 }
