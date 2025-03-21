@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Dialogs"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:dialogs="clr-namespace:AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;assembly=AvailabilityCompass.Core"
              xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Converters"
@@ -21,7 +20,7 @@
             Text="Add Calendar" />
         <TextBox
             Width="200"
-            Margin="0,0,0,10"
+            Margin="0,0,0,15"
             HorizontalAlignment="Left"
             materialDesign:HintAssist.Hint="Calendar Name"
             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
@@ -36,9 +35,9 @@
             <ComboBoxItem Content="Allow all dates except those defined in the calendar" IsSelected="True" />
             <ComboBoxItem Content="Only allow dates defined in the calendar" />
         </ComboBox>
-        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,20,0,0">
             <Button
-                Margin="0,8,8,0"
+                Margin="0,0,8,0"
                 Command="{Binding SaveCalendarCommand}"
                 Content="SAVE"
                 IsDefault="True"
@@ -50,7 +49,7 @@
                 </Button.CommandParameter>
             </Button>
             <Button
-                Margin="0,8,8,0"
+                Margin="0,0,8,0"
                 Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
                 Content="CANCEL"
                 IsCancel="True"
