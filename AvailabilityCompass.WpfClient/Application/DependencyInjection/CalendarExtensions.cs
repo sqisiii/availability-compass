@@ -1,4 +1,5 @@
 ﻿using AvailabilityCompass.Core.Features.ManageCalendars;
+using AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;
 using AvailabilityCompass.Core.Features.SearchRecords;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,12 @@ public static class CalendarExtensions
     {
         services.AddSingleton<ManageCalendarsViewModel>();
         services.AddSingleton<ICalendarFilterViewModelFactory, CalendarFilterViewModelFactory>();
+        services.AddSingleton<ICalendarViewModelFactory, CalendarViewModelFactory>();
+
+        services.AddAbstractFactory<AddCalendarViewModel>();
+        services.AddAbstractFactory<AddSingleDateViewModel>();
+        services.AddAbstractFactory<AddRecurringDateViewModel>();
+        services.AddSingleton<ICalendarDialogViewModelsFactory, CalendarDialogViewModelsFactory>();
 
         return services;
     }

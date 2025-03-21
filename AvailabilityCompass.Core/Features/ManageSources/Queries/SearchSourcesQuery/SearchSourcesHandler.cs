@@ -21,7 +21,7 @@ public class SearchSourcesHandler : IRequestHandler<SearchRecords.Queries.Search
         try
         {
             using var connection = _dbConnectionFactory.Connect();
-            var allResults = new List<SourceDataItem>();
+            var allResults = new List<SearchSourcesResponse.SourceDataItem>();
 
             const string baseSql = """
                                    SELECT
@@ -149,12 +149,12 @@ public class SearchSourcesHandler : IRequestHandler<SearchRecords.Queries.Search
                     Log.Debug("Query parameter: {Name} = {Value}", param, parameters.Get<object>(param));
                 }
 
-                var sourceDictionary = new Dictionary<(int SeqNo, string SourceId), SourceDataItem>();
-                await connection.QueryAsync<SourceDataItem, string, string, SourceDataItem>(
+                var sourceDictionary = new Dictionary<(int SeqNo, string SourceId), SearchSourcesResponse.SourceDataItem>();
+                await connection.QueryAsync<SearchSourcesResponse.SourceDataItem, string, string, SearchSourcesResponse.SourceDataItem>(
                         sql,
                         map: (source, key, value) =>
                         {
-                            var sourceKey = (SeqNo: source.SeqNo, source.SourceId);
+                            var sourceKey = (source.SeqNo, source.SourceId);
 
                             if (!sourceDictionary.TryGetValue(sourceKey, out var existingSource))
                             {
@@ -184,6 +184,6 @@ public class SearchSourcesHandler : IRequestHandler<SearchRecords.Queries.Search
             Log.Error(e, "Error while searching sources");
         }
 
-        return new SearchSourcesResponse(new List<SourceDataItem>()) { IsSuccess = false };
+        return new SearchSourcesResponse(new List<SearchSourcesResponse.SourceDataItem>()) { IsSuccess = false };
     }
 }

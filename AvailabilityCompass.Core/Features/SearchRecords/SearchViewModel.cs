@@ -32,8 +32,6 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     [DateValidation]
     private string? _endDate;
 
-    private bool _isActive;
-
     [ObservableProperty]
     private string? _searchPhrase;
 
@@ -83,30 +81,16 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
         Sources.CollectionChanged -= SourcesOnCollectionChanged;
     }
 
-    public bool IsActive
-    {
-        get => _isActive;
-        set
-        {
-            if (_isActive == value)
-            {
-                return;
-            }
-
-            _isActive = value;
-
-            if (!_isActive)
-            {
-                return;
-            }
-
-            _ = LoadCalendarsAsync();
-            _ = LoadSourcesAsync();
-        }
-    }
+    public bool IsActive { get; set; }
 
     public string Icon => "SearchWeb";
     public string Name => "Search";
+
+    public async Task LoadDataAsync()
+    {
+        await LoadCalendarsAsync();
+        await LoadSourcesAsync();
+    }
 
     // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnEndDateChanged(string? value)

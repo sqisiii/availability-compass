@@ -7,4 +7,6 @@ public interface IPageViewModel
     string Icon { get; }
 
     string Name { get; }
+
+    Task LoadDataAsync();
 }

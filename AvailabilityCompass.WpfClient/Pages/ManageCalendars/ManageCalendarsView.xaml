@@ -88,7 +88,7 @@
                                     Width="150"
                                     MinHeight="30"
                                     GroupName="CalendarsGroup"
-                                    IsChecked="{Binding IsChecked}"
+                                    IsChecked="{Binding IsSelected, Mode=TwoWay}"
                                     Style="{StaticResource MaterialDesignChoiceChipSecondaryRadioButton}">
                                     <RadioButton.Content>
                                         <WrapPanel>
@@ -172,11 +172,18 @@
                     materialDesign:CalendarAssist.IsHeaderVisible="False"
                     SelectionMode="MultipleRange" />
 
-                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <StackPanel HorizontalAlignment="Center" Orientation="Vertical">
+                    <TextBox
+                        Width="115"
+                        materialDesign:HintAssist.Hint="Calendar Name"
+                        IsReadOnly="True"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                        Text="{Binding CalendarName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"
+                        ToolTip="Calendar Name visible in Search" />
                     <ComboBox
-                        MinWidth="5"
+                        IsEnabled="False"
                         materialDesign:ComboBoxAssist.ShowSelectedItem="False"
-                        materialDesign:HintAssist.HelperText="Date Validity Rule"
+                        materialDesign:HintAssist.HelperText="Validity Rule"
                         Style="{StaticResource MaterialDesignFloatingHintComboBox}">
                         <ComboBoxItem Content="Allow all dates except those defined in the calendar" IsSelected="True" />
                         <ComboBoxItem Content="Only allow dates defined in the calendar" />

@@ -11,8 +11,8 @@ public partial class RecurringDateViewModel : ObservableObject
     private string _description = string.Empty;
 
     [ObservableProperty]
-    private string _id = string.Empty;
+    private Guid _id;
 
     [ObservableProperty]
-    private DateTime _startDate;
+    private DateOnly _startDate;
 }

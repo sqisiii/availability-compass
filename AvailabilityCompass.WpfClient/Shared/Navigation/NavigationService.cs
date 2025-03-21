@@ -1,12 +1,13 @@
 ﻿using AvailabilityCompass.Core.Shared;
+using AvailabilityCompass.Core.Shared.Navigation;
 
 namespace AvailabilityCompass.WpfClient.Shared.Navigation;
 
-public class NavigationService : INavigationService
+public class NavigationService : INavigationService<IPageViewModel>
 {
-    private readonly INavigationStore _navigationStore;
+    private readonly INavigationStore<IPageViewModel> _navigationStore;
 
-    public NavigationService(INavigationStore navigationStore)
+    public NavigationService(INavigationStore<IPageViewModel> navigationStore)
     {
         _navigationStore = navigationStore;
     }
@@ -14,5 +15,11 @@ public class NavigationService : INavigationService
     public void NavigateTo(IPageViewModel viewModel)
     {
         _navigationStore.CurrentViewModel = viewModel;
+        _ = _navigationStore.CurrentViewModel.LoadDataAsync();
+    }
+
+    public void CloseView()
+    {
+        _navigationStore.CurrentViewModel = null;
     }
 }

@@ -15,20 +15,27 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
     private readonly ISourceMetaDataViewModelFactory _sourceMetaDataViewModelFactory;
     private readonly ISourceServiceFactory _sourceServiceFactory;
 
-    public ManageSourcesViewModel(ISourceServiceFactory sourceServiceFactory, IMediator mediator, ISourceMetaDataViewModelFactory sourceMetaDataViewModelFactory)
+    public ManageSourcesViewModel(
+        ISourceServiceFactory sourceServiceFactory,
+        IMediator mediator,
+        ISourceMetaDataViewModelFactory sourceMetaDataViewModelFactory)
     {
         _sourceServiceFactory = sourceServiceFactory;
         _mediator = mediator;
         _sourceMetaDataViewModelFactory = sourceMetaDataViewModelFactory;
-
-        _ = LoadSourcesMetaDataAsync();
     }
 
     public ObservableCollection<SourceMetaDataViewModel> Sources { get; set; } = [];
 
     public bool IsActive { get; set; }
+
     public string Icon => "DatabaseCogOutline";
     public string Name => "Data";
+
+    public async Task LoadDataAsync()
+    {
+        await LoadSourcesMetaDataAsync();
+    }
 
     [RelayCommand(CanExecute = nameof(CanRefreshSource))]
     private async Task OnRefreshSource(string sourceId)

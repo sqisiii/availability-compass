@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using AvailabilityCompass.Core.Application.Database;
+using AvailabilityCompass.WpfClient.Pages;
 using Serilog;
 
 namespace AvailabilityCompass.WpfClient.Application.Initialization;
@@ -7,11 +8,13 @@ namespace AvailabilityCompass.WpfClient.Application.Initialization;
 public class Bootstrapper
 {
     private readonly IDbInitializer _dbInitializer;
+    private readonly MainViewModel _mainViewModel;
     private readonly MainWindow _mainWindow;
 
-    public Bootstrapper(MainWindow mainWindow, IDbInitializer dbInitializer)
+    public Bootstrapper(MainWindow mainWindow, MainViewModel mainViewModel, IDbInitializer dbInitializer)
     {
         _mainWindow = mainWindow;
+        _mainViewModel = mainViewModel;
         _dbInitializer = dbInitializer;
     }
 
@@ -20,6 +23,7 @@ public class Bootstrapper
         Introduce();
         _dbInitializer.InitializeAsync().Wait();
 
+        _mainViewModel.Initialize();
         _mainWindow.Show();
     }
 

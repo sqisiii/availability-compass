@@ -1,8 +1,9 @@
 ﻿using AvailabilityCompass.Core.Shared;
+using AvailabilityCompass.Core.Shared.Navigation;
 
 namespace AvailabilityCompass.WpfClient.Shared.Navigation;
 
-public class NavigationStore : INavigationStore
+public class NavigationStore : INavigationStore<IPageViewModel>
 {
     private IPageViewModel? _currentViewModel;
 

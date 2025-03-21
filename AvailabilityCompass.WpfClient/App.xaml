@@ -6,7 +6,9 @@
     xmlns:vms="clr-namespace:AvailabilityCompass.Core.Features;assembly=AvailabilityCompass.Core"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:manageSources="clr-namespace:AvailabilityCompass.Core.Features.ManageSources;assembly=AvailabilityCompass.Core"
-    xmlns:searchRecords="clr-namespace:AvailabilityCompass.Core.Features.SearchRecords;assembly=AvailabilityCompass.Core">
+    xmlns:searchRecords="clr-namespace:AvailabilityCompass.Core.Features.SearchRecords;assembly=AvailabilityCompass.Core"
+    xmlns:dialogs="clr-namespace:AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;assembly=AvailabilityCompass.Core"
+    xmlns:dialogsViews="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Dialogs">
     <Application.Resources>
         <ResourceDictionary x:Key="MaterialDesignResources">
             <ResourceDictionary.MergedDictionaries>
@@ -29,6 +31,15 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type manageSources:ManageSourcesViewModel}">
                 <views:ManageSourcesView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type dialogs:AddCalendarViewModel}">
+                <dialogsViews:AddCalendarView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type dialogs:AddRecurringDateViewModel}">
+                <dialogsViews:AddRecurringDate />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type dialogs:AddSingleDateViewModel}">
+                <dialogsViews:AddSingleDate />
             </DataTemplate>
 
         </ResourceDictionary>
