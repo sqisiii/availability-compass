@@ -6,8 +6,8 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:AvailabilityCompass.Core.Features.ManageCalendars;assembly=AvailabilityCompass.Core"
-    xmlns:controls="clr-namespace:AvailabilityCompass.WpfClient.Pages.SearchRecords.Controls"
     xmlns:controls1="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Controls"
+    xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Converters"
     d:DataContext="{d:DesignInstance viewModels:ManageCalendarsViewModel,
                                      IsDesignTimeCreatable=True}"
     d:DesignHeight="500"
@@ -15,6 +15,7 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:BooleanToIndexConverter x:Key="BooleanToIndexConverter" />
     </UserControl.Resources>
 
     <materialDesign:Card
@@ -200,12 +201,11 @@
 
                     </Grid>
                     <ComboBox
-                        IsEnabled="False"
                         materialDesign:ComboBoxAssist.ShowSelectedItem="False"
                         materialDesign:HintAssist.HelperText="Validity Rule"
+                        SelectedIndex="{Binding CalendarIsOnly, Converter={StaticResource BooleanToIndexConverter}, Mode=OneWay}"
                         Style="{StaticResource MaterialDesignFloatingHintComboBox}">
-                        <ComboBoxItem Content="Allow all dates except those defined in the calendar"
-                                      IsSelected="True" />
+                        <ComboBoxItem Content="Allow all dates except those defined in the calendar" IsSelected="True" />
                         <ComboBoxItem Content="Only allow dates defined in the calendar" />
                     </ComboBox>
 

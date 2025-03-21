@@ -28,6 +28,7 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
 
     [NotifyPropertyChangedFor(nameof(IsCalendarSelected))]
     [NotifyPropertyChangedFor(nameof(CalendarName))]
+    [NotifyPropertyChangedFor(nameof(CalendarIsOnly))]
     [ObservableProperty]
     private CalendarViewModel? _selectedCalendar;
 
@@ -58,6 +59,8 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     public string CalendarName => SelectedCalendar?.Name ?? string.Empty;
 
     public bool IsCalendarSelected => SelectedCalendar is not null;
+
+    public bool CalendarIsOnly => SelectedCalendar?.IsOnly ?? false;
 
     public FullyObservableCollection<CalendarViewModel> Calendars { get; } = [];
 
