@@ -58,11 +58,13 @@ public partial class MainViewModel : ObservableObject
     private void OnCurrentDialogViewModelChanged()
     {
         OnPropertyChanged(nameof(CurrentDialogViewModel));
-        if (CurrentDialogViewModel is not null)
+        if (CurrentDialogViewModel is null)
         {
-            CurrentDialogViewModel.IsDialogOpen = true;
-            OnPropertyChanged(nameof(IsDialogOpen));
+            return;
         }
+
+        CurrentDialogViewModel.IsDialogOpen = true;
+        OnPropertyChanged(nameof(IsDialogOpen));
     }
 
     [RelayCommand]
