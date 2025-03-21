@@ -1,27 +1,38 @@
 ﻿using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetCalendars;
+using AvailabilityCompass.Core.Shared.Database;
+using Dapper;
 using MediatR;
+using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetCalendersForFilteringQuery;
 
-public class GetCalendarsForFilteringHandler : IRequestHandler<GetCalendarsForFilteringQuery, IEnumerable<GetCalendarsForFilteringDto>>
+public class GetCalendarsForFilteringHandler : IRequestHandler<GetCalendarsForFilteringQuery, GetCalendarsForFilteringResponse>
 {
-    public Task<IEnumerable<GetCalendarsForFilteringDto>> Handle(GetCalendarsForFilteringQuery request, CancellationToken cancellationToken)
+    private readonly IDbConnectionFactory _dbConnectionFactory;
+
+    public GetCalendarsForFilteringHandler(IDbConnectionFactory dbConnectionFactory)
     {
-        var calendars = new List<GetCalendarsForFilteringDto>
+        _dbConnectionFactory = dbConnectionFactory;
+    }
+
+    public async Task<GetCalendarsForFilteringResponse> Handle(GetCalendarsForFilteringQuery request, CancellationToken cancellationToken)
+    {
+        try
         {
-            new()
-            {
-                Id = Guid.NewGuid(),
-                Type = "Inclusive",
-                Name = "Calendar 1"
-            },
-            new()
-            {
-                Id = Guid.NewGuid(),
-                Type = "Exclusive",
-                Name = "Calendar 2"
-            }
-        };
-        return Task.FromResult(calendars.AsEnumerable());
+            using var connection = _dbConnectionFactory.Connect();
+            connection.Open();
+
+            const string sql = @"
+                        SELECT c.CalendarId as Id , c.Name, c.IsOnly, c.ChangeDate
+                        FROM Calendar c";
+
+            var calendars = await connection.QueryAsync<GetCalendarsForFilteringResponse.CalendarDto>(sql);
+            return new GetCalendarsForFilteringResponse(calendars.ToList(), true);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error while getting calendars for filtering");
+            throw;
+        }
     }
 }

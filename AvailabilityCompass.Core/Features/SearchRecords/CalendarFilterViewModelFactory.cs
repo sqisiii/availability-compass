@@ -4,8 +4,8 @@ namespace AvailabilityCompass.Core.Features.SearchRecords;
 
 public class CalendarFilterViewModelFactory : ICalendarFilterViewModelFactory
 {
-    public IEnumerable<CalendarFilterViewModel> Create(IEnumerable<GetCalendarsForFilteringDto> calendars)
+    public IEnumerable<CalendarFilterViewModel> Create(IEnumerable<GetCalendarsForFilteringResponse.CalendarDto> calendars)
     {
-        return calendars.Select(c => new CalendarFilterViewModel(c.Id) { Name = c.Name, Type = c.Type });
+        return calendars.Select(c => new CalendarFilterViewModel(c.Id) { Name = c.Name, IsOnly = c.IsOnly });
     }
 }

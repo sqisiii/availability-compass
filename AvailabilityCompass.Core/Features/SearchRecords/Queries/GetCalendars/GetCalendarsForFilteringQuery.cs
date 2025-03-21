@@ -2,6 +2,6 @@
 
 namespace AvailabilityCompass.Core.Features.SearchRecords.Queries.GetCalendars;
 
-public class GetCalendarsForFilteringQuery : IRequest<IEnumerable<GetCalendarsForFilteringDto>>
+public class GetCalendarsForFilteringQuery : IRequest<GetCalendarsForFilteringResponse>
 {
 }

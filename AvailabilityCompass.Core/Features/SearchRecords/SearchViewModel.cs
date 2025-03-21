@@ -2,11 +2,13 @@
 using System.Collections.Specialized;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarRequest;
 using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetCalendars;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetSources;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.SearchSources;
 using AvailabilityCompass.Core.Shared;
+using AvailabilityCompass.Core.Shared.EventBus;
 using AvailabilityCompass.Core.Shared.ValidationAttributes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -16,11 +18,10 @@ namespace AvailabilityCompass.Core.Features.SearchRecords;
 
 public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDisposable
 {
+    private readonly IDisposable _calendarAddedSubscription;
     private readonly ICalendarFilterViewModelFactory _calendarFilterViewModelFactory;
-
     private readonly BehaviorSubject<List<ResultColumnDefinition>> _columnSubject = new([]);
     private readonly IFormElementFactory _formElementFactory;
-
     private readonly List<FormGroup> _formGroups = [];
     private readonly IMediator _mediator;
     private readonly ISourceFilterViewModelFactory _sourceFilterViewModelFactory;
@@ -54,7 +55,8 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
         IMediator mediator,
         ISourceFilterViewModelFactory sourceFilterViewModelFactory,
         ICalendarFilterViewModelFactory calendarFilterViewModelFactory,
-        IFormElementFactory formElementFactory)
+        IFormElementFactory formElementFactory,
+        IEventBus eventBus)
     {
         _mediator = mediator;
         _sourceFilterViewModelFactory = sourceFilterViewModelFactory;
@@ -62,6 +64,10 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
         _formElementFactory = formElementFactory;
         Calendars.CollectionChanged += CalendarsOnCollectionChanged;
         Sources.CollectionChanged += SourcesOnCollectionChanged;
+
+        _calendarAddedSubscription = eventBus.Listen<CalendarAddedEvent>()
+            .SelectMany(_ => Observable.FromAsync(OnCalendarAdded))
+            .Subscribe();
     }
 
     public IObservable<List<ResultColumnDefinition>> ColumnObservable => _columnSubject.AsObservable();
@@ -79,6 +85,7 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     {
         Calendars.CollectionChanged -= CalendarsOnCollectionChanged;
         Sources.CollectionChanged -= SourcesOnCollectionChanged;
+        _calendarAddedSubscription.Dispose();
     }
 
     public bool IsActive { get; set; }
@@ -90,6 +97,11 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     {
         await LoadCalendarsAsync(ct);
         await LoadSourcesAsync(ct);
+    }
+
+    private async Task OnCalendarAdded(CancellationToken ct)
+    {
+        await LoadCalendarsAsync(ct);
     }
 
     // ReSharper disable once UnusedParameterInPartialMethod
@@ -247,9 +259,9 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
 
     private async Task LoadCalendarsAsync(CancellationToken ct)
     {
-        var getCalendarsForFilteringDtos = await _mediator.Send(new GetCalendarsForFilteringQuery(), ct);
+        var getCalendarsForFilteringResponses = await _mediator.Send(new GetCalendarsForFilteringQuery(), ct);
         Calendars.Clear();
-        var calendarViewModels = _calendarFilterViewModelFactory.Create(getCalendarsForFilteringDtos);
+        var calendarViewModels = _calendarFilterViewModelFactory.Create(getCalendarsForFilteringResponses.Calendars);
         foreach (var calendarViewModel in calendarViewModels)
         {
             Calendars.Add(calendarViewModel);
