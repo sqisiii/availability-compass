@@ -19,7 +19,7 @@ public partial class AddCalendarViewModel : ObservableValidator, IDialogViewMode
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [NotifyCanExecuteChangedFor(nameof(SaveCalendarCommand))]
-    [Required]
+    [Required(ErrorMessage = "Name is required")]
     private string _name = string.Empty;
 
     public AddCalendarViewModel(IMediator mediator, INavigationService<IDialogViewModel> dialogNavigationService)
