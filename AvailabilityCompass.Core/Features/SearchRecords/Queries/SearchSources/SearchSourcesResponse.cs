@@ -19,5 +19,11 @@ public class SearchSourcesResponse
         DateOnly StartDate,
         DateOnly EndDate,
         DateTime ChangeDate,
-        Dictionary<string, object?> AdditionalData);
+        Dictionary<string, object?> AdditionalData)
+    {
+        //required for Dapper
+        public SourceDataItem() : this(0, string.Empty, string.Empty, string.Empty, new DateOnly(), new DateOnly(), DateTime.MinValue, new Dictionary<string, object?>())
+        {
+        }
+    }
 }
