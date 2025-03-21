@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using AvailabilityCompass.Core.Features.ManageSources.Sources;
+using AvailabilityCompass.Core.Shared.EventBus;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AvailabilityCompass.Core.Application.DependencyInjection;
@@ -10,6 +11,7 @@ public static class CoreExtensions
     {
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CoreExtensions).Assembly));
         services.AddHttpClient();
+        services.AddSingleton<IEventBus, EventBus>();
 
         var sourceServiceTypes = Assembly.GetExecutingAssembly()
             .GetTypes()
