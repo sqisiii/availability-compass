@@ -154,6 +154,7 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
 
     private async Task LoadCalendars(CancellationToken ct)
     {
+        var previouslySelectedCalendarId = SelectedCalendar?.Id;
         Calendars.Clear();
         var calendarResponse = await _mediator.Send(new GetCalendarsQuery(), ct);
         if (calendarResponse.Calendars is null)
@@ -164,6 +165,15 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
         foreach (var calendar in calendarResponse.Calendars)
         {
             Calendars.Add(_calendarViewModelFactory.CreateCalendar(calendar));
+        }
+
+        if (previouslySelectedCalendarId is not null)
+        {
+            var selectedCalendar = Calendars.FirstOrDefault(x => x.Id == previouslySelectedCalendarId);
+            if (selectedCalendar is not null)
+            {
+                selectedCalendar.IsSelected = true;
+            }
         }
     }
 
