@@ -15,7 +15,7 @@ public class NavigationService : INavigationService<IPageViewModel>
     public void NavigateTo(IPageViewModel viewModel)
     {
         _navigationStore.CurrentViewModel = viewModel;
-        _ = _navigationStore.CurrentViewModel.LoadDataAsync();
+        _ = _navigationStore.CurrentViewModel.LoadDataAsync(CancellationToken.None);
     }
 
     public void CloseView()

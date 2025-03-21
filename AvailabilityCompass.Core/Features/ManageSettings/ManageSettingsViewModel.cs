@@ -10,7 +10,7 @@ public partial class ManageSettingsViewModel : ObservableValidator, IPageViewMod
 
     public string Name => "Settings";
 
-    public async Task LoadDataAsync()
+    public async Task LoadDataAsync(CancellationToken ct)
     {
     }
 }

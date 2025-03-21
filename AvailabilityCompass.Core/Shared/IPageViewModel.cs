@@ -8,5 +8,5 @@ public interface IPageViewModel
 
     string Name { get; }
 
-    Task LoadDataAsync();
+    Task LoadDataAsync(CancellationToken ct);
 }

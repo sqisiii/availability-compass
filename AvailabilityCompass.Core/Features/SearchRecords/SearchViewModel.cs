@@ -86,10 +86,10 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     public string Icon => "SearchWeb";
     public string Name => "Search";
 
-    public async Task LoadDataAsync()
+    public async Task LoadDataAsync(CancellationToken ct)
     {
-        await LoadCalendarsAsync();
-        await LoadSourcesAsync();
+        await LoadCalendarsAsync(ct);
+        await LoadSourcesAsync(ct);
     }
 
     // ReSharper disable once UnusedParameterInPartialMethod
@@ -231,9 +231,9 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
         }
     }
 
-    private async Task LoadSourcesAsync()
+    private async Task LoadSourcesAsync(CancellationToken ct)
     {
-        var getSourcesForFilteringDto = await _mediator.Send(new GetSourcesForFilteringQuery());
+        var getSourcesForFilteringDto = await _mediator.Send(new GetSourcesForFilteringQuery(), ct);
         Sources.Clear();
         _formGroups.Clear();
         foreach (var source in getSourcesForFilteringDto.Sources)
@@ -245,9 +245,9 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
         }
     }
 
-    private async Task LoadCalendarsAsync()
+    private async Task LoadCalendarsAsync(CancellationToken ct)
     {
-        var getCalendarsForFilteringDtos = await _mediator.Send(new GetCalendarsForFilteringQuery());
+        var getCalendarsForFilteringDtos = await _mediator.Send(new GetCalendarsForFilteringQuery(), ct);
         Calendars.Clear();
         var calendarViewModels = _calendarFilterViewModelFactory.Create(getCalendarsForFilteringDtos);
         foreach (var calendarViewModel in calendarViewModels)

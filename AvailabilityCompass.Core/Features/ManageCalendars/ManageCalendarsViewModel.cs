@@ -53,14 +53,14 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     public string Icon => "CalendarClock";
     public string Name => "Calendar";
 
-    public async Task LoadDataAsync()
+    public async Task LoadDataAsync(CancellationToken ct)
     {
-        await LoadCalendars();
+        await LoadCalendars(ct);
     }
 
     private async Task OnCalendarAdded()
     {
-        await LoadCalendars();
+        await LoadCalendars(ct);
     }
 
     private void CalendarsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -84,10 +84,10 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
         }
     }
 
-    private async Task LoadCalendars()
+    private async Task LoadCalendars(CancellationToken ct)
     {
         Calendars.Clear();
-        var calendarResponse = await _mediator.Send(new GetCalendarsQuery());
+        var calendarResponse = await _mediator.Send(new GetCalendarsQuery(), ct);
         if (calendarResponse.Calendars is null)
         {
             return;

@@ -32,19 +32,19 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
     public string Icon => "DatabaseCogOutline";
     public string Name => "Data";
 
-    public async Task LoadDataAsync()
+    public async Task LoadDataAsync(CancellationToken ct)
     {
-        await LoadSourcesMetaDataAsync();
+        await LoadSourcesMetaDataAsync(ct);
     }
 
     [RelayCommand(CanExecute = nameof(CanRefreshSource))]
-    private async Task OnRefreshSource(string sourceId)
+    private async Task OnRefreshSource(string sourceId, CancellationToken ct)
     {
         var sourceService = _sourceServiceFactory.GetService(sourceId);
         sourceService.RefreshProgressChanged += SourceServiceOnRefreshProgressChanged;
         var sources = await sourceService.RefreshSourceDataAsync(_cancellationTokenSource.Token);
         sourceService.RefreshProgressChanged -= SourceServiceOnRefreshProgressChanged;
-        await LoadSourcesMetaDataAsync();
+        await LoadSourcesMetaDataAsync(ct);
     }
 
     public bool CanRefreshSource(string sourceId)
@@ -69,9 +69,9 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
         source.ProgressPercent = e.ProgressPercentage;
     }
 
-    private async Task LoadSourcesMetaDataAsync()
+    private async Task LoadSourcesMetaDataAsync(CancellationToken ct)
     {
-        var sourcesMetaData = await _mediator.Send(new GetSourcesMetaDataFromDbQuery());
+        var sourcesMetaData = await _mediator.Send(new GetSourcesMetaDataFromDbQuery(), ct);
         Sources.Clear();
         var sourceViewModels = _sourceMetaDataViewModelFactory.Create(sourcesMetaData);
         foreach (var sourceViewModel in sourceViewModels)
