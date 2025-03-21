@@ -176,15 +176,19 @@
                 <StackPanel>
                     <Grid>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0"
-                                   Margin="0,0,0,10"
+                        <TextBlock Grid.Column="0" Text="Calendar:" Margin="0,3,10,0"
+                                   HorizontalAlignment="Right"
+                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
+                        <TextBlock Grid.Column="1"
+                                   Margin="0,3,0,10"
                                    HorizontalAlignment="Left"
                                    Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                   Text="Calendar: Andy's" />
-                        <Button Grid.Column="1"
+                                   Text="{Binding CalendarName}" />
+                        <Button Grid.Column="2"
                                 Width="130"
                                 Margin="0,0,0,10"
                                 HorizontalAlignment="Right"
