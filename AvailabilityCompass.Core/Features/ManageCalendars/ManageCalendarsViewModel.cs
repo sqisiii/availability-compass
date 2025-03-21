@@ -77,7 +77,7 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
 
     public bool IsActive { get; set; }
     public string Icon => "CalendarClock";
-    public string Name => "Calendar";
+    public string Name => "Calendars";
 
     public async Task LoadDataAsync(CancellationToken ct)
     {

@@ -30,7 +30,7 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
     public bool IsActive { get; set; }
 
     public string Icon => "DatabaseCogOutline";
-    public string Name => "Data";
+    public string Name => "Sources";
 
     public async Task LoadDataAsync(CancellationToken ct)
     {
