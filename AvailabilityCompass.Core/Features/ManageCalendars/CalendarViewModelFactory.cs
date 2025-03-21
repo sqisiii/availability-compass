@@ -2,32 +2,45 @@
 
 public class CalendarViewModelFactory : ICalendarViewModelFactory
 {
-    public CalendarViewModel Create(CalendarDto calendarDto)
+    public CalendarViewModel CreateCalendar(CalendarDto calendarDto)
     {
         var viewModel = new CalendarViewModel
         {
             Name = calendarDto.Name,
+            IsOnly = calendarDto.IsOnly,
             Id = calendarDto.Id,
             IsSelected = false,
             SingleDates = calendarDto.SingleDates
-                .Select(sd => new SingleDateViewModel
-                {
-                    Id = sd.SingleDateId,
-                    Description = sd.SingleDateDescription,
-                    Date = sd.Date
-                })
+                .Select(CreateSingleDate)
                 .ToList(),
             RecurringDates = calendarDto.RecurringDates
-                .Select(rd => new RecurringDateViewModel
-                {
-                    Id = rd.RecurringDateId,
-                    Description = rd.RecurringDateDescription,
-                    StartDate = rd.StartDate,
-                    DaysCount = rd.DaysCount
-                })
+                .Select(CreateRecurringDate)
                 .ToList()
         };
 
         return viewModel;
+    }
+
+    public SingleDateViewModel CreateSingleDate(SingleDateDto singleDateDto)
+    {
+        return new SingleDateViewModel
+        {
+            Id = singleDateDto.SingleDateId,
+            Description = singleDateDto.SingleDateDescription,
+            Date = singleDateDto.Date
+        };
+    }
+
+    public RecurringDateViewModel CreateRecurringDate(RecurringDateDto recurringDateDto)
+    {
+        return new RecurringDateViewModel
+        {
+            Id = recurringDateDto.RecurringDateId,
+            Description = recurringDateDto.RecurringDateDescription,
+            StartDate = recurringDateDto.StartDate,
+            Duration = recurringDateDto.Duration,
+            RepetitionPeriod = recurringDateDto.RepetitionPeriod,
+            NumberOfRepetitions = recurringDateDto.NumberOfRepetitions
+        };
     }
 }

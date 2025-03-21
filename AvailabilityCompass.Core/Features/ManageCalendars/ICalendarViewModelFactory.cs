@@ -2,5 +2,8 @@
 
 public interface ICalendarViewModelFactory
 {
-    CalendarViewModel Create(CalendarDto calendarDto);
+    CalendarViewModel CreateCalendar(CalendarDto calendarDto);
+    SingleDateViewModel CreateSingleDate(SingleDateDto singleDateDto);
+
+    RecurringDateViewModel CreateRecurringDate(RecurringDateDto recurringDateDto);
 }
