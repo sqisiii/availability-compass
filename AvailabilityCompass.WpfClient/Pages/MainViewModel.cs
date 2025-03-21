@@ -4,6 +4,7 @@ using AvailabilityCompass.Core.Shared.Navigation;
 using AvailabilityCompass.WpfClient.Shared.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MaterialDesignThemes.Wpf;
 
 namespace AvailabilityCompass.WpfClient.Pages;
 
@@ -13,6 +14,10 @@ public partial class MainViewModel : ObservableObject
     private readonly INavigationService<IPageViewModel> _mainNavigationService;
     private readonly INavigationStore<IPageViewModel> _mainNavigationStore;
     private readonly INavigationTabFactory _navigationTabFactory;
+
+    [NotifyPropertyChangedFor(nameof(MaximizeToolTip))]
+    [ObservableProperty]
+    private PackIcon _maximizeIcon = new PackIcon { Kind = PackIconKind.WindowMaximize };
 
     public MainViewModel(
         INavigationTabFactory navigationTabFactory,
@@ -30,6 +35,8 @@ public partial class MainViewModel : ObservableObject
 
         MainNavigationTabs = navigationTabFactory.CreateNavigationTabs();
     }
+
+    public string MaximizeToolTip => MaximizeIcon.Kind == PackIconKind.WindowMaximize ? "Maximize" : "Restore";
 
     public IPageViewModel? CurrentViewModel => _mainNavigationStore.CurrentViewModel;
 
@@ -56,6 +63,14 @@ public partial class MainViewModel : ObservableObject
             CurrentDialogViewModel.IsDialogOpen = true;
             OnPropertyChanged(nameof(IsDialogOpen));
         }
+    }
+
+    [RelayCommand]
+    private void OnMaximizeButtonPressed()
+    {
+        MaximizeIcon = MaximizeIcon.Kind == PackIconKind.WindowMaximize
+            ? new PackIcon { Kind = PackIconKind.WindowRestore }
+            : new PackIcon { Kind = PackIconKind.WindowMaximize };
     }
 
     [RelayCommand]
