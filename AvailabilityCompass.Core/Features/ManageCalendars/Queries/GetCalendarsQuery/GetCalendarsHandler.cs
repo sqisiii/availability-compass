@@ -23,8 +23,8 @@ public class GetCalendarsHandler : IRequestHandler<GetCalendarsQuery, GetCalenda
 
             const string sql = @"
                         SELECT c.CalendarId as Id , c.Name, c.IsOnly, c.ChangeDate,
-                            sd.Id as SingleDateId, sd.Description as SingleDateDescription, sd.Date,
-                            rd.Id as RecurringDateId, rd.Description as RecurringDateDescription, rd.StartDate, rd.DaysCount
+                            sd.Id as SingleDateId, sd.Description as SingleDateDescription, sd.Date, sd.ChangeDate,
+                            rd.Id as RecurringDateId, rd.Description as RecurringDateDescription, rd.StartDate, rd.Duration, rd.RepetitionPeriod, rd.NumberOfRepetitions, rd.ChangeDate
                         FROM Calendar c
                         LEFT JOIN SingleDate sd ON c.CalendarId = sd.CalendarId
                         LEFT JOIN RecurringDate rd ON c.CalendarId = rd.CalendarId";
@@ -41,12 +41,12 @@ public class GetCalendarsHandler : IRequestHandler<GetCalendarsQuery, GetCalenda
                         calendarDict.Add(calendar.Id, calendarEntry);
                     }
 
-                    if (singleDate is not null)
+                    if (singleDate is not null && calendarEntry.SingleDates.All(x => x.SingleDateId != singleDate.SingleDateId))
                     {
                         calendarEntry.SingleDates.Add(singleDate);
                     }
 
-                    if (recurringDate is not null)
+                    if (recurringDate is not null && calendarEntry.RecurringDates.All(x => x.RecurringDateId != recurringDate.RecurringDateId))
                     {
                         calendarEntry.RecurringDates.Add(recurringDate);
                     }
