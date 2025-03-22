@@ -93,7 +93,6 @@
                         <TextBlock
                             Margin="10,14,0,0"
                             FontSize="16"
-                            Foreground="{DynamicResource MaterialDesign.Brush.Primary.Light}"
                             Text="Availability Compass" />
                     </StackPanel>
                     <StackPanel
