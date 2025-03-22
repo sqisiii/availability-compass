@@ -2,9 +2,9 @@
 
 namespace AvailabilityCompass.WpfClient.Pages.ManageCalendars.Dialogs;
 
-public partial class AddRecurringDate : UserControl
+public partial class AddRecurringDateView : UserControl
 {
-    public AddRecurringDate()
+    public AddRecurringDateView()
     {
         InitializeComponent();
     }
