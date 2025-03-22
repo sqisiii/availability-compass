@@ -6,6 +6,6 @@
              xmlns:local="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Dialogs"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <local:BaseSingleDateView ViewHeaderText="Delete this date?" IsViewEnabled="False"
+    <local:BaseSingleDateCrudView ViewHeaderText="Delete this date?" IsViewEnabled="False"
                               SaveCommandPrompt="DELETE" />
 </UserControl>

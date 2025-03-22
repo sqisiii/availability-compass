@@ -8,7 +8,7 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=dialogs:AddSingleDateViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
-    <dialogs1:BaseSingleDateView ViewHeaderText="Add Single Date to Calendar" IsViewEnabled="True"
+    <dialogs1:BaseSingleDateCrudView ViewHeaderText="Add Single Date to Calendar" IsViewEnabled="True"
                                  SaveCommandPrompt="ADD" />
 
 </UserControl>
