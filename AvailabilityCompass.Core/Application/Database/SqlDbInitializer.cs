@@ -16,6 +16,7 @@ public class SqlDbInitializer : IDbInitializer
     {
         //Sqlite doesn't have a DateTime type, so we need to register a custom type handler for DateOnly
         SqlMapper.AddTypeHandler(new SqliteDateOnlyTypeHandler());
+        //Guid is stored as Blob(16) so a custom type handler is needed
         SqlMapper.AddTypeHandler(new SqliteGuidTypeHandler());
         await PrepareSourceTablesAsync();
         await PrepareCalendarTablesAsync();
