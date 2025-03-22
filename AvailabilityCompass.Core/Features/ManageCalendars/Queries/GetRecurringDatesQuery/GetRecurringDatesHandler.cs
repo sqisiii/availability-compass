@@ -22,7 +22,7 @@ public class GetRecurringDatesHandler : IRequestHandler<GetRecurringDatesQuery, 
             connection.Open();
 
             const string sql = @"
-                        SELECT rd.Id as RecurringDateId, rd.Description as RecurringDateDescription, rd.StartDate, rd.Duration, rd.RepetitionPeriod, rd.NumberOfRepetitions, rd.ChangeDate
+                        SELECT rd.CalendarId, rd.Id as RecurringDateId, rd.Description as RecurringDateDescription, rd.StartDate, rd.Duration, rd.RepetitionPeriod, rd.NumberOfRepetitions, rd.ChangeDate
                         FROM RecurringDate rd
                         WHERE rd.CalendarId = @Id";
 

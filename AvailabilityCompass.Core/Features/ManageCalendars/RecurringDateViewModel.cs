@@ -19,13 +19,13 @@ public partial class RecurringDateViewModel : ObservableValidator
     private int? _duration;
 
     [ObservableProperty]
-    private Guid _id;
-
-    [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Number of repetitions is required")]
     [Range(1, int.MaxValue)]
     private int? _numberOfRepetitions;
+
+    [ObservableProperty]
+    private Guid _recurringDateId;
 
 
     [ObservableProperty]

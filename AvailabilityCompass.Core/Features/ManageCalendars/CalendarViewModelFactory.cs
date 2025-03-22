@@ -36,7 +36,8 @@ public class CalendarViewModelFactory : ICalendarViewModelFactory
     {
         return new RecurringDateViewModel
         {
-            Id = recurringDateDto.RecurringDateId,
+            RecurringDateId = recurringDateDto.RecurringDateId,
+            CalendarId = recurringDateDto.CalendarId,
             Description = recurringDateDto.RecurringDateDescription,
             StartDate = recurringDateDto.StartDate,
             Duration = recurringDateDto.Duration,

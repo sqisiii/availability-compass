@@ -301,14 +301,14 @@
                                         <Button
                                             Padding="5,0"
                                             Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.EditRecurringDateCommand}"
-                                            CommandParameter="{Binding Id}"
+                                            CommandParameter="{Binding RecurringDateId}"
                                             Content="{materialDesign:PackIcon Edit}"
                                             Style="{StaticResource MaterialDesignFlatButton}"
                                             ToolTip="Edit recurring dates" />
                                         <Button
                                             Padding="5,0"
                                             Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.DeleteRecurringDateCommand}"
-                                            CommandParameter="{Binding Id}"
+                                            CommandParameter="{Binding RecurringDateId}"
                                             Content="{materialDesign:PackIcon Remove}"
                                             Style="{StaticResource MaterialDesignFlatButton}"
                                             ToolTip="Delete recurring dates" />

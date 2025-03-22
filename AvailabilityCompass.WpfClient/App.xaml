@@ -42,7 +42,10 @@
                 <dialogsViews:DeleteCalendarView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type dialogs:AddRecurringDateViewModel}">
-                <dialogsViews:AddRecurringDate />
+                <dialogsViews:AddRecurringDateView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type dialogs:UpdateRecurringDateViewModel}">
+                <dialogsViews:UpdateRecurringDateView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type dialogs:AddSingleDateViewModel}">
                 <dialogsViews:AddSingleDateView />

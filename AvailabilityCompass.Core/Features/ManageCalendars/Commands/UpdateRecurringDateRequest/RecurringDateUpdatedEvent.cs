@@ -1,0 +1,3 @@
+﻿namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateRecurringDateRequest;
+
+public record RecurringDateUpdatedEvent(Guid CalendarId);

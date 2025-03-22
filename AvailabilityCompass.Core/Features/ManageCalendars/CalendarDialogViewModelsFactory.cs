@@ -11,6 +11,7 @@ public class CalendarDialogViewModelsFactory : ICalendarDialogViewModelsFactory
     private readonly IAbstractFactory<DeleteCalendarViewModel> _deleteCalendarViewModelFactory;
     private readonly IAbstractFactory<DeleteSingleDateViewModel> _deleteSingleDateViewModelFactory;
     private readonly IAbstractFactory<UpdateCalendarViewModel> _updateCalendarViewModelFactory;
+    private readonly IAbstractFactory<UpdateRecurringDateViewModel> _updateRecurringDateViewModelFactory;
     private readonly IAbstractFactory<UpdateSingleDateViewModel> _updateSingleDateViewModelFactory;
 
     public CalendarDialogViewModelsFactory(
@@ -18,12 +19,14 @@ public class CalendarDialogViewModelsFactory : ICalendarDialogViewModelsFactory
         IAbstractFactory<DeleteCalendarViewModel> deleteCalendarViewModelFactory,
         IAbstractFactory<UpdateCalendarViewModel> updateCalendarViewModelFactory,
         IAbstractFactory<AddRecurringDateViewModel> addRecurringDateViewModelFactory,
+        IAbstractFactory<UpdateRecurringDateViewModel> updateRecurringDateViewModelFactory,
         IAbstractFactory<AddSingleDateViewModel> addSingleDateViewModelFactory,
         IAbstractFactory<UpdateSingleDateViewModel> updateSingleDateViewModelFactory,
         IAbstractFactory<DeleteSingleDateViewModel> deleteSingleDateViewModelFactory)
     {
         _addCalendarViewModelFactory = addCalendarViewModelFactory;
         _addRecurringDateViewModelFactory = addRecurringDateViewModelFactory;
+        _updateRecurringDateViewModelFactory = updateRecurringDateViewModelFactory;
         _addSingleDateViewModelFactory = addSingleDateViewModelFactory;
         _updateSingleDateViewModelFactory = updateSingleDateViewModelFactory;
         _deleteSingleDateViewModelFactory = deleteSingleDateViewModelFactory;
@@ -49,6 +52,11 @@ public class CalendarDialogViewModelsFactory : ICalendarDialogViewModelsFactory
     public AddRecurringDateViewModel CreateAddRecurringDateViewModel()
     {
         return _addRecurringDateViewModelFactory.Create();
+    }
+
+    public UpdateRecurringDateViewModel CreateUpdateRecurringDateViewModel()
+    {
+        return _updateRecurringDateViewModelFactory.Create();
     }
 
     public AddSingleDateViewModel CreateAddSingleDateViewModel()
