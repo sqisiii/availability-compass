@@ -5,7 +5,7 @@ using MediatR;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;
 
-public class DeleteCalendarViewModel : DialogBaseCrudViewModel<CalendarViewModel>
+public class DeleteCalendarViewModel : BaseDialogCrudViewModel<CalendarViewModel>
 {
     private readonly IMediator _mediator;
 

@@ -6,14 +6,14 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;
 
-public abstract partial class DialogBaseCrudViewModel<T> : ObservableValidator, IDialogViewModel, IDisposable where T : ObservableValidator, new()
+public abstract partial class BaseDialogCrudViewModel<T> : ObservableValidator, IDialogViewModel, IDisposable where T : ObservableValidator, new()
 {
     private readonly INavigationService<IDialogViewModel> _dialogNavigationService;
 
     [ObservableProperty]
     private T _selectedItem = new T();
 
-    protected DialogBaseCrudViewModel(INavigationService<IDialogViewModel> dialogNavigationService)
+    protected BaseDialogCrudViewModel(INavigationService<IDialogViewModel> dialogNavigationService)
     {
         _dialogNavigationService = dialogNavigationService;
 

@@ -5,7 +5,7 @@ using MediatR;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;
 
-public class AddRecurringDateViewModel : DialogBaseCrudViewModel<RecurringDateViewModel>
+public class AddRecurringDateViewModel : BaseDialogCrudViewModel<RecurringDateViewModel>
 {
     private readonly IMediator _mediator;
 
