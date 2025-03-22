@@ -5,6 +5,7 @@ using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarRequ
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddRecurringDatesRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddSingleDateRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteCalendarRequest;
+using AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteRecurringDateRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteSingleDateRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateCalendarRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateRecurringDateRequest;
@@ -31,6 +32,7 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     private readonly INavigationService<IDialogViewModel> _dialogNavigationService;
     private readonly IMediator _mediator;
     private readonly IDisposable _recurringDateAddedSubscription;
+    private readonly IDisposable _recurringDateDeletedSubscription;
     private readonly IDisposable _recurringDateUpdatedSubscription;
     private readonly IDisposable _singleDateAddedSubscription;
     private readonly IDisposable _singleDateDeletedSubscription;
@@ -76,6 +78,9 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
         _recurringDateAddedSubscription = eventBus.Listen<RecurringDateAddedEvent>()
             .SelectMany(evt => Observable.FromAsync(ct => OnRecurringDateAdded(evt, ct)))
             .Subscribe();
+        _recurringDateDeletedSubscription = eventBus.Listen<RecurringDateDeletedEvent>()
+            .SelectMany(evt => Observable.FromAsync(ct => OnRecurringDateDeleted(evt, ct)))
+            .Subscribe();
         _recurringDateUpdatedSubscription = eventBus.Listen<RecurringDateUpdatedEvent>()
             .SelectMany(evt => Observable.FromAsync(ct => OnRecurringDateUpdated(evt, ct)))
             .Subscribe();
@@ -89,11 +94,11 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
 
     public FullyObservableCollection<CalendarViewModel> Calendars { get; } = [];
 
-    public ObservableCollection<SingleDateViewModel> SingleDates { get; } = [];
-
     public ObservableCollection<RecurringDateViewModel> RecurringDates { get; } = [];
 
     public ObservableCollection<CategorizedDate> ReservedDates { get; set; } = [];
+    public ObservableCollection<SingleDateViewModel> SingleDates { get; } = [];
+
 
     public Guid SelectedCalendarId => SelectedCalendar?.CalendarId ?? Guid.Empty;
 
@@ -107,6 +112,7 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
         _singleDateDeletedSubscription.Dispose();
         _recurringDateAddedSubscription.Dispose();
         _recurringDateUpdatedSubscription.Dispose();
+        _recurringDateDeletedSubscription.Dispose();
     }
 
     public bool IsActive { get; set; }
@@ -116,6 +122,12 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     public async Task LoadDataAsync(CancellationToken ct)
     {
         await LoadCalendars(ct);
+    }
+
+    private async Task OnRecurringDateDeleted(RecurringDateDeletedEvent evt, CancellationToken ct)
+    {
+        await RefreshRecurringDatesAsync(evt.CalendarId, ct);
+        CalculateReservedDays();
     }
 
     private async Task OnRecurringDateUpdated(RecurringDateUpdatedEvent evt, CancellationToken ct)
@@ -348,6 +360,15 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     [RelayCommand]
     private void OnDeleteRecurringDate(Guid recurringDateId)
     {
+        var recurringDateViewModel = SelectedCalendar?.RecurringDates.FirstOrDefault(x => x.RecurringDateId == recurringDateId);
+        if (recurringDateViewModel is null)
+        {
+            return;
+        }
+
+        var deleteRecurringDateViewModel = _calendarDialogViewModelsFactory.CreateDeleteRecurringDateViewModel();
+        deleteRecurringDateViewModel.LoadData(recurringDateViewModel);
+        _dialogNavigationService.NavigateTo(deleteRecurringDateViewModel);
     }
 
     [RelayCommand]

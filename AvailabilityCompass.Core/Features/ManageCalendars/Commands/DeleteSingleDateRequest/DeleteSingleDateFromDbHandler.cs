@@ -27,8 +27,8 @@ public class DeleteSingleDateFromDbHandler : IRequestHandler<DeleteSingleDateFro
             //enable automatic foreign key enforcement with cascade delete
             await connection.ExecuteAsync("PRAGMA foreign_keys = ON;").ConfigureAwait(false);
 
-            const string deleteCalendarSql = @"DELETE FROM SingleDate WHERE CalendarId = @CalendarId and Id = @SingleDateId;";
-            await connection.ExecuteAsync(deleteCalendarSql, new { request.CalendarId, request.SingleDateId }).ConfigureAwait(false);
+            const string sql = @"DELETE FROM SingleDate WHERE CalendarId = @CalendarId and Id = @SingleDateId;";
+            await connection.ExecuteAsync(sql, new { request.CalendarId, request.SingleDateId }).ConfigureAwait(false);
 
             _eventBus.Publish(new SingleDateDeletedEvent(request.CalendarId));
             return new DeleteSingleDateFromDbResponse(true);
