@@ -1,6 +1,8 @@
-﻿namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarRequest;
+﻿using AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;
 
-public class AddCalendarToDbResponse
+namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarRequest;
+
+public class AddCalendarToDbResponse : IProcessResult
 {
     public AddCalendarToDbResponse(bool isSuccess)
     {

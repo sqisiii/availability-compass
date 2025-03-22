@@ -1,60 +1,32 @@
-﻿using System.ComponentModel.DataAnnotations;
-using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddSingleDateRequest;
+﻿using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddSingleDateRequest;
 using AvailabilityCompass.Core.Shared;
 using AvailabilityCompass.Core.Shared.Navigation;
-using AvailabilityCompass.Core.Shared.ValidationAttributes;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using MediatR;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;
 
-public partial class AddSingleDateViewModel : ObservableValidator, IDialogViewModel
+public class AddSingleDateViewModel : CrudViewModelBase<SingleDateViewModel>
 {
-    private readonly INavigationService<IDialogViewModel> _dialogNavigationService;
     private readonly IMediator _mediator;
 
-    [ObservableProperty]
-    [DateValidation]
-    [NotifyCanExecuteChangedFor(nameof(SaveSingleDateCommand))]
-    [Required(ErrorMessage = "Date is required")]
-    [NotifyDataErrorInfo]
-    private string? _date;
-
-    [ObservableProperty]
-    [NotifyDataErrorInfo]
-    [NotifyCanExecuteChangedFor(nameof(SaveSingleDateCommand))]
-    [Required(ErrorMessage = "Description is required")]
-    private string _description = string.Empty;
-
-
-    public AddSingleDateViewModel(IMediator mediator, INavigationService<IDialogViewModel> dialogNavigationService)
+    public AddSingleDateViewModel(IMediator mediator, INavigationService<IDialogViewModel> dialogNavigationService) : base(dialogNavigationService)
     {
         _mediator = mediator;
-        _dialogNavigationService = dialogNavigationService;
     }
 
-    public Guid CalendarId { get; set; }
-    public bool IsActive { get; set; }
-    public bool IsDialogOpen { get; set; }
-
-
-    public Task LoadDataAsync()
+    public override void LoadData(object obj)
     {
-        return Task.CompletedTask;
-    }
-
-    [RelayCommand(CanExecute = nameof(CanSave))]
-    private async Task OnSaveSingleDate(CancellationToken ct)
-    {
-        var result = await _mediator.Send(new AddSingleDateToDbRequest(CalendarId,
-            Description,
-            DateOnly.Parse(Date ?? string.Empty)), ct);
-        if (result.isSuccess)
+        if (obj is Guid calendarId)
         {
-            _dialogNavigationService.CloseView();
+            SelectedItem.CalendarId = calendarId;
         }
     }
 
-    private bool CanSave() => !HasErrors && !string.IsNullOrWhiteSpace(Description) && !string.IsNullOrWhiteSpace(Date);
+
+    protected override async Task<IProcessResult> ProcessDataAsync(CancellationToken ct)
+    {
+        return await _mediator.Send(new AddSingleDateToDbRequest(SelectedItem.CalendarId,
+            SelectedItem.Description,
+            DateOnly.Parse(SelectedItem.DateString ?? string.Empty)), ct);
+    }
 }

@@ -5,6 +5,4 @@ public interface IDialogViewModel
     bool IsActive { get; set; }
 
     bool IsDialogOpen { get; set; }
-
-    Task LoadDataAsync();
 }

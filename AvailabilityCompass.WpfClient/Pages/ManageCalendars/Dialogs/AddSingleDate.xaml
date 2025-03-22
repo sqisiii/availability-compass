@@ -20,7 +20,7 @@
             HorizontalAlignment="Left"
             materialDesign:HintAssist.Hint="Short Description"
             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-            Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"
+            Text="{Binding SelectedItem.Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"
             ToolTip="Short description of the selected day" />
 
         <DatePicker
@@ -30,13 +30,13 @@
             materialDesign:HintAssist.HelperText="Format: yyyy-MM-dd"
             materialDesign:HintAssist.Hint="Date"
             Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
-            Text="{Binding Date, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}" />
+            Text="{Binding SelectedItem.Date, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}" />
 
 
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
             <Button
                 Margin="0,8,8,0"
-                Command="{Binding SaveSingleDateCommand}"
+                Command="{Binding SaveCommand}"
                 Content="SAVE"
                 IsDefault="True"
                 Style="{StaticResource MaterialDesignFlatButton}">

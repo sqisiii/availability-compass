@@ -274,7 +274,7 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
         }
 
         var viewModel = _calendarDialogViewModelsFactory.CreateAddRecurringDateViewModel();
-        viewModel.CalendarId = calendarId.Value;
+        viewModel.LoadData(calendarId.Value);
         _dialogNavigationService.NavigateTo(viewModel);
     }
 
@@ -288,7 +288,7 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
         }
 
         var viewModel = _calendarDialogViewModelsFactory.CreateAddSingleDateViewModel();
-        viewModel.CalendarId = calendarId.Value;
+        viewModel.LoadData(calendarId.Value);
         _dialogNavigationService.NavigateTo(viewModel);
     }
 }

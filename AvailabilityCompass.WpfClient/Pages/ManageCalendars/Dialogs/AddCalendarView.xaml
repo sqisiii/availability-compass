@@ -24,13 +24,13 @@
             HorizontalAlignment="Left"
             materialDesign:HintAssist.Hint="Calendar Name"
             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-            Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"
+            Text="{Binding SelectedItem.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"
             ToolTip="Calendar Name visible in Search" />
 
         <ComboBox
             materialDesign:ComboBoxAssist.ShowSelectedItem="False"
             materialDesign:HintAssist.HelperText="Validity Rule"
-            SelectedIndex="{Binding IsOnly, Converter={StaticResource BooleanToIndexConverter}, Mode=TwoWay}"
+            SelectedIndex="{Binding SelectedItem.IsOnly, Converter={StaticResource BooleanToIndexConverter}, Mode=TwoWay}"
             Style="{StaticResource MaterialDesignFloatingHintComboBox}">
             <ComboBoxItem Content="Allow all dates except those defined in the calendar" IsSelected="True" />
             <ComboBoxItem Content="Only allow dates defined in the calendar" />
@@ -38,7 +38,7 @@
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,20,0,0">
             <Button
                 Margin="0,0,8,0"
-                Command="{Binding SaveCalendarCommand}"
+                Command="{Binding SaveCommand}"
                 Content="SAVE"
                 IsDefault="True"
                 Style="{StaticResource MaterialDesignFlatButton}">

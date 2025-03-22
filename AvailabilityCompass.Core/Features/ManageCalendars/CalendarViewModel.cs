@@ -1,8 +1,9 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars;
 
-public partial class CalendarViewModel : ObservableObject
+public partial class CalendarViewModel : ObservableValidator
 {
     [ObservableProperty]
     private Guid _id;
@@ -14,6 +15,8 @@ public partial class CalendarViewModel : ObservableObject
     private bool _isSelected;
 
     [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required(ErrorMessage = "Name is required")]
     private string _name = string.Empty;
 
     public string Type => IsOnly ? "Only" : "Except";

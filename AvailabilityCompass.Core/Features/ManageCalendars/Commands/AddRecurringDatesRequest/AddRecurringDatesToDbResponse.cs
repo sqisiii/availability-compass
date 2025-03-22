@@ -1,6 +1,8 @@
-﻿namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddRecurringDatesRequest;
+﻿using AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;
 
-public class AddRecurringDatesToDbResponse
+namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddRecurringDatesRequest;
+
+public class AddRecurringDatesToDbResponse : IProcessResult
 {
     public AddRecurringDatesToDbResponse(bool isSuccess)
     {
