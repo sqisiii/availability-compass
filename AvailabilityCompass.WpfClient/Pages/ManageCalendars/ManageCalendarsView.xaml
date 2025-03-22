@@ -8,6 +8,8 @@
     xmlns:viewModels="clr-namespace:AvailabilityCompass.Core.Features.ManageCalendars;assembly=AvailabilityCompass.Core"
     xmlns:controls1="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Controls"
     xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Converters"
+    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:behaviors="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Behaviors"
     d:DataContext="{d:DesignInstance viewModels:ManageCalendarsViewModel,
                                      IsDesignTimeCreatable=True}"
     d:DesignHeight="500"
@@ -201,6 +203,7 @@
 
                     </Grid>
                     <ComboBox
+                        IsEnabled="False"
                         materialDesign:ComboBoxAssist.ShowSelectedItem="False"
                         materialDesign:HintAssist.HelperText="Validity Rule"
                         SelectedIndex="{Binding CalendarIsOnly, Converter={StaticResource BooleanToIndexConverter}, Mode=OneWay}"
@@ -209,11 +212,12 @@
                         <ComboBoxItem Content="Only allow dates defined in the calendar" />
                     </ComboBox>
 
-                    <Calendar
-                        x:Name="calendar"
-                        Margin="0,10,0,10"
-                        materialDesign:CalendarAssist.IsHeaderVisible="False"
-                        SelectionMode="MultipleRange" />
+                    <Calendar materialDesign:CalendarAssist.IsHeaderVisible="False" Margin="0,20,0,10"
+                              SelectionMode="None">
+                        <b:Interaction.Behaviors>
+                            <behaviors:CalendarColorBehavior ColorCodedDates="{Binding ReservedDates}" />
+                        </b:Interaction.Behaviors>
+                    </Calendar>
                 </StackPanel>
             </Grid>
             <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,55,0,0"

@@ -68,6 +68,8 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
 
     public ObservableCollection<RecurringDateViewModel> RecurringDates { get; } = [];
 
+    public ObservableCollection<CategorizedDate> ReservedDates { get; set; } = [];
+
     public void Dispose()
     {
         _calendarAddedSubscription.Dispose();
@@ -87,6 +89,7 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     private async Task OnRecurringDateAdded(RecurringDateAddedEvent evt, CancellationToken ct)
     {
         await RefreshRecurringDatesAsync(evt.CalendarId, ct);
+        CalculateReservedDays();
     }
 
     private async Task RefreshRecurringDatesAsync(Guid calendarId, CancellationToken ct)
@@ -108,6 +111,7 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     private async Task OnSingleDateAdded(SingleDateAddedEvent evt, CancellationToken ct)
     {
         await RefreshSingleDatesAsync(evt.CalendarId, ct);
+        CalculateReservedDays();
     }
 
     private async Task RefreshSingleDatesAsync(Guid calendarId, CancellationToken ct)
@@ -150,6 +154,8 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
         {
             RecurringDates.Add(calendar);
         }
+
+        CalculateReservedDays();
     }
 
     private async Task LoadCalendars(CancellationToken ct)
@@ -173,6 +179,55 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
             if (selectedCalendar is not null)
             {
                 selectedCalendar.IsSelected = true;
+            }
+        }
+    }
+
+    private void CalculateReservedDays()
+    {
+        ReservedDates.Clear();
+        if (SelectedCalendar is null)
+        {
+            return;
+        }
+
+        foreach (var singleDate in SelectedCalendar.SingleDates)
+        {
+            if (singleDate.Date is null)
+            {
+                continue;
+            }
+
+            ReservedDates.Add(new CategorizedDate(singleDate.Date.Value.ToDateTime(TimeOnly.MinValue), CategorizedDateCategory.SingleDate, singleDate.Description));
+        }
+
+        foreach (var recurringDate in SelectedCalendar.RecurringDates)
+        {
+            if (recurringDate.StartDate is null)
+            {
+                continue;
+            }
+
+            const int dateRelatedDefaultValue = 1;
+            var currentDate = recurringDate.StartDate;
+            var numberOfRepetitions = recurringDate.NumberOfRepetitions ?? dateRelatedDefaultValue;
+            for (var i = 0; i < numberOfRepetitions; i++)
+            {
+                var durationDate = currentDate;
+                var duration = recurringDate?.Duration ?? dateRelatedDefaultValue;
+                for (var j = 0; j < duration; j++)
+                {
+                    ReservedDates.Add(
+                        new CategorizedDate(
+                            durationDate.Value.ToDateTime(TimeOnly.MinValue),
+                            CategorizedDateCategory.RecurringDate,
+                            recurringDate?.Description ?? string.Empty));
+
+                    durationDate = durationDate.Value.AddDays(1);
+                }
+
+                // Move to the next repetition period
+                currentDate = currentDate.Value.AddDays(recurringDate?.RepetitionPeriod ?? dateRelatedDefaultValue);
             }
         }
     }
