@@ -8,4 +8,5 @@ public interface ICalendarDialogViewModelsFactory
     AddRecurringDateViewModel CreateAddRecurringDateViewModel();
     AddSingleDateViewModel CreateAddSingleDateViewModel();
     UpdateCalendarViewModel CreateUpdateCalendarViewModel();
+    DeleteCalendarViewModel CreateDeleteCalendarViewModel();
 }

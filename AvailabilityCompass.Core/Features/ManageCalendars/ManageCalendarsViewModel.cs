@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddRecurringDatesRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddSingleDateRequest;
+using AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteCalendarRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateCalendarRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetCalendarsQuery;
 using AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetRecurringDatesQuery;
@@ -20,6 +21,7 @@ namespace AvailabilityCompass.Core.Features.ManageCalendars;
 public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewModel, IDisposable
 {
     private readonly IDisposable _calendarAddedSubscription;
+    private readonly IDisposable _calendarDeletedSubscription;
     private readonly ICalendarDialogViewModelsFactory _calendarDialogViewModelsFactory;
     private readonly IDisposable _calendarUpdatedSubscription;
     private readonly ICalendarViewModelFactory _calendarViewModelFactory;
@@ -59,6 +61,9 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
         _calendarUpdatedSubscription = eventBus.Listen<CalendarUpdatedEvent>()
             .SelectMany(_ => Observable.FromAsync(OnCalendarUpdated))
             .Subscribe();
+        _calendarDeletedSubscription = eventBus.Listen<CalendarDeletedEvent>()
+            .SelectMany(_ => Observable.FromAsync(OnCalendarDeleted))
+            .Subscribe();
     }
 
     public string CalendarName => SelectedCalendar?.Name ?? string.Empty;
@@ -83,6 +88,7 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
         _singleDateAddedSubscription.Dispose();
         _recurringDateAddedSubscription.Dispose();
         _calendarUpdatedSubscription.Dispose();
+        _calendarDeletedSubscription.Dispose();
     }
 
     public bool IsActive { get; set; }
@@ -90,6 +96,11 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     public string Name => "Calendars";
 
     public async Task LoadDataAsync(CancellationToken ct)
+    {
+        await LoadCalendars(ct);
+    }
+
+    private async Task OnCalendarDeleted(CancellationToken ct)
     {
         await LoadCalendars(ct);
     }
@@ -258,6 +269,18 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
         _dialogNavigationService.NavigateTo(updateCalendarViewModel);
     }
 
+    [RelayCommand]
+    private void OnDeleteCalendar(Guid id)
+    {
+        if (SelectedCalendar is null)
+        {
+            return;
+        }
+
+        var deleteCalendarViewModel = _calendarDialogViewModelsFactory.CreateDeleteCalendarViewModel();
+        deleteCalendarViewModel.LoadData(SelectedCalendar);
+        _dialogNavigationService.NavigateTo(deleteCalendarViewModel);
+    }
 
     [RelayCommand]
     private void OnDeleteSingleDate(Guid id)

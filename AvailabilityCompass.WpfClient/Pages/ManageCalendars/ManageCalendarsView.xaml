@@ -186,26 +186,15 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Grid.Row="0" Text="Calendar:" Margin="0,3,10,0"
                                    HorizontalAlignment="Right"
                                    Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
-                        <TextBlock Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2"
+                        <TextBlock Grid.Column="1" Grid.Row="0"
                                    Margin="0,3,0,10"
                                    HorizontalAlignment="Left"
                                    Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                                    Text="{Binding CalendarName}" />
-                        <Button Grid.Column="2" Grid.Row="1"
-                                Width="130"
-                                Margin="0,0,0,10"
-                                HorizontalAlignment="Right"
-                                materialDesign:ElevationAssist.Elevation="Dp4"
-                                Command="{Binding UpdateCalendarCommand}"
-                                CommandParameter="{Binding SelectedCalendarId}"
-                                Content="Edit"
-                                Style="{StaticResource MaterialDesignRaisedButton}"
-                                ToolTip="Update calendar's name and role" />
 
                     </Grid>
                     <ComboBox
@@ -224,6 +213,26 @@
                             <behaviors:CalendarColorBehavior ColorCodedDates="{Binding ReservedDates}" />
                         </b:Interaction.Behaviors>
                     </Calendar>
+                    <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Margin="0,30,0,10">
+                        <Button Width="130"
+                                Margin="0,0,20,0"
+                                HorizontalAlignment="Right"
+                                materialDesign:ElevationAssist.Elevation="Dp4"
+                                Command="{Binding UpdateCalendarCommand}"
+                                CommandParameter="{Binding SelectedCalendarId}"
+                                Content="Edit"
+                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                ToolTip="Update calendar's name and role" />
+                        <Button Width="130"
+                                HorizontalAlignment="Right"
+                                materialDesign:ElevationAssist.Elevation="Dp4"
+                                Command="{Binding DeleteCalendarCommand}"
+                                CommandParameter="{Binding SelectedCalendarId}"
+                                Content="Delete"
+                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                ToolTip="Delete calendar" />
+
+                    </StackPanel>
                 </StackPanel>
             </Grid>
             <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,55,0,0"
