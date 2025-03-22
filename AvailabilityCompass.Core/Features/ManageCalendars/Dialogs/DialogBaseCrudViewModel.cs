@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿using System.ComponentModel;
 using AvailabilityCompass.Core.Shared;
 using AvailabilityCompass.Core.Shared.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -6,7 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;
 
-public abstract partial class DialogBaseCrudViewModel<T> : ObservableValidator, IDialogViewModel where T : ObservableValidator, new()
+public abstract partial class DialogBaseCrudViewModel<T> : ObservableValidator, IDialogViewModel, IDisposable where T : ObservableValidator, new()
 {
     private readonly INavigationService<IDialogViewModel> _dialogNavigationService;
 
@@ -16,12 +16,19 @@ public abstract partial class DialogBaseCrudViewModel<T> : ObservableValidator, 
     protected DialogBaseCrudViewModel(INavigationService<IDialogViewModel> dialogNavigationService)
     {
         _dialogNavigationService = dialogNavigationService;
+
+        SelectedItem.ErrorsChanged += OnSelectedItemOnErrorsChanged;
     }
 
     public bool IsActive { get; set; }
     public bool IsDialogOpen { get; set; }
 
-    partial void OnSelectedItemChanged(T? value)
+    public void Dispose()
+    {
+        SelectedItem.ErrorsChanged -= OnSelectedItemOnErrorsChanged;
+    }
+
+    private void OnSelectedItemOnErrorsChanged(object? sender, DataErrorsChangedEventArgs args)
     {
         SaveCommand.NotifyCanExecuteChanged();
     }
@@ -54,19 +61,5 @@ public abstract partial class DialogBaseCrudViewModel<T> : ObservableValidator, 
     private bool CanSave()
     {
         return !SelectedItem.HasErrors;
-    }
-}
-
-public static class ObservableValidatorExtensions
-{
-    public static void ValidateAll(this ObservableValidator validator)
-    {
-        // Use reflection to call the protected method
-        typeof(ObservableValidator)
-            .GetMethod("ValidateAllProperties",
-                BindingFlags.Instance |
-                BindingFlags.NonPublic)
-            ?
-            .Invoke(validator, null);
     }
 }
