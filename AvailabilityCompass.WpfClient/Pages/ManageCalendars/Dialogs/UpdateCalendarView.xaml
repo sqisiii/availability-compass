@@ -7,5 +7,5 @@
              mc:Ignorable="d"
              Width="370"
              d:DesignHeight="300" d:DesignWidth="300">
-    <base:CalendarCrudBaseView ViewHeaderText="Add Calendar" IsViewEnabled="True" SaveCommandPrompt="CHANGE" />
+    <base:BaseCalendarCrudView ViewHeaderText="Add Calendar" IsViewEnabled="True" SaveCommandPrompt="CHANGE" />
 </UserControl>

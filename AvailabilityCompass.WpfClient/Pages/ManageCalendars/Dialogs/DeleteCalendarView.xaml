@@ -7,6 +7,6 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <local:CalendarCrudBaseView ViewHeaderText="Delete Calendar?" IsViewEnabled="False" SaveCommandPrompt="DELETE" />
+        <local:BaseCalendarCrudView ViewHeaderText="Delete Calendar?" IsViewEnabled="False" SaveCommandPrompt="DELETE" />
     </Grid>
 </UserControl>

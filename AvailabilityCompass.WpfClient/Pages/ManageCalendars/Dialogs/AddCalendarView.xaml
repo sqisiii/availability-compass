@@ -8,5 +8,5 @@
              mc:Ignorable="d"
              Width="370"
              d:DataContext="{d:DesignInstance Type=dialogs:AddCalendarViewModel}">
-    <base:CalendarCrudBaseView ViewHeaderText="Add Calendar" IsViewEnabled="True" SaveCommandPrompt="ADD" />
+    <base:BaseCalendarCrudView ViewHeaderText="Add Calendar" IsViewEnabled="True" SaveCommandPrompt="ADD" />
 </UserControl>
