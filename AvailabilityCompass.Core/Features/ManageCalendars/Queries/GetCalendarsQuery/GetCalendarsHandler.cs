@@ -22,7 +22,7 @@ public class GetCalendarsHandler : IRequestHandler<GetCalendarsQuery, GetCalenda
             connection.Open();
 
             const string sql = @"
-                        SELECT c.CalendarId as Id , c.Name, c.IsOnly, c.ChangeDate,
+                        SELECT c.CalendarId, c.Name, c.IsOnly, c.ChangeDate,
                             sd.Id as SingleDateId, sd.Description as SingleDateDescription, sd.Date, sd.ChangeDate,
                             rd.Id as RecurringDateId, rd.Description as RecurringDateDescription, rd.StartDate, rd.Duration, rd.RepetitionPeriod, rd.NumberOfRepetitions, rd.ChangeDate
                         FROM Calendar c
@@ -35,10 +35,10 @@ public class GetCalendarsHandler : IRequestHandler<GetCalendarsQuery, GetCalenda
                 sql,
                 map: (calendar, singleDate, recurringDate) =>
                 {
-                    if (!calendarDict.TryGetValue(calendar.Id, out var calendarEntry))
+                    if (!calendarDict.TryGetValue(calendar.CalendarId, out var calendarEntry))
                     {
                         calendarEntry = calendar;
-                        calendarDict.Add(calendar.Id, calendarEntry);
+                        calendarDict.Add(calendar.CalendarId, calendarEntry);
                     }
 
                     if (singleDate is not null && calendarEntry.SingleDates.All(x => x.SingleDateId != singleDate.SingleDateId))

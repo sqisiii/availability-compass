@@ -6,9 +6,6 @@ namespace AvailabilityCompass.Core.Features.ManageCalendars;
 public partial class CalendarViewModel : ObservableValidator
 {
     [ObservableProperty]
-    private Guid _id;
-
-    [ObservableProperty]
     private bool _isOnly;
 
     [ObservableProperty]
@@ -20,6 +17,8 @@ public partial class CalendarViewModel : ObservableValidator
     private string _name = string.Empty;
 
     public string Type => IsOnly ? "Only" : "Except";
+
+    public Guid CalendarId { get; set; }
 
 
     public List<SingleDateViewModel> SingleDates { get; set; } = [];

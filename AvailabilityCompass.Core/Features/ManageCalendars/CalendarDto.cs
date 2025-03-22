@@ -6,15 +6,15 @@ public class CalendarDto
     {
     }
 
-    public CalendarDto(Guid id, string name, bool isOnly, DateTime changeDate)
+    public CalendarDto(Guid calendarId, string name, bool isOnly, DateTime changeDate)
     {
-        Id = id;
+        CalendarId = calendarId;
         Name = name;
         IsOnly = isOnly;
         ChangeDate = changeDate;
     }
 
-    public Guid Id { get; }
+    public Guid CalendarId { get; }
 
     public string Name { get; }
 

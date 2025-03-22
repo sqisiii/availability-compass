@@ -8,15 +8,18 @@ public class CalendarDialogViewModelsFactory : ICalendarDialogViewModelsFactory
     private readonly IAbstractFactory<AddCalendarViewModel> _addCalendarViewModelFactory;
     private readonly IAbstractFactory<AddRecurringDateViewModel> _addRecurringDateViewModelFactory;
     private readonly IAbstractFactory<AddSingleDateViewModel> _addSingleDateViewModelFactory;
+    private readonly IAbstractFactory<UpdateCalendarViewModel> _updateCalendarViewModelFactory;
 
     public CalendarDialogViewModelsFactory(
         IAbstractFactory<AddCalendarViewModel> addCalendarViewModelFactory,
         IAbstractFactory<AddRecurringDateViewModel> addRecurringDateViewModelFactory,
-        IAbstractFactory<AddSingleDateViewModel> addSingleDateViewModelFactory)
+        IAbstractFactory<AddSingleDateViewModel> addSingleDateViewModelFactory,
+        IAbstractFactory<UpdateCalendarViewModel> updateCalendarViewModelFactory)
     {
         _addCalendarViewModelFactory = addCalendarViewModelFactory;
         _addRecurringDateViewModelFactory = addRecurringDateViewModelFactory;
         _addSingleDateViewModelFactory = addSingleDateViewModelFactory;
+        _updateCalendarViewModelFactory = updateCalendarViewModelFactory;
     }
 
     public AddCalendarViewModel CreateAddCalendarViewModel()
@@ -32,5 +35,10 @@ public class CalendarDialogViewModelsFactory : ICalendarDialogViewModelsFactory
     public AddSingleDateViewModel CreateAddSingleDateViewModel()
     {
         return _addSingleDateViewModelFactory.Create();
+    }
+
+    public UpdateCalendarViewModel CreateUpdateCalendarViewModel()
+    {
+        return _updateCalendarViewModelFactory.Create();
     }
 }

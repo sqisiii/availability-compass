@@ -8,7 +8,7 @@ public class CalendarViewModelFactory : ICalendarViewModelFactory
         {
             Name = calendarDto.Name,
             IsOnly = calendarDto.IsOnly,
-            Id = calendarDto.Id,
+            CalendarId = calendarDto.CalendarId,
             IsSelected = false,
             SingleDates = calendarDto.SingleDates
                 .Select(CreateSingleDate)
