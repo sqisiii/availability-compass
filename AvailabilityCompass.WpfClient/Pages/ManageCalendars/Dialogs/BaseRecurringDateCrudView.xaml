@@ -31,7 +31,7 @@
             materialDesign:HintAssist.HelperText="Format: yyyy-MM-dd"
             materialDesign:HintAssist.Hint="Date"
             Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
-            Text="{Binding SelectedItem.StartDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}" />
+            Text="{Binding SelectedItem.StartDateString, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}" />
 
         <TextBox
             Width="200"
