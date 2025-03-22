@@ -6,20 +6,25 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;
 
-public abstract partial class CrudViewModelBase<T> : ObservableValidator, IDialogViewModel where T : ObservableValidator, new()
+public abstract partial class DialogBaseCrudViewModel<T> : ObservableValidator, IDialogViewModel where T : ObservableValidator, new()
 {
     private readonly INavigationService<IDialogViewModel> _dialogNavigationService;
 
     [ObservableProperty]
     private T _selectedItem = new T();
 
-    protected CrudViewModelBase(INavigationService<IDialogViewModel> dialogNavigationService)
+    protected DialogBaseCrudViewModel(INavigationService<IDialogViewModel> dialogNavigationService)
     {
         _dialogNavigationService = dialogNavigationService;
     }
 
     public bool IsActive { get; set; }
     public bool IsDialogOpen { get; set; }
+
+    partial void OnSelectedItemChanged(T? value)
+    {
+        SaveCommand.NotifyCanExecuteChanged();
+    }
 
     public virtual void LoadData(object obj)
     {
@@ -48,7 +53,7 @@ public abstract partial class CrudViewModelBase<T> : ObservableValidator, IDialo
 
     private bool CanSave()
     {
-        return !HasErrors;
+        return !SelectedItem.HasErrors;
     }
 }
 
