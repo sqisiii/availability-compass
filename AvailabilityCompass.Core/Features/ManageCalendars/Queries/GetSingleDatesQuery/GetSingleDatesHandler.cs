@@ -22,7 +22,7 @@ public class GetSingleDatesHandler : IRequestHandler<GetSingleDatesQuery, GetSin
             connection.Open();
 
             const string sql = @"
-            SELECT sd.Id as SingleDateId, sd.Description as SingleDateDescription, sd.Date, sd.ChangeDate
+            SELECT sd.CalendarId, sd.Id as SingleDateId, sd.Description as SingleDateDescription, sd.Date, sd.ChangeDate
             FROM SingleDate sd
             WHERE sd.CalendarId = @Id";
 

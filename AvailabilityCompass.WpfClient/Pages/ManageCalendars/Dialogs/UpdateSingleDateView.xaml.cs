@@ -2,9 +2,9 @@
 
 namespace AvailabilityCompass.WpfClient.Pages.ManageCalendars.Dialogs;
 
-public partial class AddSingleDate : UserControl
+public partial class UpdateSingleDateView : UserControl
 {
-    public AddSingleDate()
+    public UpdateSingleDateView()
     {
         InitializeComponent();
     }

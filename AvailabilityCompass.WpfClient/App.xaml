@@ -45,7 +45,10 @@
                 <dialogsViews:AddRecurringDate />
             </DataTemplate>
             <DataTemplate DataType="{x:Type dialogs:AddSingleDateViewModel}">
-                <dialogsViews:AddSingleDate />
+                <dialogsViews:AddSingleDateView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type dialogs:UpdateSingleDateViewModel}">
+                <dialogsViews:UpdateSingleDateView />
             </DataTemplate>
 
         </ResourceDictionary>

@@ -152,14 +152,14 @@
                                         <Button
                                             Padding="5,0"
                                             Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.EditSingleDateCommand}"
-                                            CommandParameter="{Binding Id}"
+                                            CommandParameter="{Binding SingleDateId}"
                                             Content="{materialDesign:PackIcon Edit}"
                                             Style="{StaticResource MaterialDesignFlatButton}"
                                             ToolTip="Edit single date" />
                                         <Button
                                             Padding="5,0"
                                             Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.DeleteSingleDateCommand}"
-                                            CommandParameter="{Binding Id}"
+                                            CommandParameter="{Binding SingleDateId}"
                                             Content="{materialDesign:PackIcon Remove}"
                                             Style="{StaticResource MaterialDesignFlatButton}"
                                             ToolTip="Delete single date" />

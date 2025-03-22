@@ -25,9 +25,10 @@ public class CalendarViewModelFactory : ICalendarViewModelFactory
     {
         return new SingleDateViewModel
         {
-            Id = singleDateDto.SingleDateId,
+            SingleDateId = singleDateDto.SingleDateId,
             Description = singleDateDto.SingleDateDescription,
-            Date = singleDateDto.Date
+            Date = singleDateDto.Date,
+            CalendarId = singleDateDto.CalendarId
         };
     }
 

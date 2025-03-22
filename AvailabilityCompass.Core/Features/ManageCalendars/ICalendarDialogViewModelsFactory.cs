@@ -5,8 +5,9 @@ namespace AvailabilityCompass.Core.Features.ManageCalendars;
 public interface ICalendarDialogViewModelsFactory
 {
     AddCalendarViewModel CreateAddCalendarViewModel();
+    DeleteCalendarViewModel CreateDeleteCalendarViewModel();
+    UpdateCalendarViewModel CreateUpdateCalendarViewModel();
     AddRecurringDateViewModel CreateAddRecurringDateViewModel();
     AddSingleDateViewModel CreateAddSingleDateViewModel();
-    UpdateCalendarViewModel CreateUpdateCalendarViewModel();
-    DeleteCalendarViewModel CreateDeleteCalendarViewModel();
+    UpdateSingleDateViewModel CreateUpdateSingleDateViewModel();
 }

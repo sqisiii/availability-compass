@@ -1,8 +1,8 @@
 ﻿namespace AvailabilityCompass.Core.Features.ManageCalendars;
 
-public record SingleDateDto(Guid SingleDateId, string SingleDateDescription, DateOnly Date, DateTime ChangeDate)
+public record SingleDateDto(Guid CalendarId, Guid SingleDateId, string SingleDateDescription, DateOnly Date, DateTime ChangeDate)
 {
-    public SingleDateDto() : this(Guid.Empty, string.Empty, DateOnly.MinValue, DateTime.MinValue)
+    public SingleDateDto() : this(Guid.Empty, Guid.Empty, string.Empty, DateOnly.MinValue, DateTime.MinValue)
     {
     }
 }

@@ -18,6 +18,7 @@ public static class CalendarExtensions
         services.AddAbstractFactory<AddRecurringDateViewModel>();
         services.AddAbstractFactory<UpdateCalendarViewModel>();
         services.AddAbstractFactory<DeleteCalendarViewModel>();
+        services.AddAbstractFactory<UpdateSingleDateViewModel>();
         services.AddSingleton<ICalendarDialogViewModelsFactory, CalendarDialogViewModelsFactory>();
 
         return services;

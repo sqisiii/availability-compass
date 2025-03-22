@@ -18,7 +18,7 @@ public partial class SingleDateViewModel : ObservableValidator
     private string _description = string.Empty;
 
     [ObservableProperty]
-    private Guid _id;
+    private Guid _singleDateId;
 
     public DateOnly? Date
     {
