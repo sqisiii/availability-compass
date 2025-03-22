@@ -3,18 +3,18 @@ using System.Windows.Controls;
 
 namespace AvailabilityCompass.WpfClient.Pages.ManageCalendars.Dialogs;
 
-public partial class SingleDateBaseView : UserControl
+public partial class BaseSingleDateView : UserControl
 {
     public static readonly DependencyProperty ViewHeaderTextProperty = DependencyProperty.Register(
-        nameof(ViewHeaderText), typeof(string), typeof(SingleDateBaseView), new PropertyMetadata(default(string)));
+        nameof(ViewHeaderText), typeof(string), typeof(BaseSingleDateView), new PropertyMetadata(default(string)));
 
     public static readonly DependencyProperty IsViewEnabledProperty = DependencyProperty.Register(
-        nameof(IsViewEnabled), typeof(bool), typeof(SingleDateBaseView), new PropertyMetadata(true));
+        nameof(IsViewEnabled), typeof(bool), typeof(BaseSingleDateView), new PropertyMetadata(true));
 
     public static readonly DependencyProperty SaveCommandPromptProperty = DependencyProperty.Register(
-        nameof(SaveCommandPrompt), typeof(string), typeof(SingleDateBaseView), new PropertyMetadata(default(string)));
+        nameof(SaveCommandPrompt), typeof(string), typeof(BaseSingleDateView), new PropertyMetadata(default(string)));
 
-    public SingleDateBaseView()
+    public BaseSingleDateView()
     {
         InitializeComponent();
     }
