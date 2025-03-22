@@ -23,7 +23,6 @@ public class AddCalendarToDbHandler : IRequestHandler<AddCalendarToDbRequest, Ad
         {
             using var connection = _dbConnectionFactory.Connect();
             connection.Open();
-            using var transaction = connection.BeginTransaction();
 
             const string insertCalendarSql = @"INSERT INTO Calendar (CalendarId, Name, IsOnly, ChangeDate) 
                                                 VALUES (@CalendarId, @Name, @IsOnly, @ChangeDate);";
@@ -37,10 +36,8 @@ public class AddCalendarToDbHandler : IRequestHandler<AddCalendarToDbRequest, Ad
                     request.Name,
                     request.IsOnly,
                     ChangeDate = changeDate
-                }, transaction)
+                })
                 .ConfigureAwait(false);
-
-            transaction.Commit();
 
             _eventBus.Publish(new CalendarAddedEvent());
             return new AddCalendarToDbResponse(true);

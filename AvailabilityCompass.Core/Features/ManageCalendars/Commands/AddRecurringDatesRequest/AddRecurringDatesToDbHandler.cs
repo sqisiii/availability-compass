@@ -23,7 +23,6 @@ public class AddRecurringDatesToDbHandler : IRequestHandler<AddRecurringDatesToD
         {
             using var connection = _dbConnectionFactory.Connect();
             connection.Open();
-            using var transaction = connection.BeginTransaction();
 
             const string insertSingleDateSql = @"INSERT INTO RecurringDate (CalendarId, Id, StartDate, Description, Duration, RepetitionPeriod, NumberOfRepetitions, ChangeDate) 
                                                 VALUES (@CalendarId, @Id, @StartDate, @Description, @Duration, @RepetitionPeriod, @NumberOfRepetitions, @ChangeDate);";
@@ -41,10 +40,8 @@ public class AddRecurringDatesToDbHandler : IRequestHandler<AddRecurringDatesToD
                     request.RepetitionPeriod,
                     request.NumberOfRepetitions,
                     ChangeDate = changeDate
-                }, transaction)
+                })
                 .ConfigureAwait(false);
-
-            transaction.Commit();
 
             _eventBus.Publish(new RecurringDateAddedEvent(request.CalendarId));
             return new AddRecurringDatesToDbResponse(true);

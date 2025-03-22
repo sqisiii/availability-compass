@@ -23,7 +23,6 @@ public class AddSingleDateToDbHandler : IRequestHandler<AddSingleDateToDbRequest
         {
             using var connection = _dbConnectionFactory.Connect();
             connection.Open();
-            using var transaction = connection.BeginTransaction();
 
             const string insertSingleDateSql = @"INSERT INTO SingleDate (CalendarId, Id, Date, Description, ChangeDate) 
                                                 VALUES (@CalendarId, @Id, @Date, @Description, @ChangeDate);";
@@ -38,10 +37,8 @@ public class AddSingleDateToDbHandler : IRequestHandler<AddSingleDateToDbRequest
                     request.Date,
                     request.Description,
                     ChangeDate = changeDate
-                }, transaction)
+                })
                 .ConfigureAwait(false);
-
-            transaction.Commit();
 
             _eventBus.Publish(new SingleDateAddedEvent(request.CalendarId));
             return new AddSingleDateToDbResponse(true);
