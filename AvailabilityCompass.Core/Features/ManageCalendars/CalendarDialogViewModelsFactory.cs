@@ -9,6 +9,7 @@ public class CalendarDialogViewModelsFactory : ICalendarDialogViewModelsFactory
     private readonly IAbstractFactory<AddRecurringDateViewModel> _addRecurringDateViewModelFactory;
     private readonly IAbstractFactory<AddSingleDateViewModel> _addSingleDateViewModelFactory;
     private readonly IAbstractFactory<DeleteCalendarViewModel> _deleteCalendarViewModelFactory;
+    private readonly IAbstractFactory<DeleteSingleDateViewModel> _deleteSingleDateViewModelFactory;
     private readonly IAbstractFactory<UpdateCalendarViewModel> _updateCalendarViewModelFactory;
     private readonly IAbstractFactory<UpdateSingleDateViewModel> _updateSingleDateViewModelFactory;
 
@@ -18,12 +19,14 @@ public class CalendarDialogViewModelsFactory : ICalendarDialogViewModelsFactory
         IAbstractFactory<UpdateCalendarViewModel> updateCalendarViewModelFactory,
         IAbstractFactory<AddRecurringDateViewModel> addRecurringDateViewModelFactory,
         IAbstractFactory<AddSingleDateViewModel> addSingleDateViewModelFactory,
-        IAbstractFactory<UpdateSingleDateViewModel> updateSingleDateViewModelFactory)
+        IAbstractFactory<UpdateSingleDateViewModel> updateSingleDateViewModelFactory,
+        IAbstractFactory<DeleteSingleDateViewModel> deleteSingleDateViewModelFactory)
     {
         _addCalendarViewModelFactory = addCalendarViewModelFactory;
         _addRecurringDateViewModelFactory = addRecurringDateViewModelFactory;
         _addSingleDateViewModelFactory = addSingleDateViewModelFactory;
         _updateSingleDateViewModelFactory = updateSingleDateViewModelFactory;
+        _deleteSingleDateViewModelFactory = deleteSingleDateViewModelFactory;
         _updateCalendarViewModelFactory = updateCalendarViewModelFactory;
         _deleteCalendarViewModelFactory = deleteCalendarViewModelFactory;
     }
@@ -51,6 +54,11 @@ public class CalendarDialogViewModelsFactory : ICalendarDialogViewModelsFactory
     public AddSingleDateViewModel CreateAddSingleDateViewModel()
     {
         return _addSingleDateViewModelFactory.Create();
+    }
+
+    public DeleteSingleDateViewModel CreateDeleteSingleDateViewModel()
+    {
+        return _deleteSingleDateViewModelFactory.Create();
     }
 
     public UpdateSingleDateViewModel CreateUpdateSingleDateViewModel()

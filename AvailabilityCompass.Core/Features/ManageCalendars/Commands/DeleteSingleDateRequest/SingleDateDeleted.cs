@@ -1,0 +1,3 @@
+﻿namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteSingleDateRequest;
+
+public record SingleDateDeletedEvent(Guid CalendarId);

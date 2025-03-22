@@ -5,6 +5,7 @@ using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarRequ
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddRecurringDatesRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddSingleDateRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteCalendarRequest;
+using AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteSingleDateRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateCalendarRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateSingleDateRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetCalendarsQuery;
@@ -30,6 +31,7 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     private readonly IMediator _mediator;
     private readonly IDisposable _recurringDateAddedSubscription;
     private readonly IDisposable _singleDateAddedSubscription;
+    private readonly IDisposable _singleDateDeletedSubscription;
     private readonly IDisposable _singleDateUpdatedSubscription;
 
     [NotifyPropertyChangedFor(nameof(IsCalendarSelected))]
@@ -62,6 +64,9 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
             .Subscribe();
         _singleDateAddedSubscription = eventBus.Listen<SingleDateAddedEvent>()
             .SelectMany(evt => Observable.FromAsync(ct => OnSingleDateAdded(evt, ct)))
+            .Subscribe();
+        _singleDateDeletedSubscription = eventBus.Listen<SingleDateDeletedEvent>()
+            .SelectMany(evt => Observable.FromAsync(ct => OnSingleDateDeleted(evt, ct)))
             .Subscribe();
         _singleDateUpdatedSubscription = eventBus.Listen<SingleDateUpdatedEvent>()
             .SelectMany(evt => Observable.FromAsync(ct => OnSingleDateUpdated(evt, ct)))
@@ -104,6 +109,12 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     public async Task LoadDataAsync(CancellationToken ct)
     {
         await LoadCalendars(ct);
+    }
+
+    private async Task OnSingleDateDeleted(SingleDateDeletedEvent evt, CancellationToken ct)
+    {
+        await RefreshSingleDatesAsync(evt.CalendarId, ct);
+        CalculateReservedDays();
     }
 
     private async Task OnSingleDateUpdated(SingleDateUpdatedEvent evt, CancellationToken ct)
@@ -295,8 +306,17 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     }
 
     [RelayCommand]
-    private void OnDeleteSingleDate(Guid id)
+    private void OnDeleteSingleDate(Guid singleDateId)
     {
+        var singleDateViewModel = SelectedCalendar?.SingleDates.FirstOrDefault(x => x.SingleDateId == singleDateId);
+        if (singleDateViewModel is null)
+        {
+            return;
+        }
+
+        var deleteSingleDateViewModel = _calendarDialogViewModelsFactory.CreateDeleteSingleDateViewModel();
+        deleteSingleDateViewModel.LoadData(singleDateViewModel);
+        _dialogNavigationService.NavigateTo(deleteSingleDateViewModel);
     }
 
     [RelayCommand]
@@ -314,12 +334,12 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     }
 
     [RelayCommand]
-    private void OnDeleteRecurringDate(Guid id)
+    private void OnDeleteRecurringDate(Guid recurringDateId)
     {
     }
 
     [RelayCommand]
-    private void OnEditRecurringDate(Guid id)
+    private void OnEditRecurringDate(Guid recurringDateId)
     {
     }
 

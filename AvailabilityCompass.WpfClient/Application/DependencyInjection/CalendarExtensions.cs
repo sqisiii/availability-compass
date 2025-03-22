@@ -14,11 +14,12 @@ public static class CalendarExtensions
         services.AddSingleton<ICalendarViewModelFactory, CalendarViewModelFactory>();
 
         services.AddAbstractFactory<AddCalendarViewModel>();
-        services.AddAbstractFactory<AddSingleDateViewModel>();
-        services.AddAbstractFactory<AddRecurringDateViewModel>();
-        services.AddAbstractFactory<UpdateCalendarViewModel>();
         services.AddAbstractFactory<DeleteCalendarViewModel>();
+        services.AddAbstractFactory<UpdateCalendarViewModel>();
+        services.AddAbstractFactory<AddRecurringDateViewModel>();
+        services.AddAbstractFactory<AddSingleDateViewModel>();
         services.AddAbstractFactory<UpdateSingleDateViewModel>();
+        services.AddAbstractFactory<DeleteSingleDateViewModel>();
         services.AddSingleton<ICalendarDialogViewModelsFactory, CalendarDialogViewModelsFactory>();
 
         return services;
