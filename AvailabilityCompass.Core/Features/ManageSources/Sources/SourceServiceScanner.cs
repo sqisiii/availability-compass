@@ -25,7 +25,7 @@ public class SourceServiceScanner
                 continue;
             }
 
-            sourcesMetaData.Add(new SourceMetaData(attr.Key, attr.Name, attr.IsEnabled));
+            sourcesMetaData.Add(new SourceMetaData(attr.Key, attr.Name, attr.Language, attr.IsEnabled));
         }
 
         return sourcesMetaData;

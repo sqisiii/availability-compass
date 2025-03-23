@@ -1,6 +1,6 @@
 ﻿namespace AvailabilityCompass.Core.Features.ManageSources.Sources.ViaVerde;
 
-[SourceService("ViaVerde", "Via Verde", false)]
+[SourceService("ViaVerde", "Via Verde", "PL", false)]
 public class ViaVerdeService : ISourceService
 {
     public event EventHandler<SourceRefreshProgressEventArgs>? RefreshProgressChanged;

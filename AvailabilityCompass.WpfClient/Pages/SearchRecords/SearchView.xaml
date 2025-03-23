@@ -106,7 +106,7 @@
                                         CheckBoxText="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                         FullMinHeight="30"
                                         FullWidth="180"
-                                        HeaderText="{Binding LastUpdated}"
+                                        HeaderText="{Binding HeaderText}"
                                         IsActive="{Binding IsActive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                         IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </StackPanel>

@@ -1,6 +1,6 @@
 ﻿namespace AvailabilityCompass.Core.Features.ManageSources.Sources.RowerzystaPodroznik;
 
-[SourceService("RowerzystaPodroznik", "Rowerzysta Podróżnik", false)]
+[SourceService("RowerzystaPodroznik", "Rowerzysta Podróżnik", "PL", false)]
 public class RowerzystaPodroznikService : ISourceService
 {
     public event EventHandler<SourceRefreshProgressEventArgs>? RefreshProgressChanged;

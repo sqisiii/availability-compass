@@ -7,7 +7,7 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Sources.Horyzonty;
 
-[SourceService("Horyzonty", "Horyzonty")]
+[SourceService("Horyzonty", "Horyzonty", "PL")]
 public sealed class HoryzontyService : ISourceService
 {
     private readonly HttpClient _httpClient;

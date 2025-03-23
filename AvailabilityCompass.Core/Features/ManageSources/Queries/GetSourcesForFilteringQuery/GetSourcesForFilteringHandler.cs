@@ -54,6 +54,7 @@ public class GetSourcesForFilteringHandler : IRequestHandler<
                 SourceId = sourceData.Id,
                 Name = sourceData.Name,
                 ChangedAt = sourceChangeAtDate,
+                Language = sourceData.Language,
                 IsEnabled = sourceData.IsEnabled,
                 Filters = filterOptions.Select(f => new GetSourcesForFilteringResponse.SourceFilter
                     {

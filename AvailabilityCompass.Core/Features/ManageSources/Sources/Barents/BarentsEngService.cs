@@ -7,7 +7,7 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Sources.Barents;
 
-[SourceService("Barents", "Barents")]
+[SourceService("Barents", "Barents", "ENG")]
 public class BarentsEngService : ISourceService
 {
     private readonly HttpClient _httpClient;

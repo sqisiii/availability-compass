@@ -3,11 +3,12 @@
 [AttributeUsage(AttributeTargets.Class)]
 public class SourceServiceAttribute : Attribute
 {
-    public SourceServiceAttribute(string key, string name, bool isEnabled = true)
+    public SourceServiceAttribute(string key, string name, string language, bool isEnabled = true)
     {
         Key = key;
         Name = name;
         IsEnabled = isEnabled;
+        Language = language;
     }
 
     public string Key { get; }
@@ -15,6 +16,8 @@ public class SourceServiceAttribute : Attribute
     public string Name { get; }
 
     public bool IsEnabled { get; }
+
+    public string Language { get; }
 }
 
 public static class SourceServiceAttributeExtensions

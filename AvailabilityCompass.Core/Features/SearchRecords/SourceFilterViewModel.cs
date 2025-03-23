@@ -15,6 +15,9 @@ public partial class SourceFilterViewModel : ObservableObject, IDisposable
     private bool _isSelected;
 
     [ObservableProperty]
+    private string _language = string.Empty;
+
+    [ObservableProperty]
     private string _name = string.Empty;
 
     public SourceFilterViewModel()
@@ -24,6 +27,8 @@ public partial class SourceFilterViewModel : ObservableObject, IDisposable
         _timer.Elapsed += OnLastUpdatedTimerElapsed;
         _timer.Start();
     }
+
+    public string HeaderText => $"{Language}  |  {LastUpdated}";
 
     public string SourceId { get; init; } = string.Empty;
 
@@ -40,6 +45,7 @@ public partial class SourceFilterViewModel : ObservableObject, IDisposable
     private void OnLastUpdatedTimerElapsed(object? sender, ElapsedEventArgs e)
     {
         OnPropertyChanged(nameof(LastUpdated));
+        OnPropertyChanged(nameof(HeaderText));
     }
 
 

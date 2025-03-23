@@ -10,6 +10,7 @@ public class SourceFilterViewModelFactory : ISourceFilterViewModelFactory
         {
             SourceId = getSourcesResponse.SourceId,
             IsActive = getSourcesResponse.IsEnabled,
+            Language = getSourcesResponse.Language,
             IsSelected = false,
             ChangeAt = getSourcesResponse.ChangedAt,
             Name = getSourcesResponse.Name
