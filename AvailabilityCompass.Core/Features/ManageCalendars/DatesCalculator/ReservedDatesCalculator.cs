@@ -2,6 +2,8 @@
 
 public class ReservedDatesCalculator : IReservedDatesCalculator
 {
+    private const int _yearsToCheck = 2;
+
     private readonly List<IDateProcessor> _dateProcessors =
     [
         new SingleDateProcessor(),
@@ -29,6 +31,12 @@ public class ReservedDatesCalculator : IReservedDatesCalculator
                 string.Join(", ", group.Select(d => d.Tooltip).Distinct())))
             .ToList();
 
+        // If the calendar is an "only" calendar, invert the selection
+        if (selectedCalendar.IsOnly)
+        {
+            uniqueDates = GetInvertedDates(uniqueDates);
+        }
+
         return uniqueDates;
     }
 
@@ -39,14 +47,13 @@ public class ReservedDatesCalculator : IReservedDatesCalculator
             return [];
         }
 
-        // Use HashSet to automatically handle duplicates
-        var allDates = new HashSet<DateOnly>();
-
-        foreach (var calendar in calendars)
+        var normalCalendarsReservedDates = new HashSet<DateOnly>();
+        var normalCalendars = calendars.Where(c => !c.IsOnly).ToList();
+        foreach (var calendar in normalCalendars)
         {
             foreach (var singleDate in calendar.SingleDates)
             {
-                allDates.Add(singleDate.Date);
+                normalCalendarsReservedDates.Add(singleDate.Date);
             }
 
             foreach (var recurringDate in calendar.RecurringDates)
@@ -59,12 +66,79 @@ public class ReservedDatesCalculator : IReservedDatesCalculator
 
                 foreach (var date in dates)
                 {
-                    allDates.Add(date);
+                    normalCalendarsReservedDates.Add(date);
                 }
             }
         }
 
-        return allDates.ToList();
+        // Process "Only" calendars by inverting dates
+        var onlyCalendarsExceptionDates = new HashSet<DateOnly>();
+        var onlyCalendars = calendars.Where(c => c.IsOnly).ToList();
+        foreach (var calendar in onlyCalendars)
+        {
+            foreach (var singleDate in calendar.SingleDates)
+            {
+                onlyCalendarsExceptionDates.Add(singleDate.Date);
+            }
+
+            foreach (var recurringDate in calendar.RecurringDates)
+            {
+                var dates = CalculateRecurringDatesRange(
+                    recurringDate.StartDate,
+                    recurringDate.Duration,
+                    recurringDate.RepetitionPeriod,
+                    recurringDate.NumberOfRepetitions);
+
+                foreach (var date in dates)
+                {
+                    onlyCalendarsExceptionDates.Add(date);
+                }
+            }
+        }
+
+        // If there are no "Only" calendars, just return the dates from normal calendars
+        if (onlyCalendars.Count == 0)
+        {
+            return normalCalendarsReservedDates.ToList();
+        }
+
+        // If there are any "Only" calendars, compute all dates for the next year
+        // and exclude the exception dates
+        var startDate = DateOnly.FromDateTime(DateTime.Today);
+        var endDate = startDate.AddYears(_yearsToCheck);
+        var allDatesInNextYear = new HashSet<DateOnly>();
+
+        for (var date = startDate; date < endDate; date = date.AddDays(1))
+        {
+            if (!onlyCalendarsExceptionDates.Contains(date))
+            {
+                allDatesInNextYear.Add(date);
+            }
+        }
+
+        // Combine the dates from normal calendars with inverted dates from "Only" calendars
+        return normalCalendarsReservedDates.Union(allDatesInNextYear).ToList();
+    }
+
+    private List<CategorizedDate> GetInvertedDates(List<CategorizedDate> dates)
+    {
+        var exceptedDates = dates.Select(d => DateOnly.FromDateTime(d.Date.Date)).ToHashSet();
+        var startDate = DateOnly.FromDateTime(DateTime.Today);
+        var endDate = startDate.AddYears(_yearsToCheck);
+        List<CategorizedDate> invertedDates = [];
+
+        for (var date = startDate; date < endDate; date = date.AddDays(1))
+        {
+            if (!exceptedDates.Contains(date))
+            {
+                invertedDates.Add(new CategorizedDate(
+                    date.ToDateTime(TimeOnly.MinValue),
+                    CategorizedDateCategory.Inverted,
+                    "Inverted date"));
+            }
+        }
+
+        return invertedDates;
     }
 
     private List<DateOnly> CalculateRecurringDatesRange(

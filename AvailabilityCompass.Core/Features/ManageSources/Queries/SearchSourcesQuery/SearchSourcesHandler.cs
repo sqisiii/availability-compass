@@ -31,6 +31,7 @@ public class SearchSourcesHandler : IRequestHandler<SearchRecords.Queries.Search
                                        ON s.SeqNo = sad.SourceSeqNo AND s.SourceId = sad.SourceId
                                    WHERE s.SourceId = @SourceId
                                    """;
+
             foreach (var querySource in query.Sources)
             {
                 var sqlBuilder = new StringBuilder(baseSql);
@@ -136,24 +137,29 @@ public class SearchSourcesHandler : IRequestHandler<SearchRecords.Queries.Search
                         }
                 }
 
-                // Exclude entries where any reserved date falls between StartDate and EndDate
                 if (query.ReservedDates.Count > 0)
                 {
-                    sqlBuilder.Append(" AND NOT EXISTS (");
-                    sqlBuilder.Append("SELECT 1 FROM (");
+                    // Create a StringBuilder for the CTE part only
+                    var cteBuilder = new StringBuilder("WITH reserved_dates(date) AS (VALUES ");
 
                     for (var i = 0; i < query.ReservedDates.Count; i++)
                     {
-                        if (i > 0)
-                            sqlBuilder.Append(" UNION ALL ");
-
-                        sqlBuilder.Append($"SELECT @resDate{i} AS reserved_date");
+                        if (i > 0) cteBuilder.Append(", ");
+                        cteBuilder.Append($"(@resDate{i})");
                         parameters.Add($"resDate{i}", query.ReservedDates[i].ToString("yyyy-MM-dd"));
                     }
 
-                    sqlBuilder.Append(") AS temp_dates WHERE ");
-                    sqlBuilder.Append("temp_dates.reserved_date BETWEEN s.StartDate AND s.EndDate)");
+                    cteBuilder.Append(") ");
+
+                    // Insert the CTE at the beginning of the entire query
+                    sqlBuilder.Insert(0, cteBuilder.ToString());
+
+                    // Add the NOT EXISTS condition separately
+                    sqlBuilder.Append(" AND NOT EXISTS (")
+                        .Append("SELECT 1 FROM reserved_dates WHERE ")
+                        .Append("reserved_dates.date BETWEEN s.StartDate AND s.EndDate)");
                 }
+
                 // Add pagination
                 // sqlBuilder.Append(" ORDER BY s.SourceId, s.SeqNo")
                 //     .Append($" LIMIT {query.PageSize} OFFSET {(query.PageNumber - 1) * query.PageSize}");
@@ -162,10 +168,8 @@ public class SearchSourcesHandler : IRequestHandler<SearchRecords.Queries.Search
                 var sql = sqlBuilder.ToString();
 
                 Log.Debug("Executing search query: {Query}", sql);
-                foreach (var param in parameters.ParameterNames)
-                {
-                    Log.Debug("Query parameter: {Name} = {Value}", param, parameters.Get<object>(param));
-                }
+
+                LogParametersToDebug(parameters);
 
                 var sourceDictionary = new Dictionary<(int SeqNo, string SourceId), SearchSourcesResponse.SourceDataItem>();
                 await connection.QueryAsync<SearchSourcesResponse.SourceDataItem, string, string, SearchSourcesResponse.SourceDataItem>(
@@ -203,5 +207,26 @@ public class SearchSourcesHandler : IRequestHandler<SearchRecords.Queries.Search
         }
 
         return new SearchSourcesResponse(new List<SearchSourcesResponse.SourceDataItem>()) { IsSuccess = false };
+    }
+
+    private static void LogParametersToDebug(DynamicParameters parameters)
+    {
+        var reservedDates = new List<string>();
+        foreach (var param in parameters.ParameterNames)
+        {
+            if (param.StartsWith("resDate"))
+            {
+                reservedDates.Add(parameters.Get<object>(param)?.ToString() ?? "null");
+            }
+            else
+            {
+                Log.Debug("Query parameter: {Name} = {Value}", param, parameters.Get<object>(param));
+            }
+        }
+
+        if (reservedDates.Count > 0)
+        {
+            Log.Debug("Query parameter for resDate% : {Dates}", string.Join(", ", reservedDates));
+        }
     }
 }

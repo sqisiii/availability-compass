@@ -17,5 +17,6 @@ public class CategorizedDate
 public enum CategorizedDateCategory
 {
     SingleDate,
-    RecurringDate
+    RecurringDate,
+    Inverted
 }

@@ -8,7 +8,9 @@ public class SearchSourcesQuery : IRequest<SearchSourcesResponse>
 
     public int PageSize { get; set; } = 20;
 
-    public List<Source> Sources { get; } = new();
+    public List<DateOnly> ReservedDates { get; set; } = [];
+
+    public List<Source> Sources { get; } = [];
 
     public class Source
     {
