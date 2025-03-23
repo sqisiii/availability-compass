@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:manageSources="clr-namespace:AvailabilityCompass.Core.Features.ManageSources;assembly=AvailabilityCompass.Core"
              xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageSources.Converters"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              d:DataContext="{d:DesignInstance manageSources:ManageSourcesViewModel, IsDesignTimeCreatable=True}"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
@@ -19,83 +20,84 @@
                BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
-        <Style x:Key="StatusHeader" TargetType="DataGridColumnHeader"
-               BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
-            <Setter Property="Margin" Value="10 0 0 0" />
-        </Style>
     </UserControl.Resources>
-    <StackPanel>
-        <TextBlock
-            Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-            Margin="0,10,0,10"
-            Text="Available Sources"
-            HorizontalAlignment="Center" />
-        <DataGrid
-            AutoGenerateColumns="False"
-            CanUserAddRows="False"
-            CanUserDeleteRows="False"
-            CanUserReorderColumns="True"
-            CanUserResizeColumns="True"
-            CanUserResizeRows="True"
-            CanUserSortColumns="True"
-            IsReadOnly="True"
-            ItemsSource="{Binding Sources}"
-            SelectionMode="Single"
-            SelectionUnit="FullRow"
-            Style="{StaticResource MaterialDesignDataGrid}"
-            VerticalScrollBarVisibility="Auto">
-            <DataGrid.Columns>
-                <DataGridTextColumn CellStyle="{StaticResource CenteredVerticallyColumn}"
-                                    Header="Name"
-                                    Binding="{Binding Name}" />
-                <DataGridTextColumn CellStyle="{StaticResource CenteredVerticallyColumn}" Header="Updated"
-                                    Binding="{Binding ChangedAt, StringFormat=yyyy-MM-dd HH:mm:ss, TargetNullValue=N/A}" />
-                <DataGridTextColumn CellStyle="{StaticResource CenteredVerticallyColumn}" Header="Records Count"
-                                    Binding="{Binding TripsCount}" />
-                <DataGridTemplateColumn Header="Refresh?" HeaderStyle="{StaticResource RefreshHeader}">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Content="Refresh"
-                                    Style="{StaticResource MaterialDesignFlatSecondaryMidBgButton}"
-                                    ToolTip="Refresh available trips data"
-                                    Command="{Binding DataContext.RefreshSourceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    CommandParameter="{Binding SourceId}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Status">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <ProgressBar
-                                    Grid.Row="0"
-                                    Width="240"
-                                    Height="{Binding ElementName=ProgressBarTextBlock, Path=ActualHeight}"
-                                    MinHeight="25"
-                                    Background="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
-                                    Foreground="{DynamicResource MaterialDesign.Brush.Secondary.Dark}"
-                                    Visibility="{Binding ShowProgress, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                    Value="{Binding ProgressPercent, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
-                                <TextBlock
-                                    x:Name="ProgressBarTextBlock"
-                                    Grid.Row="0"
-                                    Width="240"
-                                    MinHeight="20"
-                                    Padding="5"
-                                    TextAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
-                                    Text="{Binding ProgressPercent, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DoubleToPercentageConverter}}"
-                                    TextWrapping="WrapWithOverflow"
-                                    Visibility="{Binding ShowProgress, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                            </Grid>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
-    </StackPanel>
+    <materialDesign:Card
+        Margin="5"
+        Padding="5,5,5,15"
+        materialDesign:ElevationAssist.Elevation="Dp6">
+        <StackPanel>
+            <TextBlock
+                Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                Margin="0,10,0,10"
+                Text="Available Sources"
+                HorizontalAlignment="Center" />
+            <DataGrid
+                AutoGenerateColumns="False"
+                CanUserAddRows="False"
+                CanUserDeleteRows="False"
+                CanUserReorderColumns="True"
+                CanUserResizeColumns="True"
+                CanUserResizeRows="True"
+                CanUserSortColumns="True"
+                IsReadOnly="True"
+                ItemsSource="{Binding Sources}"
+                SelectionMode="Single"
+                SelectionUnit="FullRow"
+                Style="{StaticResource MaterialDesignDataGrid}"
+                VerticalScrollBarVisibility="Auto">
+                <DataGrid.Columns>
+                    <DataGridTextColumn CellStyle="{StaticResource CenteredVerticallyColumn}"
+                                        Header="Name"
+                                        Binding="{Binding Name}" />
+                    <DataGridTextColumn CellStyle="{StaticResource CenteredVerticallyColumn}" Header="Updated"
+                                        Binding="{Binding ChangedAt, StringFormat=yyyy-MM-dd HH:mm:ss, TargetNullValue=N/A}" />
+                    <DataGridTextColumn CellStyle="{StaticResource CenteredVerticallyColumn}" Header="Records Count"
+                                        Binding="{Binding TripsCount}" />
+                    <DataGridTemplateColumn Header="Refresh?" HeaderStyle="{StaticResource RefreshHeader}">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Refresh"
+                                        Style="{StaticResource MaterialDesignFlatSecondaryMidBgButton}"
+                                        ToolTip="Refresh available trips data"
+                                        Command="{Binding DataContext.RefreshSourceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding SourceId}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Status">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <ProgressBar
+                                        Grid.Row="0"
+                                        Width="240"
+                                        Height="{Binding ElementName=ProgressBarTextBlock, Path=ActualHeight}"
+                                        MinHeight="25"
+                                        Background="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
+                                        Foreground="{DynamicResource MaterialDesign.Brush.Secondary.Dark}"
+                                        Visibility="{Binding ShowProgress, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                        Value="{Binding ProgressPercent, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBlock
+                                        x:Name="ProgressBarTextBlock"
+                                        Grid.Row="0"
+                                        Width="240"
+                                        MinHeight="20"
+                                        Padding="5"
+                                        TextAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                                        Text="{Binding ProgressPercent, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DoubleToPercentageConverter}}"
+                                        TextWrapping="WrapWithOverflow"
+                                        Visibility="{Binding ShowProgress, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                </Grid>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+    </materialDesign:Card>
 </UserControl>
