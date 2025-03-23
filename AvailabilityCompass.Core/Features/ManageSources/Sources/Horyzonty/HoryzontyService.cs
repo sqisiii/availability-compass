@@ -33,27 +33,27 @@ public sealed class HoryzontyService : ISourceService
 
     public async Task<List<SourceFilter>> GetFilters(CancellationToken ct)
     {
-        List<string> filterFieldNames = ["Country", "Type", "Status"];
+        List<string> filterFieldNames = [SourceAdditionalDataName.Destination, SourceAdditionalDataName.Type, SourceAdditionalDataName.Remarks];
         var options = await _mediator.Send(new GetFilterOptionsQuery(_sourceId, filterFieldNames), ct);
         List<SourceFilter> filters =
         [
             new SourceFilter
             {
-                Label = "Country",
+                Label = SourceAdditionalDataName.Destination,
                 Type = SourceFilterType.MultiSelect,
-                Options = options.FilterOptions.GetValueOrDefault("Country", new List<string>())
+                Options = options.FilterOptions.GetValueOrDefault(SourceAdditionalDataName.Destination, [])
             },
             new SourceFilter
             {
-                Label = "Type",
+                Label = SourceAdditionalDataName.Type,
                 Type = SourceFilterType.MultiSelect,
-                Options = options.FilterOptions.GetValueOrDefault("Type", new List<string>())
+                Options = options.FilterOptions.GetValueOrDefault(SourceAdditionalDataName.Type, [])
             },
             new SourceFilter
             {
-                Label = "Status",
+                Label = SourceAdditionalDataName.Remarks,
                 Type = SourceFilterType.MultiSelect,
-                Options = options.FilterOptions.GetValueOrDefault("Status", new List<string>())
+                Options = options.FilterOptions.GetValueOrDefault(SourceAdditionalDataName.Remarks, [])
             },
         ];
         return filters;
@@ -76,17 +76,27 @@ public sealed class HoryzontyService : ISourceService
             var allTripsDoc = new HtmlDocument();
             allTripsDoc.LoadHtml(html);
 
-            var tripUrls = allTripsDoc.DocumentNode.Descendants("a")
+            var trips = allTripsDoc.DocumentNode.Descendants("a")
                 .Where(node => node.GetAttributeValue("class", "").Contains("product__link"))
-                .Select(node => node.GetAttributeValue("href", ""))
+                .Select(node => new
+                {
+                    Url = node.GetAttributeValue("href", ""),
+                    IsNew = node.Descendants("span")
+                        .Any(span => span.GetAttributeValue("class", "").Contains("product__new"))
+                })
                 .ToList();
 
-            for (var index = 0; index < tripUrls.Count; index++)
+            for (var index = 0; index < trips.Count; index++)
             {
-                var tripUrl = tripUrls[index];
-                (var parsedSourceDataItems, counter) = await ExtractTripDataAsync($"https://www.horyzonty.pl/{tripUrl}", counter, ct);
+                var trip = trips[index];
+                var tripUrl = trip.Url;
+                var isNew = trip.IsNew;
+                (var parsedSourceDataItems, counter) = await ExtractTripDataAsync($"https://www.horyzonty.pl{tripUrl}",
+                    isNew,
+                    counter,
+                    ct);
                 sourceDataItems.AddRange(parsedSourceDataItems);
-                OnRefreshProgressChanged((double)index / tripUrls.Count * 100);
+                OnRefreshProgressChanged((double)index / trips.Count * 100);
             }
         }
         catch (Exception e)
@@ -97,7 +107,7 @@ public sealed class HoryzontyService : ISourceService
         return sourceDataItems;
     }
 
-    private async Task<(IEnumerable<SourceDataItem> trips, int updatedCounter)> ExtractTripDataAsync(string url, int counter, CancellationToken ct)
+    private async Task<(IEnumerable<SourceDataItem> trips, int updatedCounter)> ExtractTripDataAsync(string url, bool isNew, int counter, CancellationToken ct)
     {
         var tours = new List<SourceDataItem>();
 
@@ -111,7 +121,7 @@ public sealed class HoryzontyService : ISourceService
             var title = tripDoc.DocumentNode.Descendants("div")
                 .FirstOrDefault(node => node.GetAttributeValue("class", "").Contains("hero__title"));
 
-            var country = tripDoc.DocumentNode.Descendants("span")
+            var destination = tripDoc.DocumentNode.Descendants("span")
                 .FirstOrDefault(node => node.GetAttributeValue("class", "").Contains("hero__destination"))
                 ?.InnerText;
 
@@ -154,11 +164,12 @@ public sealed class HoryzontyService : ISourceService
                     DateTime.Now,
                     new Dictionary<string, object?>
                     {
-                        { "Type", type },
-                        { "Country", country },
-                        { "Code", code },
-                        { "Status", modificator },
-                        { "Price", price }
+                        { SourceAdditionalDataName.Type, type },
+                        { SourceAdditionalDataName.Destination, destination },
+                        { SourceAdditionalDataName.Code, code },
+                        { SourceAdditionalDataName.Price, price },
+                        { SourceAdditionalDataName.IsNew, isNew ? "New" : null },
+                        { SourceAdditionalDataName.Remarks, modificator }
                     }
                 );
                 tours.Add(tour);
@@ -197,6 +208,6 @@ public sealed class HoryzontyService : ISourceService
     {
         var uri = new Uri(url);
         var segments = uri.Segments;
-        return segments.Length > 2 ? segments[3].Trim('/') : string.Empty;
+        return segments.Length > 2 ? segments[2].Trim('/') : string.Empty;
     }
 }
