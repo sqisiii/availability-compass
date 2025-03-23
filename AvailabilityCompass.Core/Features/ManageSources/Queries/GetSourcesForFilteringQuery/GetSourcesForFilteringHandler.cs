@@ -35,7 +35,7 @@ public class GetSourcesForFilteringHandler : IRequestHandler<
             var sourceService = _serviceProvider.GetKeyedService<ISourceService>(sourceData.Id);
             if (sourceService is null)
             {
-                Log.Error("Failed to get source service for source {SourceId}", sourceData.Id);
+                Log.Debug("Failed to get source service for source {SourceId}", sourceData.Id);
                 continue;
             }
 
@@ -46,7 +46,7 @@ public class GetSourcesForFilteringHandler : IRequestHandler<
             }
             catch (Exception e)
             {
-                Log.Error(e, "Failed to get filter options for source {SourceId}", sourceData.Id);
+                Log.Debug(e, "Failed to get filter options for source {SourceId}", sourceData.Id);
             }
 
             var source = new GetSourcesForFilteringResponse.Source
