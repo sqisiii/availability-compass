@@ -10,6 +10,7 @@ using AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteSingleDat
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateCalendarRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateRecurringDateRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateSingleDateRequest;
+using AvailabilityCompass.Core.Features.ManageCalendars.DatesCalculator;
 using AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetCalendarsQuery;
 using AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetRecurringDatesQuery;
 using AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetSingleDatesQuery;
@@ -24,19 +25,17 @@ namespace AvailabilityCompass.Core.Features.ManageCalendars;
 
 public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewModel, IDisposable
 {
-    private readonly IDisposable _calendarAddedSubscription;
-    private readonly IDisposable _calendarDeletedSubscription;
     private readonly ICalendarDialogViewModelsFactory _calendarDialogViewModelsFactory;
-    private readonly IDisposable _calendarUpdatedSubscription;
     private readonly ICalendarViewModelFactory _calendarViewModelFactory;
     private readonly INavigationService<IDialogViewModel> _dialogNavigationService;
     private readonly IMediator _mediator;
-    private readonly IDisposable _recurringDateAddedSubscription;
-    private readonly IDisposable _recurringDateDeletedSubscription;
-    private readonly IDisposable _recurringDateUpdatedSubscription;
-    private readonly IDisposable _singleDateAddedSubscription;
-    private readonly IDisposable _singleDateDeletedSubscription;
-    private readonly IDisposable _singleDateUpdatedSubscription;
+    private readonly IReservedDatesCalculator _reservedDatesCalculator;
+    private IDisposable? _calendarAddedSubscription;
+    private IDisposable? _calendarDeletedSubscription;
+    private IDisposable? _calendarUpdatedSubscription;
+    private IDisposable? _recurringDateAddedSubscription;
+    private IDisposable? _recurringDateDeletedSubscription;
+    private IDisposable? _recurringDateUpdatedSubscription;
 
     [NotifyPropertyChangedFor(nameof(IsCalendarSelected))]
     [NotifyPropertyChangedFor(nameof(CalendarName))]
@@ -44,19 +43,68 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     [ObservableProperty]
     private CalendarViewModel? _selectedCalendar;
 
+    private IDisposable? _singleDateAddedSubscription;
+    private IDisposable? _singleDateDeletedSubscription;
+    private IDisposable? _singleDateUpdatedSubscription;
+
     public ManageCalendarsViewModel(
         IMediator mediator,
         IEventBus eventBus,
         INavigationService<IDialogViewModel> dialogNavigationService,
         ICalendarViewModelFactory calendarViewModelFactory,
+        IReservedDatesCalculator reservedDatesCalculator,
         ICalendarDialogViewModelsFactory calendarDialogViewModelsFactory)
     {
         _mediator = mediator;
         _dialogNavigationService = dialogNavigationService;
         _calendarViewModelFactory = calendarViewModelFactory;
+        _reservedDatesCalculator = reservedDatesCalculator;
         _calendarDialogViewModelsFactory = calendarDialogViewModelsFactory;
         Calendars.CollectionChanged += CalendarsOnCollectionChanged;
 
+        SubscribeToEvents(eventBus);
+    }
+
+    public string CalendarName => SelectedCalendar?.Name ?? string.Empty;
+
+    public bool IsCalendarSelected => SelectedCalendar is not null;
+
+    public bool CalendarIsOnly => SelectedCalendar?.IsOnly ?? false;
+
+    public FullyObservableCollection<CalendarViewModel> Calendars { get; } = [];
+
+    public ObservableCollection<RecurringDateViewModel> RecurringDates { get; } = [];
+
+    public ObservableCollection<CategorizedDate> ReservedDates { get; set; } = [];
+    public ObservableCollection<SingleDateViewModel> SingleDates { get; } = [];
+
+
+    public Guid SelectedCalendarId => SelectedCalendar?.CalendarId ?? Guid.Empty;
+
+    public void Dispose()
+    {
+        _calendarAddedSubscription?.Dispose();
+        _calendarDeletedSubscription?.Dispose();
+        _calendarUpdatedSubscription?.Dispose();
+        _singleDateAddedSubscription?.Dispose();
+        _singleDateUpdatedSubscription?.Dispose();
+        _singleDateDeletedSubscription?.Dispose();
+        _recurringDateAddedSubscription?.Dispose();
+        _recurringDateUpdatedSubscription?.Dispose();
+        _recurringDateDeletedSubscription?.Dispose();
+    }
+
+    public bool IsActive { get; set; }
+    public string Icon => "CalendarClock";
+    public string Name => "Calendars";
+
+    public async Task LoadDataAsync(CancellationToken ct)
+    {
+        await LoadCalendars(ct);
+    }
+
+    private void SubscribeToEvents(IEventBus eventBus)
+    {
         _calendarAddedSubscription = eventBus.Listen<CalendarAddedEvent>()
             .SelectMany(_ => Observable.FromAsync(OnCalendarAdded))
             .Subscribe();
@@ -86,42 +134,25 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
             .Subscribe();
     }
 
-    public string CalendarName => SelectedCalendar?.Name ?? string.Empty;
-
-    public bool IsCalendarSelected => SelectedCalendar is not null;
-
-    public bool CalendarIsOnly => SelectedCalendar?.IsOnly ?? false;
-
-    public FullyObservableCollection<CalendarViewModel> Calendars { get; } = [];
-
-    public ObservableCollection<RecurringDateViewModel> RecurringDates { get; } = [];
-
-    public ObservableCollection<CategorizedDate> ReservedDates { get; set; } = [];
-    public ObservableCollection<SingleDateViewModel> SingleDates { get; } = [];
-
-
-    public Guid SelectedCalendarId => SelectedCalendar?.CalendarId ?? Guid.Empty;
-
-    public void Dispose()
-    {
-        _calendarAddedSubscription.Dispose();
-        _calendarDeletedSubscription.Dispose();
-        _calendarUpdatedSubscription.Dispose();
-        _singleDateAddedSubscription.Dispose();
-        _singleDateUpdatedSubscription.Dispose();
-        _singleDateDeletedSubscription.Dispose();
-        _recurringDateAddedSubscription.Dispose();
-        _recurringDateUpdatedSubscription.Dispose();
-        _recurringDateDeletedSubscription.Dispose();
-    }
-
-    public bool IsActive { get; set; }
-    public string Icon => "CalendarClock";
-    public string Name => "Calendars";
-
-    public async Task LoadDataAsync(CancellationToken ct)
+    private async Task OnCalendarAdded(CancellationToken ct)
     {
         await LoadCalendars(ct);
+    }
+
+    private async Task OnCalendarDeleted(CancellationToken ct)
+    {
+        await LoadCalendars(ct);
+    }
+
+    private async Task OnCalendarUpdated(CancellationToken ct)
+    {
+        await LoadCalendars(ct);
+    }
+
+    private async Task OnRecurringDateAdded(RecurringDateAddedEvent evt, CancellationToken ct)
+    {
+        await RefreshRecurringDatesAsync(evt.CalendarId, ct);
+        CalculateReservedDays();
     }
 
     private async Task OnRecurringDateDeleted(RecurringDateDeletedEvent evt, CancellationToken ct)
@@ -148,19 +179,9 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
         CalculateReservedDays();
     }
 
-    private async Task OnCalendarDeleted(CancellationToken ct)
+    private async Task OnSingleDateAdded(SingleDateAddedEvent evt, CancellationToken ct)
     {
-        await LoadCalendars(ct);
-    }
-
-    private async Task OnCalendarUpdated(CancellationToken ct)
-    {
-        await LoadCalendars(ct);
-    }
-
-    private async Task OnRecurringDateAdded(RecurringDateAddedEvent evt, CancellationToken ct)
-    {
-        await RefreshRecurringDatesAsync(evt.CalendarId, ct);
+        await RefreshSingleDatesAsync(evt.CalendarId, ct);
         CalculateReservedDays();
     }
 
@@ -180,12 +201,6 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
         }
     }
 
-    private async Task OnSingleDateAdded(SingleDateAddedEvent evt, CancellationToken ct)
-    {
-        await RefreshSingleDatesAsync(evt.CalendarId, ct);
-        CalculateReservedDays();
-    }
-
     private async Task RefreshSingleDatesAsync(Guid calendarId, CancellationToken ct)
     {
         var response = await _mediator.Send(new GetSingleDatesQuery(calendarId), ct);
@@ -200,11 +215,6 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
                 SelectedCalendar?.SingleDates.Add(singleDateViewModel);
             }
         }
-    }
-
-    private async Task OnCalendarAdded(CancellationToken ct)
-    {
-        await LoadCalendars(ct);
     }
 
     private void CalendarsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -258,49 +268,17 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     private void CalculateReservedDays()
     {
         ReservedDates.Clear();
-        if (SelectedCalendar is null)
+        var reservedDates = _reservedDatesCalculator.GetReservedCategorizedDays(SelectedCalendar);
+        foreach (var reservedDate in reservedDates)
         {
-            return;
+            ReservedDates.Add(reservedDate);
         }
+    }
 
-        foreach (var singleDate in SelectedCalendar.SingleDates)
-        {
-            if (singleDate.Date is null)
-            {
-                continue;
-            }
-
-            ReservedDates.Add(new CategorizedDate(singleDate.Date.Value.ToDateTime(TimeOnly.MinValue), CategorizedDateCategory.SingleDate, singleDate.Description));
-        }
-
-        foreach (var recurringDate in SelectedCalendar.RecurringDates)
-        {
-            if (recurringDate.StartDate is null)
-            {
-                continue;
-            }
-
-            const int dateRelatedDefaultValue = 1;
-            var currentDate = recurringDate.StartDate;
-            var numberOfRepetitions = recurringDate.NumberOfRepetitions ?? dateRelatedDefaultValue;
-            for (var i = 0; i < numberOfRepetitions; i++)
-            {
-                var durationDate = currentDate;
-                var duration = recurringDate?.Duration ?? dateRelatedDefaultValue;
-                for (var j = 0; j < duration; j++)
-                {
-                    ReservedDates.Add(
-                        new CategorizedDate(
-                            durationDate.Value.ToDateTime(TimeOnly.MinValue),
-                            CategorizedDateCategory.RecurringDate,
-                            recurringDate?.Description ?? string.Empty));
-
-                    durationDate = durationDate.Value.AddDays(1);
-                }
-
-                currentDate = currentDate.Value.AddDays(recurringDate?.RepetitionPeriod ?? dateRelatedDefaultValue);
-            }
-        }
+    [RelayCommand]
+    private void OnAddCalendar()
+    {
+        _dialogNavigationService.NavigateTo(_calendarDialogViewModelsFactory.CreateAddCalendarViewModel());
     }
 
     [RelayCommand]
@@ -330,31 +308,17 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     }
 
     [RelayCommand]
-    private void OnDeleteSingleDate(Guid singleDateId)
+    private void OnAddRecurringDate()
     {
-        var singleDateViewModel = SelectedCalendar?.SingleDates.FirstOrDefault(x => x.SingleDateId == singleDateId);
-        if (singleDateViewModel is null)
+        var calendarId = Calendars.FirstOrDefault(x => x.IsSelected)?.CalendarId;
+        if (calendarId is null)
         {
             return;
         }
 
-        var deleteSingleDateViewModel = _calendarDialogViewModelsFactory.CreateDeleteSingleDateViewModel();
-        deleteSingleDateViewModel.LoadData(singleDateViewModel);
-        _dialogNavigationService.NavigateTo(deleteSingleDateViewModel);
-    }
-
-    [RelayCommand]
-    private void OnEditSingleDate(Guid singleDateId)
-    {
-        var singleDateViewModel = SelectedCalendar?.SingleDates.FirstOrDefault(x => x.SingleDateId == singleDateId);
-        if (singleDateViewModel is null)
-        {
-            return;
-        }
-
-        var updateSingleDateViewModel = _calendarDialogViewModelsFactory.CreateUpdateSingleDateViewModel();
-        updateSingleDateViewModel.LoadData(singleDateViewModel);
-        _dialogNavigationService.NavigateTo(updateSingleDateViewModel);
+        var viewModel = _calendarDialogViewModelsFactory.CreateAddRecurringDateViewModel();
+        viewModel.LoadData(calendarId.Value);
+        _dialogNavigationService.NavigateTo(viewModel);
     }
 
     [RelayCommand]
@@ -386,26 +350,6 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     }
 
     [RelayCommand]
-    private void OnAddCalendar()
-    {
-        _dialogNavigationService.NavigateTo(_calendarDialogViewModelsFactory.CreateAddCalendarViewModel());
-    }
-
-    [RelayCommand]
-    private void OnAddRecurringDate()
-    {
-        var calendarId = Calendars.FirstOrDefault(x => x.IsSelected)?.CalendarId;
-        if (calendarId is null)
-        {
-            return;
-        }
-
-        var viewModel = _calendarDialogViewModelsFactory.CreateAddRecurringDateViewModel();
-        viewModel.LoadData(calendarId.Value);
-        _dialogNavigationService.NavigateTo(viewModel);
-    }
-
-    [RelayCommand]
     private void OnAddSingleDate()
     {
         var calendarId = Calendars.FirstOrDefault(x => x.IsSelected)?.CalendarId;
@@ -417,5 +361,33 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
         var viewModel = _calendarDialogViewModelsFactory.CreateAddSingleDateViewModel();
         viewModel.LoadData(calendarId.Value);
         _dialogNavigationService.NavigateTo(viewModel);
+    }
+
+    [RelayCommand]
+    private void OnDeleteSingleDate(Guid singleDateId)
+    {
+        var singleDateViewModel = SelectedCalendar?.SingleDates.FirstOrDefault(x => x.SingleDateId == singleDateId);
+        if (singleDateViewModel is null)
+        {
+            return;
+        }
+
+        var deleteSingleDateViewModel = _calendarDialogViewModelsFactory.CreateDeleteSingleDateViewModel();
+        deleteSingleDateViewModel.LoadData(singleDateViewModel);
+        _dialogNavigationService.NavigateTo(deleteSingleDateViewModel);
+    }
+
+    [RelayCommand]
+    private void OnEditSingleDate(Guid singleDateId)
+    {
+        var singleDateViewModel = SelectedCalendar?.SingleDates.FirstOrDefault(x => x.SingleDateId == singleDateId);
+        if (singleDateViewModel is null)
+        {
+            return;
+        }
+
+        var updateSingleDateViewModel = _calendarDialogViewModelsFactory.CreateUpdateSingleDateViewModel();
+        updateSingleDateViewModel.LoadData(singleDateViewModel);
+        _dialogNavigationService.NavigateTo(updateSingleDateViewModel);
     }
 }

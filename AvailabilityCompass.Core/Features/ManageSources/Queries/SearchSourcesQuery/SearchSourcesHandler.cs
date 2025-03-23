@@ -136,6 +136,24 @@ public class SearchSourcesHandler : IRequestHandler<SearchRecords.Queries.Search
                         }
                 }
 
+                // Exclude entries where any reserved date falls between StartDate and EndDate
+                if (query.ReservedDates.Count > 0)
+                {
+                    sqlBuilder.Append(" AND NOT EXISTS (");
+                    sqlBuilder.Append("SELECT 1 FROM (");
+
+                    for (var i = 0; i < query.ReservedDates.Count; i++)
+                    {
+                        if (i > 0)
+                            sqlBuilder.Append(" UNION ALL ");
+
+                        sqlBuilder.Append($"SELECT @resDate{i} AS reserved_date");
+                        parameters.Add($"resDate{i}", query.ReservedDates[i].ToString("yyyy-MM-dd"));
+                    }
+
+                    sqlBuilder.Append(") AS temp_dates WHERE ");
+                    sqlBuilder.Append("temp_dates.reserved_date BETWEEN s.StartDate AND s.EndDate)");
+                }
                 // Add pagination
                 // sqlBuilder.Append(" ORDER BY s.SourceId, s.SeqNo")
                 //     .Append($" LIMIT {query.PageSize} OFFSET {(query.PageNumber - 1) * query.PageSize}");

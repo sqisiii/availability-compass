@@ -1,4 +1,5 @@
 ﻿using AvailabilityCompass.Core.Features.ManageCalendars;
+using AvailabilityCompass.Core.Features.ManageCalendars.DatesCalculator;
 using AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;
 using AvailabilityCompass.Core.Features.SearchRecords;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,7 @@ public static class CalendarExtensions
         services.AddAbstractFactory<AddSingleDateViewModel>();
         services.AddAbstractFactory<UpdateSingleDateViewModel>();
         services.AddAbstractFactory<DeleteSingleDateViewModel>();
+        services.AddSingleton<IReservedDatesCalculator, ReservedDatesCalculator>();
         services.AddSingleton<ICalendarDialogViewModelsFactory, CalendarDialogViewModelsFactory>();
 
         return services;

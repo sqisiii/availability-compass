@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarRequest;
 using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
+using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetAvailableDates;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetCalendars;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetSources;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.SearchSources;
@@ -62,7 +63,6 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
         _sourceFilterViewModelFactory = sourceFilterViewModelFactory;
         _calendarFilterViewModelFactory = calendarFilterViewModelFactory;
         _formElementFactory = formElementFactory;
-        Calendars.CollectionChanged += CalendarsOnCollectionChanged;
         Sources.CollectionChanged += SourcesOnCollectionChanged;
 
         _calendarAddedSubscription = eventBus.Listen<CalendarAddedEvent>()
@@ -83,7 +83,6 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
 
     public void Dispose()
     {
-        Calendars.CollectionChanged -= CalendarsOnCollectionChanged;
         Sources.CollectionChanged -= SourcesOnCollectionChanged;
         _calendarAddedSubscription.Dispose();
     }
@@ -129,10 +128,14 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
             return;
         }
 
+        var selectedCalendars = Calendars.Where(c => c.IsSelected).Select(c => c.Id).ToList();
+        var availableDatesResponse = await _mediator.Send(new GetAvailableDatesQuery(selectedCalendars));
+
         var query = new SearchSourcesQuery
         {
             PageNumber = 1,
-            PageSize = 20
+            PageSize = 20,
+            ReservedDates = availableDatesResponse.ReservedDates
         };
         foreach (var source in Sources.Where(s => s.IsSelected))
         {
@@ -220,11 +223,6 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     private void OnUpdateColumns()
     {
         _columnSubject.OnNext(Columns.ToList());
-    }
-
-    private void CalendarsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        ;
     }
 
     private void SourcesOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
