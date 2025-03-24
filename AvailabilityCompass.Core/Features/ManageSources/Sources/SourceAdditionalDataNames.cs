@@ -1,5 +1,9 @@
 ﻿namespace AvailabilityCompass.Core.Features.ManageSources.Sources;
 
+/// <summary>
+/// Defines constant string values used as keys for additional data associated with sources.
+/// The values are used as headers of result.
+/// </summary>
 public static class SourceAdditionalDataName
 {
     public const string Type = "Type";
