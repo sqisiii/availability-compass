@@ -9,5 +9,5 @@ public class DeleteCalendarFromDbRequest : IRequest<DeleteCalendarFromDbResponse
         CalendarId = calendarId;
     }
 
-    public Guid CalendarId { get; set; }
+    public Guid CalendarId { get; }
 }

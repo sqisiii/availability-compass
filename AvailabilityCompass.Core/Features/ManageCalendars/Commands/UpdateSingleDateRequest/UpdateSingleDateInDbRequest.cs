@@ -12,8 +12,8 @@ public class UpdateSingleDateInDbRequest : IRequest<UpdateSingleDateInDbResponse
         SingleDateId = singleDateId;
     }
 
-    public Guid CalendarId { get; set; }
-    public string Description { get; set; }
-    public DateOnly Date { get; set; }
-    public Guid SingleDateId { get; set; }
+    public Guid CalendarId { get; }
+    public string Description { get; }
+    public DateOnly Date { get; }
+    public Guid SingleDateId { get; }
 }

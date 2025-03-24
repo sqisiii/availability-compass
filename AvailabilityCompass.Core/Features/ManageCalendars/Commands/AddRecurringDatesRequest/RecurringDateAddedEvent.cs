@@ -7,5 +7,5 @@ public class RecurringDateAddedEvent
         CalendarId = calendarId;
     }
 
-    public Guid CalendarId { get; set; }
+    public Guid CalendarId { get; }
 }

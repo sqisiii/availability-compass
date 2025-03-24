@@ -10,6 +10,6 @@ public class DeleteSingleDateFromDbRequest : IRequest<DeleteSingleDateFromDbResp
         SingleDateId = singleDateId;
     }
 
-    public Guid CalendarId { get; set; }
-    public Guid SingleDateId { get; set; }
+    public Guid CalendarId { get; }
+    public Guid SingleDateId { get; }
 }

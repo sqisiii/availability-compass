@@ -15,11 +15,11 @@ public class UpdateRecurringDateInDbRequest : IRequest<UpdateRecurringDateInDbRe
         NumberOfRepetitions = numberOfRepetitions;
     }
 
-    public Guid CalendarId { get; set; }
-    public Guid RecurringDateId { get; set; }
-    public DateOnly StartDate { get; set; }
-    public int Duration { get; set; }
-    public string Description { get; set; }
-    public int RepetitionPeriod { get; set; }
-    public int NumberOfRepetitions { get; set; }
+    public Guid CalendarId { get; }
+    public Guid RecurringDateId { get; }
+    public DateOnly StartDate { get; }
+    public int Duration { get; }
+    public string Description { get; }
+    public int RepetitionPeriod { get; }
+    public int NumberOfRepetitions { get; }
 }
