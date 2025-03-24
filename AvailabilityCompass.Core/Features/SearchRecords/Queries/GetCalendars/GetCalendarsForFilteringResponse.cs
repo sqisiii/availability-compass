@@ -10,7 +10,7 @@ public class GetCalendarsForFilteringResponse
         Calendars = calendars;
     }
 
-    public List<CalendarDto> Calendars { get; init; }
+    public List<CalendarDto> Calendars { get; }
 
     public class CalendarDto
     {
