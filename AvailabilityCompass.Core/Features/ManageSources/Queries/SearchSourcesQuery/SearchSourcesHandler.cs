@@ -7,6 +7,14 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Queries.SearchSourcesQuery;
 
+/// <summary>
+/// Handles the search for data from sources
+/// </summary>
+/// <remarks>
+/// This handler processes search requests for sources, applying filters on both direct source properties
+/// and additional data associated with sources. It supports date range filtering and text search functionality.
+/// The request and response classes are defined in a different class. See <see cref="SearchSourcesQuery"/> and <see cref="SearchSourcesResponse"/>.
+/// </remarks>
 public class SearchSourcesHandler : IRequestHandler<SearchRecords.Queries.SearchSources.SearchSourcesQuery, SearchSourcesResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;
