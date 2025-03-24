@@ -25,11 +25,12 @@ public class AddRecurringDateViewModel : BaseDialogCrudViewModel<RecurringDateVi
 
     protected override async Task<IProcessResult> ProcessDataAsync(CancellationToken ct)
     {
+        const int defaultRecurringDateValue = 1;
         return await _mediator.Send(new AddRecurringDatesToDbRequest(SelectedItem.CalendarId,
             SelectedItem.Description,
             DateOnly.Parse(SelectedItem.StartDateString ?? string.Empty),
-            SelectedItem.Duration ?? 1,
-            SelectedItem.RepetitionPeriod ?? 1,
-            SelectedItem.NumberOfRepetitions ?? 1), ct);
+            SelectedItem.Duration ?? defaultRecurringDateValue,
+            SelectedItem.RepetitionPeriod ?? defaultRecurringDateValue,
+            SelectedItem.NumberOfRepetitions ?? defaultRecurringDateValue), ct);
     }
 }
