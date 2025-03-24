@@ -6,6 +6,13 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetCalendersForFilteringQuery;
 
+/// <summary>
+/// Handles the request to retrieve calendars for filtering purposes.
+/// </summary>
+/// <remarks>
+/// This handler fetches calendar information from the database and returns it in a structured format.
+/// The request and response are defined in different feature: <see cref="GetCalendarsForFilteringQuery"/> and <see cref="GetCalendarsForFilteringResponse"/>.
+/// </remarks>
 public class GetCalendarsForFilteringHandler : IRequestHandler<GetCalendarsForFilteringQuery, GetCalendarsForFilteringResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;
