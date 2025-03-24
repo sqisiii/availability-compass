@@ -1,5 +1,13 @@
 ﻿namespace AvailabilityCompass.Core.Features.ManageSources.Sources;
 
+/// <summary>
+/// Attribute used to define metadata for source services.
+/// Applied to classes that implement source service functionality.
+/// </summary>
+/// <remarks>
+/// It is required to apply this attribute to all classes that implement <see cref="ISourceService"/>
+/// It is required for reflection-based discovery of source services.
+/// </remarks>
 [AttributeUsage(AttributeTargets.Class)]
 public class SourceServiceAttribute : Attribute
 {
