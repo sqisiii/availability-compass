@@ -25,7 +25,7 @@ public class GetFilterOptionsHandler : IRequestHandler<GetFilterOptionsQuery, Ge
 
             foreach (var fieldName in query.FieldNames)
             {
-                var sql = $@"
+                const string sql = $@"
                         SELECT DISTINCT Value 
                         FROM SourceAdditionalData
                     WHERE SourceId = @SourceId and Key = @Key";
