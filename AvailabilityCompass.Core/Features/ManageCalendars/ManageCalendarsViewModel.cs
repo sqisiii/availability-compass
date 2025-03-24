@@ -23,6 +23,10 @@ using MediatR;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars;
 
+/// <summary>
+/// ViewModel for managing calendars, including single and recurring dates.
+/// Handles calendar selection, loading, and CRUD operations.
+/// </summary>
 public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewModel, IDisposable
 {
     private readonly ICalendarDialogViewModelsFactory _calendarDialogViewModelsFactory;
