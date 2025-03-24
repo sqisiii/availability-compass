@@ -5,6 +5,7 @@ using MediatR;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class DeleteRecurringDateViewModel : BaseDialogCrudViewModel<RecurringDateViewModel>
 {
     private readonly IMediator _mediator;

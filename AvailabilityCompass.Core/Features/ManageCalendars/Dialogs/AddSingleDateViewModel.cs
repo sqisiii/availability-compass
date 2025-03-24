@@ -5,6 +5,7 @@ using MediatR;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class AddSingleDateViewModel : BaseDialogCrudViewModel<SingleDateViewModel>
 {
     private readonly IMediator _mediator;
