@@ -33,7 +33,7 @@ public class GetSingleDatesHandler : IRequestHandler<GetSingleDatesQuery, GetSin
         catch (Exception ex)
         {
             Log.Error(ex, "Error while getting single dates");
-            return new GetSingleDatesResponse(new List<SingleDateDto>(), false);
+            return new GetSingleDatesResponse([], false);
         }
     }
 }
