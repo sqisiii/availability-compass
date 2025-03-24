@@ -9,5 +9,5 @@ public class GetCalendarsResponse
     }
 
     public bool IsSuccess { get; init; }
-    public List<CalendarDto>? Calendars { get; set; }
+    public List<CalendarDto>? Calendars { get; }
 }
