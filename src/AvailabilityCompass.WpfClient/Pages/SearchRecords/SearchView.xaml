@@ -17,6 +17,7 @@
     <UserControl.Resources>
         <converters:FormGroupVisibilityConverter x:Key="VisibilityConverter" />
         <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <!-- ReSharper disable once Xaml.RedundantResource -->
         <DataTemplate x:Key="UrlCellTemplate">
             <TextBlock>
@@ -79,7 +80,11 @@
 
                 <!-- Sources section -->
                 <TextBlock Margin="0,10,0,0" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Sources" />
-                <WrapPanel Margin="0,10,0,0" Orientation="Horizontal">
+                <TextBlock Margin="0,10,0,0"
+                           Text="No sources available. Go to 'Sources' to gather data."
+                           Visibility="{Binding SourcesUnAvailable, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <WrapPanel Margin="0,10,0,0" Orientation="Horizontal"
+                           Visibility="{Binding SourcesAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <ListBox ItemsSource="{Binding Sources}">
                         <ListBox.ItemContainerStyle>
                             <!--  Style to get rid of the selection visual  -->
