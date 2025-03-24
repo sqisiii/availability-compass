@@ -1,5 +1,12 @@
 ﻿namespace AvailabilityCompass.Core.Features.ManageCalendars;
 
+/// <summary>
+/// Represents a date with an associated category and explanatory tooltip.
+/// </summary>
+/// <remarks>
+/// This class is used to categorize dates for calendar management features,
+/// allowing dates to be classified as single, recurring, or inverted.
+/// </remarks>
 public class CategorizedDate
 {
     public CategorizedDate(DateTime date, CategorizedDateCategory category, string tooltip)
@@ -9,9 +16,9 @@ public class CategorizedDate
         Tooltip = tooltip;
     }
 
-    public DateTime Date { get; set; }
-    public CategorizedDateCategory Category { get; set; }
-    public string Tooltip { get; set; }
+    public DateTime Date { get; }
+    public CategorizedDateCategory Category { get; }
+    public string Tooltip { get; }
 }
 
 public enum CategorizedDateCategory
