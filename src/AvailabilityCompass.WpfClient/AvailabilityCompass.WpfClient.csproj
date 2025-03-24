@@ -8,22 +8,23 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <UseWPF>true</UseWPF>
         <PublishSingleFile>true</PublishSingleFile>
+        <Platforms>AnyCPU;x64</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0"/>
-        <PackageReference Include="MaterialDesignThemes" Version="5.2.1"/>
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.2"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.2"/>
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.2"/>
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.2"/>
-        <PackageReference Include="Serilog" Version="4.2.0"/>
-        <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0"/>
-        <PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0"/>
-        <PackageReference Include="Serilog.Sinks.File" Version="6.0.0"/>
-        <PackageReference Include="Serilog.Sinks.Map" Version="2.0.0"/>
-        <PackageReference Include="System.Reactive" Version="6.0.1"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+        <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.2" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.2" />
+        <PackageReference Include="Serilog" Version="4.2.0" />
+        <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
+        <PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0" />
+        <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+        <PackageReference Include="Serilog.Sinks.Map" Version="2.0.0" />
+        <PackageReference Include="System.Reactive" Version="6.0.1" />
     </ItemGroup>
 
     <ItemGroup>
@@ -51,24 +52,24 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\AvailabilityCompass.Core\AvailabilityCompass.Core.csproj"/>
+        <ProjectReference Include="..\AvailabilityCompass.Core\AvailabilityCompass.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Images\"/>
+        <Folder Include="Images\" />
     </ItemGroup>
 
     <PropertyGroup>
         <ApplicationIcon>Images\logo.ico</ApplicationIcon>
     </PropertyGroup>
     <ItemGroup>
-        <None Remove="Images\logo.ico"/>
+        <None Remove="Images\logo.ico" />
         <Resource Include="Images\logo.ico">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Resource>
-        <None Remove="Images\logo.jpg"/>
-        <None Remove="Images\logo.png"/>
-        <Resource Include="Images\logo.png"/>
+        <None Remove="Images\logo.jpg" />
+        <None Remove="Images\logo.png" />
+        <Resource Include="Images\logo.png" />
     </ItemGroup>
 
 </Project>
