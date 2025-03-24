@@ -37,7 +37,7 @@ public class ReplaceSourceDataInDbHandler : IRequestHandler<ReplaceSourceDataInD
             if (sourceIds.Count == 0)
             {
                 Log.Warning("There are no sources to insert");
-                return false; // No sources to insert
+                return false;
             }
 
             const string deleteSourceSql = @"DELETE FROM Source WHERE SourceId IN @SourceIds;";
@@ -95,13 +95,12 @@ public class ReplaceSourceDataInDbHandler : IRequestHandler<ReplaceSourceDataInD
 
             transaction.Commit();
             _eventBus.Publish(new SourcesDataChangedEvent());
+            return true;
         }
         catch (Exception e)
         {
             Log.Error(e, "Failed to add sources");
             return false;
         }
-
-        return true;
     }
 }
