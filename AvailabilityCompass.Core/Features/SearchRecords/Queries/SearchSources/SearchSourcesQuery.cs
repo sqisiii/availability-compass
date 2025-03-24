@@ -4,11 +4,7 @@ namespace AvailabilityCompass.Core.Features.SearchRecords.Queries.SearchSources;
 
 public class SearchSourcesQuery : IRequest<SearchSourcesResponse>
 {
-    public int PageNumber { get; set; } = 1;
-
-    public int PageSize { get; set; } = 20;
-
-    public List<DateOnly> ReservedDates { get; set; } = [];
+    public List<DateOnly> ReservedDates { get; init; } = [];
 
     public List<Source> Sources { get; } = [];
 

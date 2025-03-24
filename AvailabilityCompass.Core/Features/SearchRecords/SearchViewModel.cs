@@ -145,8 +145,6 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
 
         var query = new SearchSourcesQuery
         {
-            PageNumber = 1,
-            PageSize = 20,
             ReservedDates = availableDatesResponse.ReservedDates
         };
         foreach (var source in Sources.Where(s => s.IsSelected))

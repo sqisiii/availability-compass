@@ -168,10 +168,6 @@ public class SearchSourcesHandler : IRequestHandler<SearchRecords.Queries.Search
                         .Append("reserved_dates.date BETWEEN s.StartDate AND s.EndDate)");
                 }
 
-                // Add pagination
-                // sqlBuilder.Append(" ORDER BY s.SourceId, s.SeqNo")
-                //     .Append($" LIMIT {query.PageSize} OFFSET {(query.PageNumber - 1) * query.PageSize}");
-
                 sqlBuilder.Append(" ORDER BY s.StartDate");
                 var sql = sqlBuilder.ToString();
 
