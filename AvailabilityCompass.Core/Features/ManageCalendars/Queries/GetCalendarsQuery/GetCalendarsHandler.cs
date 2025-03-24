@@ -53,7 +53,7 @@ public class GetCalendarsHandler : IRequestHandler<GetCalendarsQuery, GetCalenda
 
                     return calendarEntry;
                 },
-                splitOn: "SingleDateId,RecurringDateId");
+                splitOn: "SingleDateId,RecurringDateId").ConfigureAwait(false);
 
             return new GetCalendarsResponse(calendarDict.Values.ToList(), true);
         }

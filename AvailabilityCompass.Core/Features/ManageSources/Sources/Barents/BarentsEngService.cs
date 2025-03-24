@@ -151,7 +151,7 @@ public class BarentsEngService : ISourceService
 
         try
         {
-            var html = await _httpClient.GetStringAsync(url, ct);
+            var html = await _httpClient.GetStringAsync(url, ct).ConfigureAwait(false);
 
             var tripDoc = new HtmlDocument();
             tripDoc.LoadHtml(html);

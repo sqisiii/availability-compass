@@ -30,7 +30,7 @@ public class UpdateSingleDateInDbHandler : IRequestHandler<UpdateSingleDateInDbR
             await connection.ExecuteAsync(
                 "UPDATE SingleDate SET Description = @Description, Date = @Date, ChangeDate = @ChangeDate WHERE Id = @SingleDateId AND CalendarId = @CalendarId",
                 new { request.SingleDateId, request.CalendarId, request.Date, request.Description, ChangeDate = changeDate }
-            );
+            ).ConfigureAwait(false);
 
             _eventBus.Publish(new SingleDateUpdatedEvent(request.CalendarId));
             return new UpdateSingleDateInDbResponse(true);

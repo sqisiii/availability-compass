@@ -26,7 +26,7 @@ public class GetRecurringDatesHandler : IRequestHandler<GetRecurringDatesQuery, 
                         FROM RecurringDate rd
                         WHERE rd.CalendarId = @Id";
 
-            var recurringDates = await connection.QueryAsync<RecurringDateDto>(sql, new { Id = request.CalendarId });
+            var recurringDates = await connection.QueryAsync<RecurringDateDto>(sql, new { Id = request.CalendarId }).ConfigureAwait(false);
 
             return new GetRecurringDatesResponse(recurringDates.ToList(), true);
         }

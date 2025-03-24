@@ -90,7 +90,7 @@ public class GetSourcesForFilteringHandler : IRequestHandler<
                         FROM Source
                         GROUP BY SourceId;";
 
-            return await connection.QueryAsync<(string SourceId, DateTime ChangedAt)>(query);
+            return await connection.QueryAsync<(string SourceId, DateTime ChangedAt)>(query).ConfigureAwait(false);
         }
         catch (Exception e)
         {

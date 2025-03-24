@@ -34,7 +34,7 @@ public class GetSourcesMetaDataFromDbHandler : IRequestHandler<GetSourcesMetaDat
                         FROM Source
                         GROUP BY SourceId;";
 
-            return await connection.QueryAsync<GetSourcesMetaDataFromDbDto>(query);
+            return await connection.QueryAsync<GetSourcesMetaDataFromDbDto>(query).ConfigureAwait(false);
         }
         catch (Exception e)
         {

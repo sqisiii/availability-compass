@@ -26,7 +26,7 @@ public class GetCalendarsForFilteringHandler : IRequestHandler<GetCalendarsForFi
                         SELECT c.CalendarId as Id , c.Name, c.IsOnly, c.ChangeDate
                         FROM Calendar c";
 
-            var calendars = await connection.QueryAsync<GetCalendarsForFilteringResponse.CalendarDto>(sql);
+            var calendars = await connection.QueryAsync<GetCalendarsForFilteringResponse.CalendarDto>(sql).ConfigureAwait(false);
             return new GetCalendarsForFilteringResponse(calendars.ToList(), true);
         }
         catch (Exception ex)

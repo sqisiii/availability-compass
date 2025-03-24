@@ -42,7 +42,7 @@ public class UpdateRecurringDateInDbHandler : IRequestHandler<UpdateRecurringDat
                     request.Description,
                     ChangeDate = changeDate
                 }
-            );
+            ).ConfigureAwait(false);
 
             _eventBus.Publish(new RecurringDateUpdatedEvent(request.CalendarId));
             return new UpdateRecurringDateInDbResponse(true);

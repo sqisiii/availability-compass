@@ -30,7 +30,7 @@ public class GetFilterOptionsHandler : IRequestHandler<GetFilterOptionsQuery, Ge
                         FROM SourceAdditionalData
                     WHERE SourceId = @SourceId and Key = @Key";
                 var parameters = new { SourceId = query.SourceId, Key = fieldName };
-                var values = await connection.QueryAsync<string>(sql, parameters);
+                var values = await connection.QueryAsync<string>(sql, parameters).ConfigureAwait(false);
                 filterOptions[fieldName] = values.OrderBy(x => x).ToList();
             }
 

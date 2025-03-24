@@ -26,7 +26,7 @@ public class GetSingleDatesHandler : IRequestHandler<GetSingleDatesQuery, GetSin
             FROM SingleDate sd
             WHERE sd.CalendarId = @Id";
 
-            var singleDates = await connection.QueryAsync<SingleDateDto>(sql, new { Id = request.CalendarId });
+            var singleDates = await connection.QueryAsync<SingleDateDto>(sql, new { Id = request.CalendarId }).ConfigureAwait(false);
 
             return new GetSingleDatesResponse(singleDates.ToList(), true);
         }

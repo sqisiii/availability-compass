@@ -29,7 +29,7 @@ public class UpdateCalendarInDbHandler : IRequestHandler<UpdateCalendarInDbReque
             await connection.ExecuteAsync(
                 "UPDATE Calendar SET Name = @Name, IsOnly = @IsOnly, ChangeDate = @ChangeDate WHERE CalendarId = @CalendarId",
                 new { request.CalendarId, request.Name, request.IsOnly, ChangeDate = changeDate }
-            );
+            ).ConfigureAwait(false);
 
             _eventBus.Publish(new CalendarUpdatedEvent());
             return new UpdateCalendarInDbResponse(true);
