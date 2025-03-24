@@ -4,6 +4,9 @@ using System.Windows.Data;
 
 namespace AvailabilityCompass.WpfClient.Shared.Converters;
 
+/// <summary>
+/// Converts a boolean value to a Visibility.
+/// </summary>
 public class BooleanToVisibilityConverter : IValueConverter
 {
     // ReSharper disable once MemberCanBePrivate.Global
