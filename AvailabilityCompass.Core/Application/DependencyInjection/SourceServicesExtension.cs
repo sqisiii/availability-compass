@@ -4,6 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AvailabilityCompass.Core.Application.DependencyInjection;
 
+/// <summary>
+/// Extension methods for registering source services with the dependency injection container.
+/// </summary>
 public static class SourceServicesExtension
 {
     public static IServiceCollection AddSourceServices(this IServiceCollection services)
