@@ -1,4 +1,5 @@
 ﻿using AvailabilityCompass.Core.Shared.Database;
+using AvailabilityCompass.Core.Shared.EventBus;
 using Dapper;
 using MediatR;
 using Serilog;
@@ -8,10 +9,12 @@ namespace AvailabilityCompass.Core.Features.ManageSources.Commands.ReplaceSource
 public class ReplaceSourceDataInDbHandler : IRequestHandler<ReplaceSourceDataInDbRequest, ReplaceSourceDataInDbResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;
+    private readonly IEventBus _eventBus;
 
-    public ReplaceSourceDataInDbHandler(IDbConnectionFactory dbConnectionFactory)
+    public ReplaceSourceDataInDbHandler(IDbConnectionFactory dbConnectionFactory, IEventBus eventBus)
     {
         _dbConnectionFactory = dbConnectionFactory;
+        _eventBus = eventBus;
     }
 
     public async Task<ReplaceSourceDataInDbResponse> Handle(ReplaceSourceDataInDbRequest request, CancellationToken cancellationToken)
@@ -91,6 +94,7 @@ public class ReplaceSourceDataInDbHandler : IRequestHandler<ReplaceSourceDataInD
             }
 
             transaction.Commit();
+            _eventBus.Publish(new SourcesDataChangedEvent());
         }
         catch (Exception e)
         {

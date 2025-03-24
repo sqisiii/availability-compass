@@ -1,6 +1,7 @@
 ﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using AvailabilityCompass.Core.Shared.EventBus;
+
+namespace AvailabilityCompass.Core.Shared.EventBus;
 
 public class EventBus : IEventBus
 {
@@ -17,5 +18,10 @@ public class EventBus : IEventBus
     public IObservable<TEvent> Listen<TEvent>()
     {
         return _subject.OfType<TEvent>();
+    }
+
+    public IObservable<object> ListenToAll()
+    {
+        return _subject.AsObservable();
     }
 }

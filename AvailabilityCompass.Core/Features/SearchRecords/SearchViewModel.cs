@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarRequest;
 using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetAvailableDates;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetCalendars;
@@ -33,6 +32,8 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     [NotifyPropertyChangedFor(nameof(StartDate))]
     [DateValidation]
     private string? _endDate;
+
+    private bool _initialDataLoaded;
 
     [ObservableProperty]
     private string? _searchPhrase;
@@ -65,8 +66,8 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
         _formElementFactory = formElementFactory;
         Sources.CollectionChanged += SourcesOnCollectionChanged;
 
-        _calendarAddedSubscription = eventBus.Listen<CalendarAddedEvent>()
-            .SelectMany(_ => Observable.FromAsync(OnCalendarAdded))
+        _calendarAddedSubscription = eventBus.ListenToAll()
+            .SelectMany(_ => Observable.FromAsync(OnFilterDataChanged))
             .Subscribe();
     }
 
@@ -74,7 +75,7 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
 
     public FullyObservableCollection<SourceFilterViewModel> Sources { get; } = [];
 
-    public FullyObservableCollection<CalendarFilterViewModel> Calendars { get; } = [];
+    public ObservableCollection<CalendarFilterViewModel> Calendars { get; } = [];
 
     public ObservableCollection<FormGroup> FormGroups { get; set; } = [];
 
@@ -94,13 +95,24 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
 
     public async Task LoadDataAsync(CancellationToken ct)
     {
+        if (_initialDataLoaded)
+        {
+            Results.Clear();
+            await Task.Delay(100, ct);
+            await OnSearch();
+            return;
+        }
+
         await LoadCalendarsAsync(ct);
         await LoadSourcesAsync(ct);
+        _initialDataLoaded = true;
     }
 
-    private async Task OnCalendarAdded(CancellationToken ct)
+    private async Task OnFilterDataChanged(CancellationToken ct)
     {
+        Results.Clear();
         await LoadCalendarsAsync(ct);
+        await LoadSourcesAsync(ct);
     }
 
     // ReSharper disable once UnusedParameterInPartialMethod
