@@ -81,7 +81,7 @@
                 <!-- Sources section -->
                 <TextBlock Margin="0,10,0,0" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Sources" />
                 <TextBlock Margin="0,10,0,0"
-                           Text="No sources available. Go to 'Sources' to gather data."
+                           Text="No sources available. Go to 'Sources' to refresh sources data."
                            Visibility="{Binding SourcesUnAvailable, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 <WrapPanel Margin="0,10,0,0" Orientation="Horizontal"
                            Visibility="{Binding SourcesAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
