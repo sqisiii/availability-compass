@@ -74,6 +74,10 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     public bool SourcesAvailable => Sources.Any(s => s.ChangeAt > DateTime.MinValue);
     public bool SourcesUnAvailable => !SourcesAvailable;
 
+    public bool CalendarsAvailable => Calendars.Count > 0;
+
+    public bool CalendarsUnAvailable => !CalendarsAvailable;
+
     public IObservable<List<ResultColumnDefinition>> ColumnObservable => _columnSubject.AsObservable();
 
     public FullyObservableCollection<SourceFilterViewModel> Sources { get; } = [];
@@ -280,5 +284,8 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
         {
             Calendars.Add(calendarViewModel);
         }
+
+        OnPropertyChanged(nameof(CalendarsAvailable));
+        OnPropertyChanged(nameof(CalendarsUnAvailable));
     }
 }
