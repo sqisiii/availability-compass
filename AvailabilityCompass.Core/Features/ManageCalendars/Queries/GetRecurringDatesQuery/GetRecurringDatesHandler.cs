@@ -33,7 +33,7 @@ public class GetRecurringDatesHandler : IRequestHandler<GetRecurringDatesQuery, 
         catch (Exception ex)
         {
             Log.Error(ex, "Error while getting recurring dates");
-            return new GetRecurringDatesResponse(new List<RecurringDateDto>(), false);
+            return new GetRecurringDatesResponse([], false);
         }
     }
 }
