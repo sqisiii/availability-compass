@@ -9,5 +9,5 @@ public class AddCalendarToDbResponse : IProcessResult
         IsSuccess = isSuccess;
     }
 
-    public bool IsSuccess { get; init; }
+    public bool IsSuccess { get; }
 }
