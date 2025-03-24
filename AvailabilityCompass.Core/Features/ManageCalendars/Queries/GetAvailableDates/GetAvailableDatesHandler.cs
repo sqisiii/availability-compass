@@ -7,20 +7,25 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetAvailableDates;
 
+/// <summary>
+/// Handles requests to get available dates for a set of calendars.
+/// </summary>
+/// <remarks>
+/// This handler retrieves calendar data from the database and calculates reserved dates
+/// based on single and recurring dates defined in the calendars.
+/// Request and Response are defined in the different feature <see cref="GetAvailableDatesQuery"/> and <see cref="GetAvailableDatesResponse"/> classes.
+/// </remarks>
 public class GetAvailableDatesHandler : IRequestHandler<GetAvailableDatesQuery, GetAvailableDatesResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;
-    private readonly IMediator _mediator;
     private readonly IReservedDatesCalculator _reservedDatesCalculator;
 
     public GetAvailableDatesHandler(
         IDbConnectionFactory dbConnectionFactory,
-        IReservedDatesCalculator reservedDatesCalculator,
-        IMediator mediator)
+        IReservedDatesCalculator reservedDatesCalculator)
     {
         _dbConnectionFactory = dbConnectionFactory;
         _reservedDatesCalculator = reservedDatesCalculator;
-        _mediator = mediator;
     }
 
     public async Task<GetAvailableDatesResponse> Handle(GetAvailableDatesQuery request, CancellationToken cancellationToken)
