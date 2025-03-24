@@ -16,7 +16,7 @@ public class DateValidationAttribute : ValidationAttribute
     /// <param name="formats">An array of date formats to validate against. If no formats are provided, "yyyy-MM-dd" is used by default.</param>
     public DateValidationAttribute(params string[] formats)
     {
-        _formats = formats.Length > 0 ? formats : new[] { "yyyy-MM-dd" };
+        _formats = formats.Length > 0 ? formats : ["yyyy-MM-dd"];
     }
 
     /// <summary>
