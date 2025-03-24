@@ -64,6 +64,8 @@ business logic.
 The application uses Dependency Injection. The Microsoft.Extensions.DependencyInjection package is used for the IOC
 container.
 
+The UI styling is done with the Material Design In XAML Toolkit.
+
 The application follows SOLID, KISS, DRY, and similar principles handled best to my time constraints.
 
 Architecture Design Records
