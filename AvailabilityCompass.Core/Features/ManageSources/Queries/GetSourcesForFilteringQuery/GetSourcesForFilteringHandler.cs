@@ -8,6 +8,14 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Queries.GetSourcesForFilteringQuery;
 
+/// <summary>
+/// Handles retrieval of sources data for filtering purposes.
+/// </summary>
+/// <remarks>
+/// This handler processes source metadata, retrieves associated filter options,
+/// and prepares a structured response.
+/// The request and response classes are defined in a different feature. See <see cref="SearchRecords.Queries.GetSources.GetSourcesForFilteringQuery"/> and <see cref="GetSourcesForFilteringResponse"/>.
+/// </remarks>
 public class GetSourcesForFilteringHandler : IRequestHandler<
     SearchRecords.Queries.GetSources.GetSourcesForFilteringQuery, GetSourcesForFilteringResponse>
 {
