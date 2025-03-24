@@ -4,6 +4,11 @@ using System.ComponentModel;
 
 namespace AvailabilityCompass.Core.Shared;
 
+/// <summary>
+/// A collection that is fully observable, meaning it notifies listeners of changes to the items within the collection,
+/// as well as changes to the collection itself.
+/// </summary>
+/// <typeparam name="T">The type of elements in the collection, which must implement <see cref="INotifyPropertyChanged"/>.</typeparam>
 public sealed class FullyObservableCollection<T> : ObservableCollection<T>
     where T : INotifyPropertyChanged
 {
