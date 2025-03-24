@@ -16,7 +16,7 @@ public class CalendarDto
 
     public Guid CalendarId { get; }
 
-    public string Name { get; }
+    public string Name { get; } = string.Empty;
 
     public bool IsOnly { get; }
 
