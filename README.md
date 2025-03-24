@@ -43,6 +43,8 @@ provided by the integrated source.
 In the Results section, you can sort the results any way you want, and there is a link to the trip itself if you want to
 book it.
 
+And if you don't want to go blind, there is Dark Theme support too! Just go to Settings page.
+
 ## Implementation Details
 
 This is a WPF Vertically Sliced application which follows the MVVM pattern. It uses the CommunityToolkit.MVVM package so
