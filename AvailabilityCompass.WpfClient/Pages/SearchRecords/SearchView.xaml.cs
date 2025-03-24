@@ -9,21 +9,29 @@ using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 // ReSharper disable once CheckNamespace
 namespace AvailabilityCompass.WpfClient.Pages;
 
-public partial class SearchView : UserControl
+public partial class SearchView : UserControl, IDisposable
 {
+    private IDisposable? _subscription;
+
+
     public SearchView()
     {
         InitializeComponent();
     }
 
+    public void Dispose()
+    {
+        _subscription?.Dispose();
+    }
+
     private void SearchView_OnLoaded(object sender, RoutedEventArgs e)
     {
-        if (DataContext is not SearchViewModel viewModel)
+        if (DataContext is not SearchViewModel viewModel || _subscription is not null)
         {
             return;
         }
 
-        viewModel.ColumnObservable.Subscribe(UpdateDataGridColumns);
+        _subscription = viewModel.ColumnObservable.Subscribe(UpdateDataGridColumns);
     }
 
     private void UpdateDataGridColumns(List<ResultColumnDefinition> columns)
