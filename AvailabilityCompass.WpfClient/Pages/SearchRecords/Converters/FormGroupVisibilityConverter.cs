@@ -5,6 +5,9 @@ using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 
 namespace AvailabilityCompass.WpfClient.Pages.SearchRecords.Converters;
 
+/// <summary>
+/// Converts a FormElementType to a Visibility value based on a target type string.
+/// </summary>
 public class FormGroupVisibilityConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)

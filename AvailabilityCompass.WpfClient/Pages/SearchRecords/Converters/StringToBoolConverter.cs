@@ -3,6 +3,9 @@ using System.Windows.Data;
 
 namespace AvailabilityCompass.WpfClient.Pages.SearchRecords.Converters;
 
+/// <summary>
+/// Converts a string (true/false) to a boolean value and vice versa.
+/// </summary>
 public class StringToBoolConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
