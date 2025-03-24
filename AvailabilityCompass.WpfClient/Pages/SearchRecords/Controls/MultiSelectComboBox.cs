@@ -6,6 +6,12 @@ using MaterialDesignThemes.Wpf.Internal;
 
 namespace AvailabilityCompass.WpfClient.Pages.SearchRecords.Controls;
 
+/// <summary>
+/// A custom ComboBox control that supports multiple selection.
+/// </summary>
+/// <remarks>
+/// SelectedValues property in XAML ComboBox is readonly collection, so it is not possible to bind it to a list of selected items.
+/// </remarks>
 public sealed class MultiSelectComboBox : ComboBox
 {
     public static readonly DependencyProperty SelectedValuesProperty = DependencyProperty.Register(
