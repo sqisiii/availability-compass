@@ -63,6 +63,13 @@ Adopting the MVVM architecture will have the following consequences:
    This is particularly advantageous if the application is expected to support multiple platforms in the future, as the
    ViewModel and business logic remain consistent across environments.
 
+5. **Limiting Code Behind issues:**
+
+   In MVVM pattern using Code Behind should be greatly limited. It should be used mostly only to change the UI elements
+   look or behavior. For example WPF controls expose some of their properties without a possibility to binding a new
+   collection to them. To work around this issue it may be required to create additional custom controls or implement
+   new behaviors.
+
 # Risks
 
 The are risks related to MVVM and VSA usage in the same project:
