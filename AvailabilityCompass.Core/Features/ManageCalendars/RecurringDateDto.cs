@@ -10,7 +10,14 @@ public record RecurringDateDto(
     int NumberOfRepetitions,
     DateTime ChangeDate)
 {
-    public RecurringDateDto() : this(Guid.Empty, Guid.Empty, string.Empty, DateOnly.MinValue, 1, 1, 1, DateTime.MinValue)
+    public RecurringDateDto() : this(Guid.Empty,
+        Guid.Empty,
+        string.Empty,
+        DateOnly.MinValue,
+        1,
+        1,
+        1,
+        DateTime.MinValue)
     {
     }
 }
