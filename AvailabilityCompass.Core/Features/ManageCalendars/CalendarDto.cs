@@ -2,6 +2,7 @@
 
 public class CalendarDto
 {
+    //required for Dapper
     public CalendarDto()
     {
     }
