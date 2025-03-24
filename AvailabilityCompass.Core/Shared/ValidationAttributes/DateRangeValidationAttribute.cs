@@ -3,6 +3,9 @@ using System.Globalization;
 
 namespace AvailabilityCompass.Core.Shared.ValidationAttributes;
 
+/// <summary>
+/// Validates that a date is within a valid range compared to another date property.
+/// </summary>
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
 public class DateRangeValidationAttribute : ValidationAttribute
 {
@@ -10,12 +13,23 @@ public class DateRangeValidationAttribute : ValidationAttribute
     private readonly bool _isStartDate;
     private readonly string _otherDatePropertyName;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DateRangeValidationAttribute"/> class.
+    /// </summary>
+    /// <param name="otherDatePropertyName">The name of the other date property to compare against.</param>
+    /// <param name="isStartDate">Indicates whether this date is the start date.</param>
     public DateRangeValidationAttribute(string otherDatePropertyName, bool isStartDate = false)
     {
         _otherDatePropertyName = otherDatePropertyName;
         _isStartDate = isStartDate;
     }
 
+    /// <summary>
+    /// Validates the specified value with respect to the current validation attribute.
+    /// </summary>
+    /// <param name="value">The value of the date to validate.</param>
+    /// <param name="validationContext">The context information about the validation operation.</param>
+    /// <returns>A <see cref="ValidationResult"/> that indicates whether the value is valid.</returns>
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
         // If value is null or empty, validation passes
