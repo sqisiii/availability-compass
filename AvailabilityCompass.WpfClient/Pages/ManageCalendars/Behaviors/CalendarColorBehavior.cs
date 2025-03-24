@@ -10,6 +10,9 @@ using Microsoft.Xaml.Behaviors;
 
 namespace AvailabilityCompass.WpfClient.Pages.ManageCalendars.Behaviors;
 
+/// <summary>
+/// A behavior that applies color coding and hints to dates in a WPF Calendar control based on their categories.
+/// </summary>
 public class CalendarColorBehavior : Behavior<Calendar>
 {
     public static readonly DependencyProperty ColorCodedDatesProperty =
