@@ -77,9 +77,9 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
 
     public ObservableCollection<CalendarFilterViewModel> Calendars { get; } = [];
 
-    public ObservableCollection<FormGroup> FormGroups { get; set; } = [];
+    public ObservableCollection<FormGroup> FormGroups { get; } = [];
 
-    public ObservableCollection<ResultColumnDefinition> Columns { get; } = [];
+    private List<ResultColumnDefinition> Columns { get; } = [];
     public ObservableCollection<Dictionary<string, object>> Results { get; } = [];
 
     public void Dispose()
