@@ -18,9 +18,9 @@ public partial class CalendarViewModel : ObservableValidator
 
     public string Type => IsOnly ? "Only" : "Except";
 
-    public Guid CalendarId { get; set; }
+    public Guid CalendarId { get; init; }
 
 
-    public List<SingleDateViewModel> SingleDates { get; set; } = [];
-    public List<RecurringDateViewModel> RecurringDates { get; set; } = [];
+    public List<SingleDateViewModel> SingleDates { get; init; } = [];
+    public List<RecurringDateViewModel> RecurringDates { get; init; } = [];
 }
