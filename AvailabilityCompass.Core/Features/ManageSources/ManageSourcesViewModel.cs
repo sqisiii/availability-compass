@@ -8,6 +8,10 @@ using MediatR;
 
 namespace AvailabilityCompass.Core.Features.ManageSources;
 
+/// <summary>
+/// ViewModel for managing data sources in the application.
+/// Provides functionality for viewing, refreshing, and monitoring source data.
+/// </summary>
 public partial class ManageSourcesViewModel : ObservableValidator, IPageViewModel
 {
     private readonly CancellationTokenSource _cancellationTokenSource = new();
@@ -25,7 +29,7 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
         _sourceMetaDataViewModelFactory = sourceMetaDataViewModelFactory;
     }
 
-    public ObservableCollection<SourceMetaDataViewModel> Sources { get; set; } = [];
+    public ObservableCollection<SourceMetaDataViewModel> Sources { get; } = [];
 
     public bool IsActive { get; set; }
 
@@ -50,12 +54,7 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
     public bool CanRefreshSource(string sourceId)
     {
         var source = Sources.FirstOrDefault(s => s.SourceId == sourceId);
-        if (source == null)
-        {
-            return false;
-        }
-
-        return source.IsEnabled;
+        return source != null && source.IsEnabled;
     }
 
     private void SourceServiceOnRefreshProgressChanged(object? sender, SourceRefreshProgressEventArgs e)
