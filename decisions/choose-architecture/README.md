@@ -58,7 +58,7 @@ Adopting Vertical Slice Architecture will have the following consequences:
    Layer) to a feature-oriented mindset. This may require some initial learning curve and a shift in how I approach code
    organization.
 4. Alignment with CQRS Patterns: Vertical Slice Architecture naturally aligns with Command Query Responsibility
-   Segregation (CQRS). While this is beneficial for separating read and write concerns, it also means we’ll need to be
+   Segregation (CQRS). While this is beneficial for separating read and write concerns, it also means I will need to be
    disciplined about maintaining consistency and avoiding premature abstraction.
 5. Potential Tooling Adjustments: Some of my current tooling, templates, or conventions may assume a layered structure.
    These will need to be revisited or adapted to support the slice-based organization.
