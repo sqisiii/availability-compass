@@ -18,7 +18,7 @@
             Margin="0,0,0,10"
             HorizontalAlignment="Left"
             IsEnabled="{Binding IsViewEnabled, ElementName=Root}"
-            materialDesign:HintAssist.Hint="Short Description"
+            materialDesign:HintAssist.Hint="Description"
             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
             Text="{Binding SelectedItem.Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"
             ToolTip="Short description of the selected recurring days" />
@@ -29,7 +29,7 @@
             HorizontalAlignment="Left"
             IsEnabled="{Binding IsViewEnabled, ElementName=Root}"
             materialDesign:HintAssist.HelperText="Format: yyyy-MM-dd"
-            materialDesign:HintAssist.Hint="Date"
+            materialDesign:HintAssist.Hint="Start Date"
             Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
             Text="{Binding SelectedItem.StartDateString, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}" />
 
@@ -48,7 +48,7 @@
             Margin="0,0,0,15"
             HorizontalAlignment="Left"
             IsEnabled="{Binding IsViewEnabled, ElementName=Root}"
-            materialDesign:HintAssist.Hint="Repetition Period"
+            materialDesign:HintAssist.Hint="Frequency"
             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
             Text="{Binding SelectedItem.RepetitionPeriod, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"
             ToolTip="The number of days " />
