@@ -2,10 +2,12 @@ namespace AvailabilityCompass.Core.Features.ManageCalendars.DatesCalculator;
 
 public class RecurringDateProcessor : IDateProcessor
 {
+    private readonly int _defaultDuration = 1;
+    private readonly int _defaultNumberOfRepetitions = 0;
+
     public List<CategorizedDate> Process(CalendarViewModel calendar)
     {
         var result = new List<CategorizedDate>();
-        const int dateRelatedDefaultValue = 1;
 
         foreach (var recurringDate in calendar.RecurringDates)
         {
@@ -15,12 +17,12 @@ public class RecurringDateProcessor : IDateProcessor
             }
 
             var currentDate = recurringDate.StartDate;
-            var numberOfRepetitions = recurringDate.NumberOfRepetitions ?? dateRelatedDefaultValue;
+            var numberOfRepetitions = recurringDate.NumberOfRepetitions ?? _defaultNumberOfRepetitions;
 
-            for (var i = 0; i < numberOfRepetitions; i++)
+            for (var i = 0; i <= numberOfRepetitions; i++)
             {
                 var durationDate = currentDate;
-                var duration = recurringDate.Duration ?? dateRelatedDefaultValue;
+                var duration = recurringDate.Duration ?? _defaultDuration;
 
                 for (var j = 0; j < duration; j++)
                 {
@@ -32,7 +34,10 @@ public class RecurringDateProcessor : IDateProcessor
                     durationDate = durationDate.Value.AddDays(1);
                 }
 
-                currentDate = currentDate.Value.AddDays(recurringDate.RepetitionPeriod ?? dateRelatedDefaultValue);
+                if (recurringDate.Frequency is not null)
+                {
+                    currentDate = currentDate.Value.AddDays(recurringDate.Frequency.Value);
+                }
             }
         }
 

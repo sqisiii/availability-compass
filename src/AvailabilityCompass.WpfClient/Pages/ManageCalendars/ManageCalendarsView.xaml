@@ -287,9 +287,9 @@
                         <DataGridTextColumn HeaderStyle="{StaticResource WrappedHeaderStyle}"
                                             Binding="{Binding Description}" Header="Description" />
                         <DataGridTextColumn HeaderStyle="{StaticResource WrappedHeaderStyle}"
-                                            Binding="{Binding Duration}" Header="Duration" />
+                                            Binding="{Binding Duration}" Header="Duration in days" />
                         <DataGridTextColumn HeaderStyle="{StaticResource WrappedHeaderStyle}"
-                                            Binding="{Binding RepetitionPeriod}" Header="Frequency" />
+                                            Binding="{Binding Frequency}" Header="Frequency in days" />
                         <DataGridTextColumn HeaderStyle="{StaticResource WrappedHeaderStyle}"
                                             Binding="{Binding NumberOfRepetitions}" Header="Number of repetitions" />
 

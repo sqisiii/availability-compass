@@ -4,13 +4,13 @@ namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddRecurrin
 
 public class AddRecurringDatesToDbRequest : IRequest<AddRecurringDatesToDbResponse>
 {
-    public AddRecurringDatesToDbRequest(Guid calendarId, string description, DateOnly startDate, int duration, int repetitionPeriod, int numberOfRepetitions)
+    public AddRecurringDatesToDbRequest(Guid calendarId, string description, DateOnly startDate, int duration, int? frequency, int numberOfRepetitions)
     {
         CalendarId = calendarId;
         Description = description;
         StartDate = startDate;
         Duration = duration;
-        RepetitionPeriod = repetitionPeriod;
+        Frequency = frequency;
         NumberOfRepetitions = numberOfRepetitions;
     }
 
@@ -22,7 +22,7 @@ public class AddRecurringDatesToDbRequest : IRequest<AddRecurringDatesToDbRespon
 
     public int Duration { get; }
 
-    public int RepetitionPeriod { get; }
+    public int? Frequency { get; }
 
     public int NumberOfRepetitions { get; }
 }

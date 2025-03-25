@@ -61,7 +61,7 @@ public class ReservedDatesCalculator : IReservedDatesCalculator
                 var dates = CalculateRecurringDatesRange(
                     recurringDate.StartDate,
                     recurringDate.Duration,
-                    recurringDate.RepetitionPeriod,
+                    recurringDate.Frequency,
                     recurringDate.NumberOfRepetitions);
 
                 foreach (var date in dates)
@@ -86,7 +86,7 @@ public class ReservedDatesCalculator : IReservedDatesCalculator
                 var dates = CalculateRecurringDatesRange(
                     recurringDate.StartDate,
                     recurringDate.Duration,
-                    recurringDate.RepetitionPeriod,
+                    recurringDate.Frequency,
                     recurringDate.NumberOfRepetitions);
 
                 foreach (var date in dates)
@@ -144,13 +144,13 @@ public class ReservedDatesCalculator : IReservedDatesCalculator
     private List<DateOnly> CalculateRecurringDatesRange(
         DateOnly startDate,
         int duration,
-        int repetitionPeriod,
+        int? frequency,
         int numberOfRepetitions)
     {
         List<DateOnly> result = [];
         var currentDate = startDate;
 
-        for (var i = 0; i < numberOfRepetitions; i++)
+        for (var i = 0; i <= numberOfRepetitions; i++)
         {
             var durationDate = currentDate;
 
@@ -160,7 +160,10 @@ public class ReservedDatesCalculator : IReservedDatesCalculator
                 durationDate = durationDate.AddDays(1);
             }
 
-            currentDate = currentDate.AddDays(repetitionPeriod);
+            if (frequency is not null)
+            {
+                currentDate = currentDate.AddDays(frequency.Value);
+            }
         }
 
         return result;

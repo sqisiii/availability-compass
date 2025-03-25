@@ -24,7 +24,7 @@ public class GetCalendarsHandler : IRequestHandler<GetCalendarsQuery, GetCalenda
             const string sql = @"
                         SELECT c.CalendarId, c.Name, c.IsOnly, c.ChangeDate,
                             sd.Id as SingleDateId, sd.CalendarId, sd.Description as SingleDateDescription, sd.Date, sd.ChangeDate,
-                            rd.Id as RecurringDateId, rd.CalendarId, rd.Description as RecurringDateDescription, rd.StartDate, rd.Duration, rd.RepetitionPeriod, rd.NumberOfRepetitions, rd.ChangeDate
+                            rd.Id as RecurringDateId, rd.CalendarId, rd.Description as RecurringDateDescription, rd.StartDate, rd.Duration, rd.Frequency, rd.NumberOfRepetitions, rd.ChangeDate
                         FROM Calendar c
                         LEFT JOIN SingleDate sd ON c.CalendarId = sd.CalendarId
                         LEFT JOIN RecurringDate rd ON c.CalendarId = rd.CalendarId";
@@ -32,28 +32,29 @@ public class GetCalendarsHandler : IRequestHandler<GetCalendarsQuery, GetCalenda
             var calendarDict = new Dictionary<Guid, CalendarDto>();
 
             await connection.QueryAsync<CalendarDto, SingleDateDto?, RecurringDateDto?, CalendarDto>(
-                sql,
-                map: (calendar, singleDate, recurringDate) =>
-                {
-                    if (!calendarDict.TryGetValue(calendar.CalendarId, out var calendarEntry))
+                    sql,
+                    map: (calendar, singleDate, recurringDate) =>
                     {
-                        calendarEntry = calendar;
-                        calendarDict.Add(calendar.CalendarId, calendarEntry);
-                    }
+                        if (!calendarDict.TryGetValue(calendar.CalendarId, out var calendarEntry))
+                        {
+                            calendarEntry = calendar;
+                            calendarDict.Add(calendar.CalendarId, calendarEntry);
+                        }
 
-                    if (singleDate is not null && calendarEntry.SingleDates.All(x => x.SingleDateId != singleDate.SingleDateId))
-                    {
-                        calendarEntry.SingleDates.Add(singleDate);
-                    }
+                        if (singleDate is not null && calendarEntry.SingleDates.All(x => x.SingleDateId != singleDate.SingleDateId))
+                        {
+                            calendarEntry.SingleDates.Add(singleDate);
+                        }
 
-                    if (recurringDate is not null && calendarEntry.RecurringDates.All(x => x.RecurringDateId != recurringDate.RecurringDateId))
-                    {
-                        calendarEntry.RecurringDates.Add(recurringDate);
-                    }
+                        if (recurringDate is not null && calendarEntry.RecurringDates.All(x => x.RecurringDateId != recurringDate.RecurringDateId))
+                        {
+                            calendarEntry.RecurringDates.Add(recurringDate);
+                        }
 
-                    return calendarEntry;
-                },
-                splitOn: "SingleDateId,RecurringDateId").ConfigureAwait(false);
+                        return calendarEntry;
+                    },
+                    splitOn: "SingleDateId,RecurringDateId")
+                .ConfigureAwait(false);
 
             return new GetCalendarsResponse(calendarDict.Values.ToList(), true);
         }

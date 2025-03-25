@@ -55,7 +55,7 @@ public class GetAvailableDatesHandler : IRequestHandler<GetAvailableDatesQuery, 
             const string sql = @"
                     SELECT c.CalendarId, c.Name, c.IsOnly, c.ChangeDate,
                         sd.Id as SingleDateId, sd.CalendarId, sd.Description as SingleDateDescription, sd.Date, sd.ChangeDate,
-                        rd.Id as RecurringDateId, rd.CalendarId, rd.Description as RecurringDateDescription, rd.StartDate, rd.Duration, rd.RepetitionPeriod, rd.NumberOfRepetitions, rd.ChangeDate
+                        rd.Id as RecurringDateId, rd.CalendarId, rd.Description as RecurringDateDescription, rd.StartDate, rd.Duration, rd.Frequency, rd.NumberOfRepetitions, rd.ChangeDate
                     FROM Calendar c
                     LEFT JOIN SingleDate sd ON c.CalendarId = sd.CalendarId
                     LEFT JOIN RecurringDate rd ON c.CalendarId = rd.CalendarId

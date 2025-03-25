@@ -41,7 +41,7 @@ public class CalendarViewModelFactory : ICalendarViewModelFactory
             Description = recurringDateDto.RecurringDateDescription,
             StartDate = recurringDateDto.StartDate,
             Duration = recurringDateDto.Duration,
-            RepetitionPeriod = recurringDateDto.RepetitionPeriod,
+            Frequency = recurringDateDto.Frequency,
             NumberOfRepetitions = recurringDateDto.NumberOfRepetitions
         };
     }

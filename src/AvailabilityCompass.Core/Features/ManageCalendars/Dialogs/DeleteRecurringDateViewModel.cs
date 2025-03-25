@@ -25,7 +25,7 @@ public class DeleteRecurringDateViewModel : BaseDialogCrudViewModel<RecurringDat
         SelectedItem.CalendarId = calendarId.CalendarId;
         SelectedItem.Description = calendarId.Description;
         SelectedItem.StartDate = calendarId.StartDate;
-        SelectedItem.RepetitionPeriod = calendarId.RepetitionPeriod;
+        SelectedItem.Frequency = calendarId.Frequency;
         SelectedItem.NumberOfRepetitions = calendarId.NumberOfRepetitions;
         SelectedItem.Duration = calendarId.Duration;
         SelectedItem.RecurringDateId = calendarId.RecurringDateId;
@@ -34,7 +34,7 @@ public class DeleteRecurringDateViewModel : BaseDialogCrudViewModel<RecurringDat
 
     protected override async Task<IProcessResult> ProcessDataAsync(CancellationToken ct)
     {
-        if (SelectedItem.StartDate is null || SelectedItem.RepetitionPeriod is null || SelectedItem.NumberOfRepetitions is null || SelectedItem.Duration is null)
+        if (SelectedItem.StartDate is null || SelectedItem.Frequency is null || SelectedItem.NumberOfRepetitions is null || SelectedItem.Duration is null)
         {
             return new FailedProcessResult();
         }

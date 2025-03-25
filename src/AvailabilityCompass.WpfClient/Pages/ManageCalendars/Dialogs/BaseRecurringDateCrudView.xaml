@@ -38,7 +38,7 @@
             Margin="0,0,0,15"
             HorizontalAlignment="Left"
             IsEnabled="{Binding IsViewEnabled, ElementName=Root}"
-            materialDesign:HintAssist.Hint="Duration"
+            materialDesign:HintAssist.Hint="Duration in days"
             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
             Text="{Binding SelectedItem.Duration, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"
             ToolTip="The number of marked days" />
@@ -48,9 +48,9 @@
             Margin="0,0,0,15"
             HorizontalAlignment="Left"
             IsEnabled="{Binding IsViewEnabled, ElementName=Root}"
-            materialDesign:HintAssist.Hint="Frequency"
+            materialDesign:HintAssist.Hint="Frequency in days"
             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-            Text="{Binding SelectedItem.RepetitionPeriod, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"
+            Text="{Binding SelectedItem.Frequency, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"
             ToolTip="The number of days " />
 
         <TextBox

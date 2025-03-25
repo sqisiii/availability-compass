@@ -28,21 +28,22 @@ public class UpdateRecurringDateInDbHandler : IRequestHandler<UpdateRecurringDat
             var changeDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
 
             await connection.ExecuteAsync(
-                "UPDATE RecurringDate SET StartDate = @StartDate, Duration = @Duration, RepetitionPeriod = @RepetitionPeriod, " +
-                "NumberOfRepetitions = @NumberOfRepetitions, Description = @Description, ChangeDate = @ChangeDate " +
-                "WHERE Id = @RecurringDateId AND CalendarId = @CalendarId",
-                new
-                {
-                    request.RecurringDateId,
-                    request.CalendarId,
-                    request.StartDate,
-                    request.Duration,
-                    request.RepetitionPeriod,
-                    request.NumberOfRepetitions,
-                    request.Description,
-                    ChangeDate = changeDate
-                }
-            ).ConfigureAwait(false);
+                    "UPDATE RecurringDate SET StartDate = @StartDate, Duration = @Duration, Frequency = @Frequency, " +
+                    "NumberOfRepetitions = @NumberOfRepetitions, Description = @Description, ChangeDate = @ChangeDate " +
+                    "WHERE Id = @RecurringDateId AND CalendarId = @CalendarId",
+                    new
+                    {
+                        request.RecurringDateId,
+                        request.CalendarId,
+                        request.StartDate,
+                        request.Duration,
+                        request.Frequency,
+                        request.NumberOfRepetitions,
+                        request.Description,
+                        ChangeDate = changeDate
+                    }
+                )
+                .ConfigureAwait(false);
 
             _eventBus.Publish(new RecurringDateUpdatedEvent(request.CalendarId));
             return new UpdateRecurringDateInDbResponse(true);

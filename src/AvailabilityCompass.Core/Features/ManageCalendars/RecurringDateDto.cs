@@ -6,7 +6,7 @@ public record RecurringDateDto(
     string RecurringDateDescription,
     DateOnly StartDate,
     int Duration,
-    int RepetitionPeriod,
+    int? Frequency,
     int NumberOfRepetitions,
     DateTime ChangeDate)
 {
@@ -15,8 +15,8 @@ public record RecurringDateDto(
         string.Empty,
         DateOnly.MinValue,
         1,
-        1,
-        1,
+        null,
+        0,
         DateTime.MinValue)
     {
     }

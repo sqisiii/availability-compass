@@ -4,14 +4,14 @@ namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateRecur
 
 public class UpdateRecurringDateInDbRequest : IRequest<UpdateRecurringDateInDbResponse>
 {
-    public UpdateRecurringDateInDbRequest(Guid calendarId, Guid recurringDateId, DateOnly startDate, int duration, string description, int repetitionPeriod, int numberOfRepetitions)
+    public UpdateRecurringDateInDbRequest(Guid calendarId, Guid recurringDateId, DateOnly startDate, int duration, string description, int? frequency, int? numberOfRepetitions)
     {
         CalendarId = calendarId;
         RecurringDateId = recurringDateId;
         StartDate = startDate;
         Duration = duration;
         Description = description;
-        RepetitionPeriod = repetitionPeriod;
+        Frequency = frequency;
         NumberOfRepetitions = numberOfRepetitions;
     }
 
@@ -20,6 +20,6 @@ public class UpdateRecurringDateInDbRequest : IRequest<UpdateRecurringDateInDbRe
     public DateOnly StartDate { get; }
     public int Duration { get; }
     public string Description { get; }
-    public int RepetitionPeriod { get; }
-    public int NumberOfRepetitions { get; }
+    public int? Frequency { get; }
+    public int? NumberOfRepetitions { get; }
 }

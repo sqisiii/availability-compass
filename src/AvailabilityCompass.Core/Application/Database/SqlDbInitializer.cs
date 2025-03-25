@@ -75,7 +75,7 @@ public class SqlDbInitializer : IDbInitializer
                 Id BLOB(16) NOT NULL,
                 StartDate TEXT NOT NULL,
                 Duration INTEGER NOT NULL,
-                RepetitionPeriod INTEGER NOT NULL,
+                Frequency INTEGER,
                 NumberOfRepetitions INTEGER NOT NULL,    
                 Description TEXT,
                 ChangeDate TEXT NOT NULL,
