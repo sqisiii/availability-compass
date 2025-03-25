@@ -76,14 +76,19 @@ public sealed class HoryzontyService : ISourceService
             var allTripsDoc = new HtmlDocument();
             allTripsDoc.LoadHtml(html);
 
-            var trips = allTripsDoc.DocumentNode.Descendants("a")
+            var trips = allTripsDoc.DocumentNode.Descendants("div")
                 .Where(node => node.GetAttributeValue("class", "").Contains("product__link"))
-                .Select(node => new
+                .Select(node =>
                 {
-                    Url = node.GetAttributeValue("href", ""),
-                    IsNew = node.Descendants("span")
-                        .Any(span => span.GetAttributeValue("class", "").Contains("product__new"))
+                    var linkNode = node.Descendants("a").FirstOrDefault();
+                    return new
+                    {
+                        Url = linkNode?.GetAttributeValue("href", ""),
+                        IsNew = node.Descendants("span")
+                            .Any(span => span.GetAttributeValue("class", "").Contains("product__new"))
+                    };
                 })
+                .Where(trip => !string.IsNullOrEmpty(trip.Url))
                 .ToList();
 
             for (var index = 0; index < trips.Count; index++)
