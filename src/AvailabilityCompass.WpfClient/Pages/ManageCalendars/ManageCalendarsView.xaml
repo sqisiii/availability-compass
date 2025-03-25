@@ -118,7 +118,7 @@
                     Margin="10,10,0,10"
                     HorizontalAlignment="Center"
                     Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                    Text="Single Date" />
+                    Text="Single Day" />
                 <Button
                     Width="80"
                     Margin="0,0,0,10"
