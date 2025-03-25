@@ -3,10 +3,9 @@ using System.Collections.Specialized;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
-using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetAvailableDates;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetCalendars;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetSources;
-using AvailabilityCompass.Core.Features.SearchRecords.Queries.SearchSources;
+using AvailabilityCompass.Core.Features.SearchRecords.Search;
 using AvailabilityCompass.Core.Shared;
 using AvailabilityCompass.Core.Shared.EventBus;
 using AvailabilityCompass.Core.Shared.ValidationAttributes;
@@ -24,6 +23,7 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     private readonly IFormElementFactory _formElementFactory;
     private readonly List<FormGroup> _formGroups = [];
     private readonly IMediator _mediator;
+    private readonly ISearchCommandFactory _searchCommandFactory;
     private readonly ISourceFilterViewModelFactory _sourceFilterViewModelFactory;
 
     [ObservableProperty]
@@ -58,12 +58,14 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
         ISourceFilterViewModelFactory sourceFilterViewModelFactory,
         ICalendarFilterViewModelFactory calendarFilterViewModelFactory,
         IFormElementFactory formElementFactory,
-        IEventBus eventBus)
+        IEventBus eventBus,
+        ISearchCommandFactory searchCommandFactory)
     {
         _mediator = mediator;
         _sourceFilterViewModelFactory = sourceFilterViewModelFactory;
         _calendarFilterViewModelFactory = calendarFilterViewModelFactory;
         _formElementFactory = formElementFactory;
+        _searchCommandFactory = searchCommandFactory;
         Sources.CollectionChanged += SourcesOnCollectionChanged;
 
         _calendarAddedSubscription = eventBus.ListenToAll()
@@ -86,7 +88,7 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
 
     public ObservableCollection<FormGroup> FormGroups { get; } = [];
 
-    private List<ResultColumnDefinition> Columns { get; } = [];
+    public List<ResultColumnDefinition> Columns { get; } = [];
     public ObservableCollection<Dictionary<string, object>> Results { get; } = [];
 
     public void Dispose()
@@ -142,102 +144,10 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     [RelayCommand(CanExecute = nameof(CanSearch))]
     private async Task OnSearch()
     {
-        if (!Sources.Any(s => s.IsSelected))
-        {
-            return;
-        }
-
-        var selectedCalendars = Calendars.Where(c => c.IsSelected).Select(c => c.Id).ToList();
-        var availableDatesResponse = await _mediator.Send(new GetAvailableDatesQuery(selectedCalendars));
-
-        var query = new SearchSourcesQuery
-        {
-            ReservedDates = availableDatesResponse.ReservedDates
-        };
-        foreach (var source in Sources.Where(s => s.IsSelected))
-        {
-            var sourceFilters = new SearchSourcesQuery.Source(source.SourceId);
-            foreach (var formGroup in FormGroups.Where(f => f.SourceId == source.SourceId))
-            {
-                foreach (var formElement in formGroup.Elements)
-                {
-                    switch (formElement.Type)
-                    {
-                        case FormElementType.MultiSelect when formElement.SelectedOptions.Count > 0:
-                            sourceFilters.SelectedFiltersValues.Add($"sad.{formElement.Label}", formElement.SelectedOptions.ToList());
-                            break;
-                        case FormElementType.CheckBox when !string.IsNullOrEmpty(formElement.TextValue):
-                            break;
-                        case FormElementType.TextBox when !string.IsNullOrEmpty(formElement.TextValue):
-                            sourceFilters.SelectedFiltersValues.Add($"sad.{formElement.Label}", [formElement.TextValue]);
-                            break;
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(StartDate))
-                {
-                    sourceFilters.SelectedFiltersValues.Add("startDate", [StartDate]);
-                }
-
-                if (!string.IsNullOrEmpty(EndDate))
-                {
-                    sourceFilters.SelectedFiltersValues.Add("endDate", [EndDate]);
-                }
-
-                if (!string.IsNullOrEmpty(SearchPhrase))
-                {
-                    sourceFilters.SelectedFiltersValues.Add("search", [SearchPhrase]);
-                }
-            }
-
-            query.Sources.Add(sourceFilters);
-        }
-
-        var searchResponse = await _mediator.Send(query);
-
-        Columns.Clear();
-        Results.Clear();
-
-        if (searchResponse.IsSuccess && searchResponse.SourceDataItems.Any())
-        {
-            Columns.Add(new ResultColumnDefinition("Source", "SourceName"));
-            Columns.Add(new ResultColumnDefinition("Title", "Title"));
-            Columns.Add(new ResultColumnDefinition("Start Date", "StartDate"));
-            Columns.Add(new ResultColumnDefinition("End Date", "EndDate"));
-
-            foreach (var sourceDataItem in searchResponse.SourceDataItems)
-            {
-                var singleSourceResults = new Dictionary<string, object>();
-                if (sourceDataItem.Title is null)
-                {
-                    continue;
-                }
-
-                singleSourceResults.Add("SourceName", sourceDataItem.SourceId);
-                singleSourceResults.Add("Title", sourceDataItem.Title);
-                singleSourceResults.Add("Url", sourceDataItem.Url ?? string.Empty);
-                singleSourceResults.Add("StartDate", sourceDataItem.StartDate.ToString("yyyy-MM-dd"));
-                singleSourceResults.Add("EndDate", sourceDataItem.EndDate.ToString("yyyy-MM-dd"));
-
-                foreach (var (key, value) in sourceDataItem.AdditionalData)
-                {
-                    if (Columns.All(columnDefinition => columnDefinition.PropertyName != key))
-                    {
-                        Columns.Add(new ResultColumnDefinition(key, key));
-                    }
-
-                    singleSourceResults.Add(key, value ?? string.Empty);
-                }
-
-                Results.Add(singleSourceResults);
-            }
-
-            Columns.Add(new ResultColumnDefinition("URL", "Url"));
-            OnUpdateColumns();
-        }
+        await _searchCommandFactory.Create().ExecuteAsync();
     }
 
-    private void OnUpdateColumns()
+    public void OnUpdateColumns()
     {
         _columnSubject.OnNext(Columns.ToList());
     }
