@@ -118,7 +118,7 @@
                     Margin="10,10,0,10"
                     HorizontalAlignment="Left"
                     Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                    Text="Single Dates" />
+                    Text="Single Date" />
                 <Button
                     Width="130"
                     Margin="0,0,0,10"
@@ -241,7 +241,7 @@
                     Margin="10,10,0,10"
                     HorizontalAlignment="Left"
                     Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                    Text="Recurring Dates" />
+                    Text="Multiple Days and Recurrings" />
                 <Button
                     Width="130"
                     Margin="0,0,0,10"
@@ -287,11 +287,11 @@
                         <DataGridTextColumn HeaderStyle="{StaticResource WrappedHeaderStyle}"
                                             Binding="{Binding Description}" Header="Description" />
                         <DataGridTextColumn HeaderStyle="{StaticResource WrappedHeaderStyle}"
-                                            Binding="{Binding Duration}" Header="Period Duration" />
+                                            Binding="{Binding Duration}" Header="Duration" />
                         <DataGridTextColumn HeaderStyle="{StaticResource WrappedHeaderStyle}"
-                                            Binding="{Binding RepetitionPeriod}" Header="Repetition Period" />
+                                            Binding="{Binding RepetitionPeriod}" Header="Frequency" />
                         <DataGridTextColumn HeaderStyle="{StaticResource WrappedHeaderStyle}"
-                                            Binding="{Binding NumberOfRepetitions}" Header="Repetitions Count" />
+                                            Binding="{Binding NumberOfRepetitions}" Header="Number of repetitions" />
 
                         <DataGridTemplateColumn Width="Auto" Header="Operations">
 
