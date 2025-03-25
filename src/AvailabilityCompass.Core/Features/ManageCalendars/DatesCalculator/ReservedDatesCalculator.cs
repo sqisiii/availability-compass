@@ -31,12 +31,6 @@ public class ReservedDatesCalculator : IReservedDatesCalculator
                 string.Join(", ", group.Select(d => d.Tooltip).Distinct())))
             .ToList();
 
-        // If the calendar is an "only" calendar, invert the selection
-        if (selectedCalendar.IsOnly)
-        {
-            uniqueDates = GetInvertedDates(uniqueDates);
-        }
-
         return uniqueDates;
     }
 
