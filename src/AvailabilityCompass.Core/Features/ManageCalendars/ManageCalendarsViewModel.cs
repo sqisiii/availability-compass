@@ -110,7 +110,7 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     private void SubscribeToEvents(IEventBus eventBus)
     {
         _calendarAddedSubscription = eventBus.Listen<CalendarAddedEvent>()
-            .SelectMany(_ => Observable.FromAsync(OnCalendarAdded))
+            .SelectMany(evt => Observable.FromAsync(ct => OnCalendarAdded(evt, ct)))
             .Subscribe();
         _calendarDeletedSubscription = eventBus.Listen<CalendarDeletedEvent>()
             .SelectMany(_ => Observable.FromAsync(OnCalendarDeleted))
@@ -138,9 +138,9 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
             .Subscribe();
     }
 
-    private async Task OnCalendarAdded(CancellationToken ct)
+    private async Task OnCalendarAdded(CalendarAddedEvent evt, CancellationToken ct)
     {
-        await LoadCalendars(ct);
+        await LoadCalendars(evt.CalendarId, ct);
     }
 
     private async Task OnCalendarDeleted(CancellationToken ct)
@@ -246,6 +246,11 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
 
     private async Task LoadCalendars(CancellationToken ct)
     {
+        await LoadCalendars(null, ct);
+    }
+
+    private async Task LoadCalendars(Guid? newSelectedCalendarId, CancellationToken ct)
+    {
         var previouslySelectedCalendarId = SelectedCalendar?.CalendarId;
         Calendars.Clear();
         var calendarResponse = await _mediator.Send(new GetCalendarsQuery(), ct);
@@ -259,9 +264,10 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
             Calendars.Add(_calendarViewModelFactory.CreateCalendar(calendar));
         }
 
-        if (previouslySelectedCalendarId is not null)
+        var calendarId = newSelectedCalendarId ?? previouslySelectedCalendarId;
+        if (calendarId is not null)
         {
-            var selectedCalendar = Calendars.FirstOrDefault(x => x.CalendarId == previouslySelectedCalendarId);
+            var selectedCalendar = Calendars.FirstOrDefault(x => x.CalendarId == calendarId);
             if (selectedCalendar is not null)
             {
                 selectedCalendar.IsSelected = true;

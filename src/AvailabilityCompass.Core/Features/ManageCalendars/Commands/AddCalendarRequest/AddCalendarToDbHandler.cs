@@ -39,7 +39,7 @@ public class AddCalendarToDbHandler : IRequestHandler<AddCalendarToDbRequest, Ad
                 })
                 .ConfigureAwait(false);
 
-            _eventBus.Publish(new CalendarAddedEvent());
+            _eventBus.Publish(new CalendarAddedEvent(calendarId));
             return new AddCalendarToDbResponse(true);
         }
         catch (Exception ex)
