@@ -50,8 +50,9 @@ And if you don't want to go blind, there is Dark Theme support too! Just go to S
 This is a WPF Vertically Sliced application which follows the MVVM pattern. It uses the CommunityToolkit.MVVM package so
 the ViewModels could be used in the future with the MAUI application. It uses the standard MediatR package for pull
 communication between slices and Reactive Extensions for .NET (aka Rx.NET or System.Reactive) package for push
-communication. As it is a development showcase application, inside the slices it can use .NET events or simple
-interfaces for pull and push communication.
+communication. 
+I know that using those for a small application like this might be like killing a fly by using a bazooka, but it is a developmer showcase application ...
+Inside the slices .NET events or simple interfaces for pull and push communication were used as well.
 
 It uses Serilog for structured logging. For the WPF application, the SQLite database was used.
 
