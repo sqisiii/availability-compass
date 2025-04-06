@@ -127,7 +127,7 @@ public class BarentsEngService : ISourceService
 
                 (var parsedSourceDataItems, counter) = await ExtractTripDataAsync($"https://barents.pl{tripUrl}", counter, title, destination, isNew, type, ct);
                 sourceDataItems.AddRange(parsedSourceDataItems);
-                OnRefreshProgressChanged((double)index / tripsData.Count * 100);
+                OnRefreshProgressChanged((double)(index + 1) / tripsData.Count * 100);
             }
         }
         catch (Exception e)

@@ -108,6 +108,7 @@ public class RowerzystaPodroznikService : ISourceService
 
                 if (string.IsNullOrEmpty(tripUrl) || string.IsNullOrEmpty(title))
                 {
+                    OnRefreshProgressChanged((double)(index + 1) / tripsData.Count * 100);
                     continue;
                 }
 
@@ -121,7 +122,7 @@ public class RowerzystaPodroznikService : ISourceService
                     additionalInfo,
                     ct);
                 sourceDataItems.AddRange(parsedSourceDataItems);
-                OnRefreshProgressChanged((double)index / tripsData.Count * 100);
+                OnRefreshProgressChanged((double)(index + 1) / tripsData.Count * 100);
             }
         }
         catch (Exception e)

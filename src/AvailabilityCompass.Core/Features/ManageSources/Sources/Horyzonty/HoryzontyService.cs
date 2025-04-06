@@ -101,7 +101,7 @@ public sealed class HoryzontyService : ISourceService
                     counter,
                     ct);
                 sourceDataItems.AddRange(parsedSourceDataItems);
-                OnRefreshProgressChanged((double)index / trips.Count * 100);
+                OnRefreshProgressChanged((double)(index + 1) / trips.Count * 100);
             }
         }
         catch (Exception e)
