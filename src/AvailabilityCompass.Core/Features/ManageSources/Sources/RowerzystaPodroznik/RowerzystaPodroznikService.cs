@@ -207,7 +207,14 @@ public class RowerzystaPodroznikService : ISourceService
         // Additional date info if present in more parts
         if (dateParts.Length > 2)
         {
-            additionalInfo = string.Join(" - ", dateParts.Skip(2));
+            if (string.IsNullOrEmpty(additionalInfo))
+            {
+                additionalInfo = string.Join(" - ", dateParts.Skip(2));
+            }
+            else
+            {
+                additionalInfo += " - " + string.Join(" - ", dateParts.Skip(2));
+            }
         }
 
         return (startDate, endDate, additionalInfo);
