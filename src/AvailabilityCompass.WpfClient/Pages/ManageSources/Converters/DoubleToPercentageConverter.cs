@@ -9,7 +9,7 @@ namespace AvailabilityCompass.WpfClient.Pages.ManageSources.Converters;
 public class DoubleToPercentageConverter : IValueConverter
 {
     private readonly object _defaultPercentValue = 0.0;
-    private readonly double doubleTolerance = 0.0001;
+    private readonly double doubleTolerance = 0.1;
 
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {

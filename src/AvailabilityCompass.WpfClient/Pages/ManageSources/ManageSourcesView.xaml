@@ -31,6 +31,13 @@
                 Margin="0,10,0,10"
                 Text="Available Sources"
                 HorizontalAlignment="Center" />
+            <Button Content="Refresh All"
+                    Width="120"
+                    Margin="0,10,10,10"
+                    HorizontalAlignment="Right"
+                    Style="{StaticResource MaterialDesignFlatSecondaryMidBgButton}"
+                    ToolTip="Refresh available trips data"
+                    Command="{Binding DataContext.RefreshAllSourcesCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
             <DataGrid
                 AutoGenerateColumns="False"
                 CanUserAddRows="False"

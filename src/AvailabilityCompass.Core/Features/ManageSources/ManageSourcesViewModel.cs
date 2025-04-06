@@ -16,6 +16,7 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
 {
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private readonly IMediator _mediator;
+    private readonly HashSet<string> _refreshingSourceIds = [];
     private readonly ISourceMetaDataViewModelFactory _sourceMetaDataViewModelFactory;
     private readonly ISourceServiceFactory _sourceServiceFactory;
 
@@ -31,6 +32,7 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
 
     public ObservableCollection<SourceMetaDataViewModel> Sources { get; } = [];
 
+
     public bool IsActive { get; set; }
 
     public string Icon => "DatabaseCogOutline";
@@ -41,26 +43,64 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
         await LoadSourcesMetaDataAsync(ct);
     }
 
+    [RelayCommand]
+    private async Task OnRefreshAllSourcesAsync(CancellationToken ct)
+    {
+        var tasks = Sources
+            .Where(source => source.IsEnabled)
+            .Select(source => RefreshSourceData(source.SourceId, _cancellationTokenSource.Token))
+            .ToList();
+
+        await Task.WhenAll(tasks);
+        await RefreshSourceMetaDataAsync(ct);
+    }
+
+
     [RelayCommand(CanExecute = nameof(CanRefreshSource))]
     private async Task OnRefreshSource(string sourceId, CancellationToken ct)
     {
+        await RefreshSourceData(sourceId, ct);
+        await RefreshSourceMetaDataAsync(ct);
+    }
+
+    private async Task RefreshSourceMetaDataAsync(CancellationToken ct)
+    {
+        if (_refreshingSourceIds.Count > 0)
+        {
+            return;
+        }
+
+        await LoadSourcesMetaDataAsync(ct);
+    }
+
+    private async Task RefreshSourceData(string sourceId, CancellationToken ct)
+    {
+        if (!_refreshingSourceIds.Add(sourceId))
+        {
+            return;
+        }
+
+        RefreshSourceCommand.NotifyCanExecuteChanged();
+        RefreshAllSourcesCommand.NotifyCanExecuteChanged();
         var sourceService = _sourceServiceFactory.GetService(sourceId);
         sourceService.RefreshProgressChanged += SourceServiceOnRefreshProgressChanged;
-        var sources = await sourceService.RefreshSourceDataAsync(_cancellationTokenSource.Token);
+        await sourceService.RefreshSourceDataAsync(ct);
         sourceService.RefreshProgressChanged -= SourceServiceOnRefreshProgressChanged;
-        await LoadSourcesMetaDataAsync(ct);
+        _refreshingSourceIds.Remove(sourceId);
+        RefreshSourceCommand.NotifyCanExecuteChanged();
+        RefreshAllSourcesCommand.NotifyCanExecuteChanged();
     }
 
     public bool CanRefreshSource(string sourceId)
     {
         var source = Sources.FirstOrDefault(s => s.SourceId == sourceId);
-        return source != null && source.IsEnabled;
+        return source is not null && source.IsEnabled && !_refreshingSourceIds.Contains(sourceId);
     }
 
     private void SourceServiceOnRefreshProgressChanged(object? sender, SourceRefreshProgressEventArgs e)
     {
         var source = Sources.FirstOrDefault(s => s.SourceId == e.SourceId);
-        if (source == null)
+        if (source is null)
         {
             return;
         }
