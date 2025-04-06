@@ -88,13 +88,36 @@ public class ViaVerdeService : ISourceService
                     var title = cells[0].InnerText.Trim();
                     var startDate = DateOnly.ParseExact(cells[1].InnerText.Trim(), "yyyy/MM/dd");
                     var endDate = DateOnly.ParseExact(cells[2].InnerText.Trim(), "yyyy/MM/dd");
-                    var remarks = cells[3].InnerText.Trim();
+                    var transport = cells[3].InnerText.Trim();
                     var price = cells[4].InnerText.Trim();
                     var difficulty = cells[5].InnerText.Trim();
                     var destination = cells[6].InnerText.Trim();
-                    var additionalRemarks = cells[7].InnerText.Trim();
+                    var freeSpace = cells[7].InnerText.Trim();
 
                     var type = await GetTypeAsync(tripUrl, ct).ConfigureAwait(false);
+
+                    const string polishNewPhrase = "Nowość";
+                    var isNew = string.Equals(type?.Trim(), polishNewPhrase, StringComparison.OrdinalIgnoreCase);
+                    if (isNew)
+                    {
+                        type = null;
+                    }
+
+                    var remarks = string.Empty;
+                    if (!string.IsNullOrEmpty(transport))
+                    {
+                        remarks += transport;
+                    }
+
+                    if (!string.IsNullOrEmpty(freeSpace))
+                    {
+                        if (!string.IsNullOrEmpty(remarks))
+                        {
+                            remarks += " - ";
+                        }
+
+                        remarks += $"{freeSpace}";
+                    }
 
                     var tour = new SourceDataItem
                     {
@@ -107,16 +130,17 @@ public class ViaVerdeService : ISourceService
                         ChangeDate = DateTime.Now,
                         AdditionalData = new Dictionary<string, object?>
                         {
-                            { SourceAdditionalDataName.Type, type },
-                            { SourceAdditionalDataName.Destination, destination },
-                            { SourceAdditionalDataName.Price, price },
-                            { SourceAdditionalDataName.Remarks, $"{remarks} - {additionalRemarks}" },
-                            { SourceAdditionalDataName.Difficulty, difficulty }
+                            { SourceAdditionalDataName.Type, type?.Trim() ?? string.Empty },
+                            { SourceAdditionalDataName.Destination, destination.Trim() },
+                            { SourceAdditionalDataName.Price, price.Trim() },
+                            { SourceAdditionalDataName.Remarks, remarks.Trim() },
+                            { SourceAdditionalDataName.IsNew, isNew ? "New" : null },
+                            { SourceAdditionalDataName.Difficulty, difficulty.Trim() }
                         }
                     };
 
                     sourceDataItems.Add(tour);
-                    OnRefreshProgressChanged((double)counter / rows.Count() * 100);
+                    OnRefreshProgressChanged((double)counter / rows.Count * 100);
                 }
             }
         }
