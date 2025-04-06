@@ -86,7 +86,7 @@ public partial class MultiSelectComboBoxView : UserControl
         }
 
         var checkBoxContent = checkBox.Content?.ToString();
-        if (string.IsNullOrEmpty(checkBoxContent))
+        if (checkBoxContent is null)
         {
             return;
         }
@@ -133,6 +133,11 @@ public partial class MultiSelectComboBoxView : UserControl
 
         if (truncated && result.Length + 3 <= maxLength)
             result.Append("...");
+
+        if (result.Length == 0)
+        {
+            result.Append("...");
+        }
 
         return result.ToString();
     }
