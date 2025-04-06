@@ -203,6 +203,7 @@ public class SearchSourcesHandler : IRequestHandler<SearchRecords.Queries.Search
                 allResults.AddRange(sourceDictionary.Values);
             }
 
+            allResults = allResults.OrderBy(r => r.StartDate).ThenBy(r => r.EndDate).ToList();
             return new SearchSourcesResponse(allResults);
         }
         catch (Exception e)
@@ -220,7 +221,7 @@ public class SearchSourcesHandler : IRequestHandler<SearchRecords.Queries.Search
         {
             if (param.StartsWith("resDate"))
             {
-                reservedDates.Add(parameters.Get<object>(param)?.ToString() ?? "null");
+                reservedDates.Add(parameters.Get<object>(param).ToString() ?? "null");
             }
             else
             {
