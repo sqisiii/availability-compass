@@ -106,6 +106,11 @@ public class RowerzystaPodroznikService : ISourceService
 
                 var (startDate, endDate, additionalInfo) = ExtractDate(date);
 
+                if (string.IsNullOrEmpty(tripUrl) || string.IsNullOrEmpty(title))
+                {
+                    continue;
+                }
+
                 (var parsedSourceDataItems, counter) = await ExtractTripDataAsync(tripUrl,
                     counter,
                     title,
