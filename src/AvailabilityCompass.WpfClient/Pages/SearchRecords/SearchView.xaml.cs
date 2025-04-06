@@ -63,4 +63,13 @@ public partial class SearchView : UserControl, IDisposable
         Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
         e.Handled = true;
     }
+
+    private void SearchButton_Click(object sender, RoutedEventArgs e)
+    {
+        // Scroll to the bottom
+        if (FindName("MainScrollViewer") is ScrollViewer scrollViewer)
+        {
+            scrollViewer.ScrollToEnd();
+        }
+    }
 }

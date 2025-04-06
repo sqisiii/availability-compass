@@ -33,7 +33,7 @@
         Margin="5"
         Padding="5,5,5,15"
         materialDesign:ElevationAssist.Elevation="Dp6">
-        <ScrollViewer>
+        <ScrollViewer x:Name="MainScrollViewer">
             <StackPanel>
                 <TextBlock
                     Style="{StaticResource MaterialDesignHeadline6TextBlock}"
@@ -208,6 +208,7 @@
                 <!-- Search button -->
                 <Button
                     Width="200"
+                    Click="SearchButton_Click"
                     Command="{Binding SearchCommand}"
                     Content="Search"
                     Margin="10"
