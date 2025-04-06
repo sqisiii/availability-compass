@@ -174,7 +174,7 @@ public sealed class HoryzontyService : ISourceService
                         { SourceAdditionalDataName.Code, code },
                         { SourceAdditionalDataName.Price, price },
                         { SourceAdditionalDataName.IsNew, isNew ? "New" : null },
-                        { SourceAdditionalDataName.Remarks, modificator }
+                        { SourceAdditionalDataName.Remarks, modificator ?? string.Empty }
                     }
                 );
                 tours.Add(tour);
