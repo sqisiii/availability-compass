@@ -1,4 +1,5 @@
 ﻿using System.Timers;
+using AvailabilityCompass.Core.Shared;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Timer = System.Timers.Timer;
 
@@ -6,6 +7,7 @@ namespace AvailabilityCompass.Core.Features.SearchRecords;
 
 public partial class SourceFilterViewModel : ObservableObject, IDisposable
 {
+    private readonly IDateTimeProvider _dateTimeProvider;
     private readonly Timer _timer;
 
     [ObservableProperty]
@@ -20,8 +22,9 @@ public partial class SourceFilterViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _name = string.Empty;
 
-    public SourceFilterViewModel()
+    public SourceFilterViewModel(IDateTimeProvider dateTimeProvider)
     {
+        _dateTimeProvider = dateTimeProvider;
         var intervalInMs = 60000;
         _timer = new Timer(intervalInMs); // 1 minute interval
         _timer.Elapsed += OnLastUpdatedTimerElapsed;
@@ -49,21 +52,25 @@ public partial class SourceFilterViewModel : ObservableObject, IDisposable
     }
 
 
-    private static string GetRelativeTime(DateTime? dateTime)
+    private string GetRelativeTime(DateTime? dateTime)
     {
         if (dateTime is null || dateTime == DateTime.MinValue)
         {
             return "N/A";
         }
 
-        var timeSpan = DateTime.Now - dateTime;
+        var timeSpan = _dateTimeProvider.Now - dateTime;
 
         switch (timeSpan.Value.TotalMinutes)
         {
             case < 1:
                 return "Just now";
+            case < 2:
+                return "1 minute ago";
             case < 60:
                 return $"{(int)timeSpan.Value.TotalMinutes} minutes ago";
+            case < 120:
+                return "1 hour ago";
             default:
             {
                 if (timeSpan.Value.TotalHours < 24)
@@ -75,6 +82,6 @@ public partial class SourceFilterViewModel : ObservableObject, IDisposable
             }
         }
 
-        return $"{(int)timeSpan.Value.TotalDays} days ago";
+        return timeSpan.Value.TotalDays < 2 ? "1 day ago" : $"{(int)timeSpan.Value.TotalDays} days ago";
     }
 }
