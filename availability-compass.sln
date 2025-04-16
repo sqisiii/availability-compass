@@ -14,6 +14,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvailabilityCompass.Core.Tests.Unit", "tests\AvailabilityCompass.Core.Tests.Unit\AvailabilityCompass.Core.Tests.Unit.csproj", "{0B140A18-A445-EA02-60DE-0FB5C75FEC0B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +42,14 @@ Global
 		{677DCB7C-682D-4177-8370-5C6C824A5D5A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{677DCB7C-682D-4177-8370-5C6C824A5D5A}.Release|x64.ActiveCfg = Release|x64
 		{677DCB7C-682D-4177-8370-5C6C824A5D5A}.Release|x64.Build.0 = Release|x64
+		{0B140A18-A445-EA02-60DE-0FB5C75FEC0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B140A18-A445-EA02-60DE-0FB5C75FEC0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B140A18-A445-EA02-60DE-0FB5C75FEC0B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0B140A18-A445-EA02-60DE-0FB5C75FEC0B}.Debug|x64.Build.0 = Debug|Any CPU
+		{0B140A18-A445-EA02-60DE-0FB5C75FEC0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B140A18-A445-EA02-60DE-0FB5C75FEC0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B140A18-A445-EA02-60DE-0FB5C75FEC0B}.Release|x64.ActiveCfg = Release|Any CPU
+		{0B140A18-A445-EA02-60DE-0FB5C75FEC0B}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -45,6 +57,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{8127B105-62E6-4870-97E5-75BD7ABA5834} = {6BF8DEA8-A67F-42A0-9E08-3F855BDFB33E}
 		{677DCB7C-682D-4177-8370-5C6C824A5D5A} = {6BF8DEA8-A67F-42A0-9E08-3F855BDFB33E}
+		{0B140A18-A445-EA02-60DE-0FB5C75FEC0B} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DD49C0DA-F235-43EC-87FE-3AC6E99AC25D}
