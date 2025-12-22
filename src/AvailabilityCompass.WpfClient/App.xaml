@@ -17,8 +17,12 @@
 
                 <materialDesign:BundledTheme
                     BaseTheme="Light"
-                    PrimaryColor="Indigo"
-                    SecondaryColor="Amber" />
+                    PrimaryColor="DeepPurple"
+                    SecondaryColor="Purple" />
+
+                <!-- Shadcn Theme Resources -->
+                <ResourceDictionary Source="/Themes/ShadcnLightTheme.xaml" />
+                <ResourceDictionary Source="/Themes/ShadcnStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate DataType="{x:Type vms:ManageCalendars.ManageCalendarsViewModel}">
                 <views:ManageCalendarsView />

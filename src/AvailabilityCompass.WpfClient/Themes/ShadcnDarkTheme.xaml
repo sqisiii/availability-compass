@@ -1,0 +1,94 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Shadcn Dark Theme Colors (converted from oklch) -->
+
+    <!-- Background Colors -->
+    <Color x:Key="BackgroundColor">#000000</Color>
+    <Color x:Key="ForegroundColor">#FBFBFB</Color>
+    <Color x:Key="CardColor">#141416</Color>
+    <Color x:Key="CardForegroundColor">#FCFCFC</Color>
+    <Color x:Key="PopoverColor">#141416</Color>
+    <Color x:Key="PopoverForegroundColor">#FCFCFC</Color>
+
+    <!-- Muted Colors -->
+    <Color x:Key="MutedColor">#322E3B</Color>
+    <Color x:Key="MutedForegroundColor">#ACA4BB</Color>
+
+    <!-- Primary Colors -->
+    <Color x:Key="PrimaryColor">#2D1B69</Color>
+    <Color x:Key="PrimaryForegroundColor">#C5BFDC</Color>
+
+    <!-- Secondary Colors -->
+    <Color x:Key="SecondaryColor">#3D3747</Color>
+    <Color x:Key="SecondaryForegroundColor">#CCC7D4</Color>
+
+    <!-- Accent Colors -->
+    <Color x:Key="AccentColor">#4E4661</Color>
+    <Color x:Key="AccentForegroundColor">#E3DFE9</Color>
+
+    <!-- Border and Input -->
+    <Color x:Key="BorderColor">#3A383E</Color>
+    <Color x:Key="InputColor">#3A383E</Color>
+    <Color x:Key="RingColor">#2D1B69</Color>
+
+    <!-- Destructive -->
+    <Color x:Key="DestructiveColor">#F04444</Color>
+    <Color x:Key="DestructiveForegroundColor">#FFFFFF</Color>
+
+    <!-- Chart Colors -->
+    <Color x:Key="Chart1Color">#A78BFA</Color>
+    <Color x:Key="Chart2Color">#22D3EE</Color>
+    <Color x:Key="Chart3Color">#FBBF24</Color>
+    <Color x:Key="Chart4Color">#34D399</Color>
+    <Color x:Key="Chart5Color">#F472B6</Color>
+
+    <!-- Sidebar Colors -->
+    <Color x:Key="SidebarBackgroundColor">#141416</Color>
+    <Color x:Key="SidebarForegroundColor">#FCFCFC</Color>
+    <Color x:Key="SidebarBorderColor">#3A383E</Color>
+    <Color x:Key="SidebarPrimaryColor">#2D1B69</Color>
+    <Color x:Key="SidebarPrimaryForegroundColor">#C5BFDC</Color>
+    <Color x:Key="SidebarAccentColor">#322E3B</Color>
+    <Color x:Key="SidebarAccentForegroundColor">#ACA4BB</Color>
+    <Color x:Key="SidebarRingColor">#2D1B69</Color>
+
+    <!-- SolidColorBrushes -->
+    <SolidColorBrush x:Key="ShadcnBackgroundBrush" Color="{StaticResource BackgroundColor}" />
+    <SolidColorBrush x:Key="ShadcnForegroundBrush" Color="{StaticResource ForegroundColor}" />
+    <SolidColorBrush x:Key="ShadcnCardBrush" Color="{StaticResource CardColor}" />
+    <SolidColorBrush x:Key="ShadcnCardForegroundBrush" Color="{StaticResource CardForegroundColor}" />
+    <SolidColorBrush x:Key="ShadcnPopoverBrush" Color="{StaticResource PopoverColor}" />
+    <SolidColorBrush x:Key="ShadcnPopoverForegroundBrush" Color="{StaticResource PopoverForegroundColor}" />
+    <SolidColorBrush x:Key="ShadcnMutedBrush" Color="{StaticResource MutedColor}" />
+    <SolidColorBrush x:Key="ShadcnMutedForegroundBrush" Color="{StaticResource MutedForegroundColor}" />
+    <SolidColorBrush x:Key="ShadcnPrimaryBrush" Color="{StaticResource PrimaryColor}" />
+    <SolidColorBrush x:Key="ShadcnPrimaryForegroundBrush" Color="{StaticResource PrimaryForegroundColor}" />
+    <SolidColorBrush x:Key="ShadcnSecondaryBrush" Color="{StaticResource SecondaryColor}" />
+    <SolidColorBrush x:Key="ShadcnSecondaryForegroundBrush" Color="{StaticResource SecondaryForegroundColor}" />
+    <SolidColorBrush x:Key="ShadcnAccentBrush" Color="{StaticResource AccentColor}" />
+    <SolidColorBrush x:Key="ShadcnAccentForegroundBrush" Color="{StaticResource AccentForegroundColor}" />
+    <SolidColorBrush x:Key="ShadcnBorderBrush" Color="{StaticResource BorderColor}" />
+    <SolidColorBrush x:Key="ShadcnInputBrush" Color="{StaticResource InputColor}" />
+    <SolidColorBrush x:Key="ShadcnRingBrush" Color="{StaticResource RingColor}" />
+    <SolidColorBrush x:Key="ShadcnDestructiveBrush" Color="{StaticResource DestructiveColor}" />
+    <SolidColorBrush x:Key="ShadcnDestructiveForegroundBrush" Color="{StaticResource DestructiveForegroundColor}" />
+
+    <!-- Chart Brushes -->
+    <SolidColorBrush x:Key="ShadcnChart1Brush" Color="{StaticResource Chart1Color}" />
+    <SolidColorBrush x:Key="ShadcnChart2Brush" Color="{StaticResource Chart2Color}" />
+    <SolidColorBrush x:Key="ShadcnChart3Brush" Color="{StaticResource Chart3Color}" />
+    <SolidColorBrush x:Key="ShadcnChart4Brush" Color="{StaticResource Chart4Color}" />
+    <SolidColorBrush x:Key="ShadcnChart5Brush" Color="{StaticResource Chart5Color}" />
+
+    <!-- Sidebar Brushes -->
+    <SolidColorBrush x:Key="ShadcnSidebarBackgroundBrush" Color="{StaticResource SidebarBackgroundColor}" />
+    <SolidColorBrush x:Key="ShadcnSidebarForegroundBrush" Color="{StaticResource SidebarForegroundColor}" />
+    <SolidColorBrush x:Key="ShadcnSidebarBorderBrush" Color="{StaticResource SidebarBorderColor}" />
+    <SolidColorBrush x:Key="ShadcnSidebarPrimaryBrush" Color="{StaticResource SidebarPrimaryColor}" />
+    <SolidColorBrush x:Key="ShadcnSidebarPrimaryForegroundBrush" Color="{StaticResource SidebarPrimaryForegroundColor}" />
+    <SolidColorBrush x:Key="ShadcnSidebarAccentBrush" Color="{StaticResource SidebarAccentColor}" />
+    <SolidColorBrush x:Key="ShadcnSidebarAccentForegroundBrush" Color="{StaticResource SidebarAccentForegroundColor}" />
+    <SolidColorBrush x:Key="ShadcnSidebarRingBrush" Color="{StaticResource SidebarRingColor}" />
+
+</ResourceDictionary>
