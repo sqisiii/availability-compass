@@ -27,6 +27,7 @@ public class DeleteCalendarFromDbHandler : IRequestHandler<DeleteCalendarFromDbR
             //enable automatic foreign key enforcement = deletion
             await connection.ExecuteAsync("PRAGMA foreign_keys = ON;").ConfigureAwait(false);
 
+            // language=SQLite
             const string deleteCalendarSql = @"DELETE FROM Calendar WHERE CalendarId = @CalendarId;";
             await connection.ExecuteAsync(deleteCalendarSql, new { request.CalendarId }).ConfigureAwait(false);
 

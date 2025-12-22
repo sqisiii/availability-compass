@@ -27,6 +27,7 @@ public class DeleteRecurringDateFromDbHandler : IRequestHandler<DeleteRecurringD
             //enable automatic foreign key enforcement with cascade delete
             await connection.ExecuteAsync("PRAGMA foreign_keys = ON;").ConfigureAwait(false);
 
+            // language=SQLite
             const string sql = @"DELETE FROM RecurringDate WHERE CalendarId = @CalendarId and Id = @RecurringDateId;";
             await connection.ExecuteAsync(sql, new { request.CalendarId, request.RecurringDateId }).ConfigureAwait(false);
 

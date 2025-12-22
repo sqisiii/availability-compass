@@ -24,6 +24,7 @@ public class AddSingleDateToDbHandler : IRequestHandler<AddSingleDateToDbRequest
             using var connection = _dbConnectionFactory.Connect();
             connection.Open();
 
+            // language=SQLite
             const string insertSingleDateSql = @"INSERT INTO SingleDate (CalendarId, Id, Date, Description, ChangeDate) 
                                                 VALUES (@CalendarId, @Id, @Date, @Description, @ChangeDate);";
 

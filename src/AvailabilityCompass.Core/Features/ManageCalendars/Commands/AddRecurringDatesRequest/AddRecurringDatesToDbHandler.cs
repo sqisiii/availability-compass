@@ -23,8 +23,9 @@ public class AddRecurringDatesToDbHandler : IRequestHandler<AddRecurringDatesToD
         {
             using var connection = _dbConnectionFactory.Connect();
             connection.Open();
-
-            const string insertSingleDateSql = @"INSERT INTO RecurringDate (CalendarId, Id, StartDate, Description, Duration, Frequency, NumberOfRepetitions, ChangeDate) 
+            // language=SQLite
+            const string insertSingleDateSql =
+                @"INSERT INTO RecurringDate (CalendarId, Id, StartDate, Description, Duration, Frequency, NumberOfRepetitions, ChangeDate) 
                                                 VALUES (@CalendarId, @Id, @StartDate, @Description, @Duration, @Frequency, @NumberOfRepetitions, @ChangeDate);";
 
             var id = Guid.NewGuid();

@@ -91,6 +91,7 @@ public class GetSourcesForFilteringHandler : IRequestHandler<
             using var connection = _dbConnectionFactory.Connect();
             connection.Open();
 
+            // language=SQLite
             var query = @"
                         SELECT 
                             SourceId, 

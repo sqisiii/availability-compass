@@ -24,6 +24,7 @@ public class AddCalendarToDbHandler : IRequestHandler<AddCalendarToDbRequest, Ad
             using var connection = _dbConnectionFactory.Connect();
             connection.Open();
 
+            // language=SQLite
             const string insertCalendarSql = @"INSERT INTO Calendar (CalendarId, Name, IsOnly, ChangeDate) 
                                                 VALUES (@CalendarId, @Name, @IsOnly, @ChangeDate);";
 

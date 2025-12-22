@@ -1,4 +1,5 @@
 ﻿using AvailabilityCompass.Core.Application.Database;
+using AvailabilityCompass.Core.Features.ManageSettings;
 using AvailabilityCompass.WpfClient.Pages;
 using Serilog;
 using System.Runtime.InteropServices;
@@ -11,6 +12,7 @@ namespace AvailabilityCompass.WpfClient.Application.Initialization;
 public class Bootstrapper
 {
     private readonly IDbInitializer _dbInitializer;
+    private readonly IThemeService _themeService;
     private readonly MainViewModel _mainViewModel;
     private readonly MainWindow _mainWindow;
 
@@ -20,11 +22,13 @@ public class Bootstrapper
     /// <param name="mainWindow">The main window of the application.</param>
     /// <param name="mainViewModel">The main view model of the application.</param>
     /// <param name="dbInitializer">The database initializer.</param>
-    public Bootstrapper(MainWindow mainWindow, MainViewModel mainViewModel, IDbInitializer dbInitializer)
+    /// <param name="themeService">The theme service.</param>
+    public Bootstrapper(MainWindow mainWindow, MainViewModel mainViewModel, IDbInitializer dbInitializer, IThemeService themeService)
     {
         _mainWindow = mainWindow;
         _mainViewModel = mainViewModel;
         _dbInitializer = dbInitializer;
+        _themeService = themeService;
     }
 
     /// <summary>
@@ -35,7 +39,10 @@ public class Bootstrapper
         Introduce();
         _dbInitializer.InitializeAsync().Wait();
 
-        _mainViewModel.Initialize();
+        // Load saved theme before showing the window
+        _themeService.LoadThemeAsync().Wait();
+
+        _mainViewModel.InitializeAsync().Wait();
         _mainWindow.Show();
     }
 

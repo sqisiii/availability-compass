@@ -1,7 +1,9 @@
-﻿using System.Collections.ObjectModel;
+using AvailabilityCompass.Core.Features.ManageCalendars;
+using AvailabilityCompass.Core.Features.ManageSettings;
+using AvailabilityCompass.Core.Features.ManageSources;
+using AvailabilityCompass.Core.Features.SearchRecords;
 using AvailabilityCompass.Core.Shared;
 using AvailabilityCompass.Core.Shared.Navigation;
-using AvailabilityCompass.WpfClient.Shared.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MaterialDesignThemes.Wpf;
@@ -11,48 +13,56 @@ namespace AvailabilityCompass.WpfClient.Pages;
 public partial class MainViewModel : ObservableObject
 {
     private readonly INavigationStore<IDialogViewModel> _dialogNavigationStore;
-    private readonly INavigationService<IPageViewModel> _mainNavigationService;
-    private readonly INavigationStore<IPageViewModel> _mainNavigationStore;
-    private readonly INavigationTabFactory _navigationTabFactory;
+    private readonly INavigationService<IDialogViewModel> _dialogNavigationService;
+    private readonly IThemeService _themeService;
+    private readonly SearchViewModel _searchViewModel;
+    private readonly ManageSourcesViewModel _manageSourcesViewModel;
+    private readonly ManageCalendarsViewModel _manageCalendarsViewModel;
 
     [NotifyPropertyChangedFor(nameof(MaximizeToolTip))]
     [ObservableProperty]
-    private PackIcon _maximizeIcon = new PackIcon { Kind = PackIconKind.WindowMaximize };
+    private PackIcon _maximizeIcon = new() { Kind = PackIconKind.WindowMaximize };
+
+    [NotifyPropertyChangedFor(nameof(ThemeIcon))]
+    [ObservableProperty]
+    private bool _isDarkTheme;
 
     public MainViewModel(
-        INavigationTabFactory navigationTabFactory,
-        INavigationStore<IPageViewModel> mainNavigationStore,
         INavigationStore<IDialogViewModel> dialogNavigationStore,
-        INavigationService<IPageViewModel> mainNavigationService
+        INavigationService<IDialogViewModel> dialogNavigationService,
+        IThemeService themeService,
+        SearchViewModel searchViewModel,
+        ManageSourcesViewModel manageSourcesViewModel,
+        ManageCalendarsViewModel manageCalendarsViewModel
     )
     {
-        _navigationTabFactory = navigationTabFactory;
-        _mainNavigationStore = mainNavigationStore;
         _dialogNavigationStore = dialogNavigationStore;
-        _mainNavigationService = mainNavigationService;
-        _mainNavigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
-        _dialogNavigationStore.CurrentViewModelChanged += OnCurrentDialogViewModelChanged;
+        _dialogNavigationService = dialogNavigationService;
+        _themeService = themeService;
+        _searchViewModel = searchViewModel;
+        _manageSourcesViewModel = manageSourcesViewModel;
+        _manageCalendarsViewModel = manageCalendarsViewModel;
 
-        MainNavigationTabs = navigationTabFactory.CreateNavigationTabs();
+        _dialogNavigationStore.CurrentViewModelChanged += OnCurrentDialogViewModelChanged;
+        _isDarkTheme = _themeService.IsDarkTheme;
     }
 
     public string MaximizeToolTip => MaximizeIcon.Kind == PackIconKind.WindowMaximize ? "Maximize" : "Restore";
 
-    public IPageViewModel? CurrentViewModel => _mainNavigationStore.CurrentViewModel;
+    public PackIconKind ThemeIcon => IsDarkTheme ? PackIconKind.WeatherSunny : PackIconKind.WeatherNight;
+
+    public SearchViewModel SearchViewModel => _searchViewModel;
 
     public IDialogViewModel? CurrentDialogViewModel => _dialogNavigationStore.CurrentViewModel;
+
     public bool IsDialogOpen => CurrentDialogViewModel?.IsDialogOpen ?? false;
 
-    public ObservableCollection<NavigationTabModel> MainNavigationTabs { get; }
-
-    public void Initialize()
+    public async Task InitializeAsync()
     {
-        _mainNavigationService.NavigateTo(MainNavigationTabs.First().PageViewModel);
-    }
-
-    private void OnCurrentViewModelChanged()
-    {
-        OnPropertyChanged(nameof(CurrentViewModel));
+        IsDarkTheme = _themeService.IsDarkTheme;
+        await _searchViewModel.LoadDataAsync(CancellationToken.None);
+        await _manageSourcesViewModel.LoadDataAsync(CancellationToken.None);
+        await _manageCalendarsViewModel.LoadDataAsync(CancellationToken.None);
     }
 
     private void OnCurrentDialogViewModelChanged()
@@ -76,13 +86,21 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void OnTabChanged(NavigationTabModel? tab)
+    private async Task OnToggleThemeAsync()
     {
-        if (tab == null)
-        {
-            return;
-        }
+        IsDarkTheme = !IsDarkTheme;
+        await _themeService.SaveThemeAsync(IsDarkTheme);
+    }
 
-        _mainNavigationService.NavigateTo(tab.PageViewModel);
+    [RelayCommand]
+    private void OnOpenCalendars()
+    {
+        _dialogNavigationService.NavigateTo(_manageCalendarsViewModel);
+    }
+
+    [RelayCommand]
+    private void OnOpenSources()
+    {
+        _dialogNavigationService.NavigateTo(_manageSourcesViewModel);
     }
 }

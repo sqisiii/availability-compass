@@ -1,325 +1,377 @@
-﻿<UserControl
-    x:Class="AvailabilityCompass.WpfClient.Pages.ManageCalendarsView"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewModels="clr-namespace:AvailabilityCompass.Core.Features.ManageCalendars;assembly=AvailabilityCompass.Core"
-    xmlns:controls1="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Controls"
-    xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Converters"
-    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:behaviors="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Behaviors"
-    d:DataContext="{d:DesignInstance viewModels:ManageCalendarsViewModel,
-                                     IsDesignTimeCreatable=True}"
-    d:DesignHeight="500"
-    d:DesignWidth="1000"
-    mc:Ignorable="d">
+<UserControl x:Class="AvailabilityCompass.WpfClient.Pages.ManageCalendarsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:viewModels="clr-namespace:AvailabilityCompass.Core.Features.ManageCalendars;assembly=AvailabilityCompass.Core"
+             xmlns:controls1="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Controls"
+             xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Converters"
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:behaviors="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Behaviors"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModels:ManageCalendarsViewModel}"
+             d:DesignHeight="700"
+             d:DesignWidth="1100">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:BooleanToIndexConverter x:Key="BooleanToIndexConverter" />
     </UserControl.Resources>
 
-    <materialDesign:Card
-        Margin="5"
-        Padding="5,5,5,15"
-        materialDesign:ElevationAssist.Elevation="Dp6">
+    <Border Background="{DynamicResource ShadcnCardBrush}"
+            BorderBrush="{DynamicResource ShadcnBorderBrush}"
+            BorderThickness="1"
+            CornerRadius="12"
+            Padding="0"
+            MinWidth="1000"
+            MaxWidth="1200"
+            MaxHeight="750">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid
-                Grid.Row="0"
-                Grid.Column="0"
-                Grid.ColumnSpan="3"
-                Margin="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <TextBlock
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Margin="0,10,0,10"
-                    HorizontalAlignment="Center"
-                    Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                    Text="Calendars" />
-                <Button
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    Width="130"
-                    HorizontalAlignment="Right"
-                    materialDesign:ElevationAssist.Elevation="Dp4"
-                    Command="{Binding AddCalendarCommand}"
-                    Content="Add Calendar"
-                    Style="{StaticResource MaterialDesignRaisedButton}"
-                    ToolTip="Add new calendar" />
 
-                <WrapPanel
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Margin="0,10,0,0"
-                    Orientation="Horizontal">
-                    <ListBox ItemsSource="{Binding Calendars}">
-                        <ListBox.ItemContainerStyle>
-                            <!--  Style to get rid of the selection visual  -->
-                            <Style TargetType="{x:Type ListBoxItem}">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                            <ContentPresenter />
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="Margin" Value="5,0,5,5" />
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel Orientation="Horizontal" />
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type viewModels:CalendarViewModel}">
-                                <controls1:SelectionRadioButton
-                                    RadioButtonText="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                    FullMinHeight="30"
-                                    FullWidth="150"
-                                    IsActive="True"
-                                    GroupName="CalendarGroup"
-                                    HeaderText="{Binding Type}"
-                                    IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </WrapPanel>
-            </Grid>
-            <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
-                       Margin="10,25,10,5"
-                       HorizontalAlignment="Stretch"
-                       Visibility="{Binding Path=IsCalendarSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
-                       Background="{DynamicResource MaterialDesign.Brush.Primary.Light}" />
+            <!-- Header -->
+            <Border Grid.Row="0"
+                    Background="{DynamicResource ShadcnMutedBrush}"
+                    CornerRadius="12,12,0,0"
+                    Padding="20,16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Row="2" Grid.Column="0" Margin="10,0,0,0"
-                        Visibility="{Binding Path=IsCalendarSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <TextBlock
-                    Margin="10,10,0,10"
-                    HorizontalAlignment="Center"
-                    Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                    Text="Single Day" />
-                <Button
-                    Width="80"
-                    Margin="0,0,0,10"
-                    HorizontalAlignment="Right"
-                    materialDesign:ElevationAssist.Elevation="Dp4"
-                    Command="{Binding AddSingleDateCommand}"
-                    Content="Add"
-                    Style="{StaticResource MaterialDesignRaisedButton}"
-                    ToolTip="Add new single date" />
-                <DataGrid
-                    AutoGenerateColumns="False"
-                    CanUserAddRows="False"
-                    CanUserDeleteRows="False"
-                    CanUserReorderColumns="True"
-                    CanUserResizeColumns="True"
-                    CanUserResizeRows="True"
-                    CanUserSortColumns="True"
-                    IsReadOnly="True"
-                    ItemsSource="{Binding SingleDates}"
-                    SelectionMode="Single"
-                    Style="{StaticResource MaterialDesignDataGrid}"
-                    VerticalScrollBarVisibility="Auto">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Description}" Header="Description" />
-                        <DataGridTextColumn MinWidth="80" Binding="{Binding Date, StringFormat='yyyy-MM-dd'}"
-                                            Header="Date" />
-                        <DataGridTemplateColumn Width="Auto" Header="Operations">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button
-                                            Padding="5,0"
-                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.EditSingleDateCommand}"
-                                            CommandParameter="{Binding SingleDateId}"
-                                            Content="{materialDesign:PackIcon Edit}"
-                                            Style="{StaticResource MaterialDesignFlatButton}"
-                                            ToolTip="Edit single date" />
-                                        <Button
-                                            Padding="5,0"
-                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.DeleteSingleDateCommand}"
-                                            CommandParameter="{Binding SingleDateId}"
-                                            Content="{materialDesign:PackIcon Remove}"
-                                            Style="{StaticResource MaterialDesignFlatButton}"
-                                            ToolTip="Delete single date" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </StackPanel>
+                    <TextBlock Grid.Column="0"
+                               Text="Manage Calendars"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource ShadcnForegroundBrush}"
+                               VerticalAlignment="Center" />
 
+                    <Button Grid.Column="1"
+                            Style="{StaticResource ShadcnIconButton}"
+                            Command="{Binding CloseCommand}"
+                            ToolTip="Close"
+                            Width="32"
+                            Height="32">
+                        <materialDesign:PackIcon Kind="Close"
+                                                 Width="18"
+                                                 Height="18"
+                                                 Foreground="{DynamicResource ShadcnMutedForegroundBrush}" />
+                    </Button>
+                </Grid>
+            </Border>
 
-            <StackPanel Grid.Row="2" Grid.Column="1" Margin="10,0,0,0"
-                        Visibility="{Binding Path=IsCalendarSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <TextBlock
-                    Margin="10,10,0,10"
-                    HorizontalAlignment="Center"
-                    Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                    Text="Multiple Days and Recurrings" />
-                <Button
-                    Width="80"
-                    Margin="0,0,0,10"
-                    HorizontalAlignment="Right"
-                    materialDesign:ElevationAssist.Elevation="Dp4"
-                    Command="{Binding AddRecurringDateCommand}"
-                    Content="Add"
-                    Style="{StaticResource MaterialDesignRaisedButton}"
-                    ToolTip="Add new recurring dates" />
-                <DataGrid
-                    AutoGenerateColumns="False"
-                    CanUserAddRows="False"
-                    CanUserDeleteRows="False"
-                    CanUserReorderColumns="True"
-                    CanUserResizeColumns="True"
-                    CanUserResizeRows="True"
-                    CanUserSortColumns="True"
-                    IsReadOnly="True"
-                    ItemsSource="{Binding RecurringDates}"
-                    SelectionMode="Single"
-                    Style="{StaticResource MaterialDesignDataGrid}"
-                    VerticalScrollBarVisibility="Auto">
-                    <DataGrid.Resources>
-                        <!-- Shared Header Style -->
-                        <Style x:Key="WrappedHeaderStyle" TargetType="DataGridColumnHeader"
-                               BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
-                            <Setter Property="ContentTemplate">
-                                <Setter.Value>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding}"
-                                                   TextWrapping="Wrap"
-                                                   MaxWidth="80"
-                                                   HorizontalAlignment="Center"
-                                                   TextAlignment="Center" />
-                                    </DataTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </DataGrid.Resources>
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding StartDate, StringFormat='yyyy-MM-dd'}"
-                                            Header="Start Date" />
-                        <DataGridTextColumn HeaderStyle="{StaticResource WrappedHeaderStyle}"
-                                            Binding="{Binding Description}" Header="Description" />
-                        <DataGridTextColumn HeaderStyle="{StaticResource WrappedHeaderStyle}"
-                                            Binding="{Binding Duration}" Header="Duration in days" />
-                        <DataGridTextColumn HeaderStyle="{StaticResource WrappedHeaderStyle}"
-                                            Binding="{Binding Frequency}" Header="Frequency in days" />
-                        <DataGridTextColumn HeaderStyle="{StaticResource WrappedHeaderStyle}"
-                                            Binding="{Binding NumberOfRepetitions}" Header="Number of repetitions" />
-
-                        <DataGridTemplateColumn Width="Auto" Header="Operations">
-
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button
-                                            Padding="5,0"
-                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.EditRecurringDateCommand}"
-                                            CommandParameter="{Binding RecurringDateId}"
-                                            Content="{materialDesign:PackIcon Edit}"
-                                            Style="{StaticResource MaterialDesignFlatButton}"
-                                            ToolTip="Edit recurring dates" />
-                                        <Button
-                                            Padding="5,0"
-                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.DeleteRecurringDateCommand}"
-                                            CommandParameter="{Binding RecurringDateId}"
-                                            Content="{materialDesign:PackIcon Remove}"
-                                            Style="{StaticResource MaterialDesignFlatButton}"
-                                            ToolTip="Delete recurring dates" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </StackPanel>
-            <Grid
-                Grid.Row="2"
-                Grid.Column="2"
-                Width="350"
-                Visibility="{Binding Path=IsCalendarSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
-                Margin="10, 10, 0, 0">
-                <StackPanel>
-                    <Grid HorizontalAlignment="Center">
+            <!-- Content -->
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Auto"
+                          Padding="8">
+                <materialDesign:Card
+                    Margin="5"
+                    Padding="5,5,5,15"
+                    materialDesign:ElevationAssist.Elevation="Dp6">
+                    <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Grid.Row="0" Text="Calendar:" Margin="10,0,10,0"
-                                   HorizontalAlignment="Right"
-                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
-                        <TextBlock Grid.Column="1" Grid.Row="0"
-                                   Margin="0,0,0,10"
-                                   HorizontalAlignment="Left"
-                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                   Text="{Binding CalendarName}" />
+                        <Grid
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="3"
+                            Margin="10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Margin="0,10,0,10"
+                                HorizontalAlignment="Center"
+                                Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                Text="Calendars" />
+                            <Button
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Width="130"
+                                HorizontalAlignment="Right"
+                                materialDesign:ElevationAssist.Elevation="Dp4"
+                                Command="{Binding AddCalendarCommand}"
+                                Content="Add Calendar"
+                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                ToolTip="Add new calendar" />
 
+                            <WrapPanel
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Margin="0,10,0,0"
+                                Orientation="Horizontal">
+                                <ListBox ItemsSource="{Binding Calendars}">
+                                    <ListBox.ItemContainerStyle>
+                                        <!--  Style to get rid of the selection visual  -->
+                                        <Style TargetType="{x:Type ListBoxItem}">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                                        <ContentPresenter />
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Setter Property="Margin" Value="5,0,5,5" />
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type viewModels:CalendarViewModel}">
+                                            <controls1:SelectionRadioButton
+                                                RadioButtonText="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                FullMinHeight="30"
+                                                FullWidth="150"
+                                                IsActive="True"
+                                                GroupName="CalendarGroup"
+                                                HeaderText="{Binding Type}"
+                                                IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </WrapPanel>
+                        </Grid>
+                        <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                                   Margin="10,25,10,5"
+                                   HorizontalAlignment="Stretch"
+                                   Visibility="{Binding Path=IsCalendarSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                   Background="{DynamicResource MaterialDesign.Brush.Primary.Light}" />
+
+                        <StackPanel Grid.Row="2" Grid.Column="0" Margin="10,0,0,0"
+                                    Visibility="{Binding Path=IsCalendarSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock
+                                Margin="10,10,0,10"
+                                HorizontalAlignment="Center"
+                                Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                Text="Single Day" />
+                            <Button
+                                Width="80"
+                                Margin="0,0,0,10"
+                                HorizontalAlignment="Right"
+                                materialDesign:ElevationAssist.Elevation="Dp4"
+                                Command="{Binding AddSingleDateCommand}"
+                                Content="Add"
+                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                ToolTip="Add new single date" />
+                            <DataGrid
+                                AutoGenerateColumns="False"
+                                CanUserAddRows="False"
+                                CanUserDeleteRows="False"
+                                CanUserReorderColumns="True"
+                                CanUserResizeColumns="True"
+                                CanUserResizeRows="True"
+                                CanUserSortColumns="True"
+                                IsReadOnly="True"
+                                ItemsSource="{Binding SingleDates}"
+                                SelectionMode="Single"
+                                Style="{StaticResource MaterialDesignDataGrid}"
+                                VerticalScrollBarVisibility="Auto">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Binding="{Binding Description}" Header="Description" />
+                                    <DataGridTextColumn MinWidth="80" Binding="{Binding Date, StringFormat='yyyy-MM-dd'}"
+                                                        Header="Date" />
+                                    <DataGridTemplateColumn Width="Auto" Header="Operations">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Button
+                                                        Padding="5,0"
+                                                        Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.EditSingleDateCommand}"
+                                                        CommandParameter="{Binding SingleDateId}"
+                                                        Content="{materialDesign:PackIcon Edit}"
+                                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                                        ToolTip="Edit single date" />
+                                                    <Button
+                                                        Padding="5,0"
+                                                        Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.DeleteSingleDateCommand}"
+                                                        CommandParameter="{Binding SingleDateId}"
+                                                        Content="{materialDesign:PackIcon Remove}"
+                                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                                        ToolTip="Delete single date" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+
+
+                        <StackPanel Grid.Row="2" Grid.Column="1" Margin="10,0,0,0"
+                                    Visibility="{Binding Path=IsCalendarSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock
+                                Margin="10,10,0,10"
+                                HorizontalAlignment="Center"
+                                Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                Text="Multiple Days and Recurrings" />
+                            <Button
+                                Width="80"
+                                Margin="0,0,0,10"
+                                HorizontalAlignment="Right"
+                                materialDesign:ElevationAssist.Elevation="Dp4"
+                                Command="{Binding AddRecurringDateCommand}"
+                                Content="Add"
+                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                ToolTip="Add new recurring dates" />
+                            <DataGrid
+                                AutoGenerateColumns="False"
+                                CanUserAddRows="False"
+                                CanUserDeleteRows="False"
+                                CanUserReorderColumns="True"
+                                CanUserResizeColumns="True"
+                                CanUserResizeRows="True"
+                                CanUserSortColumns="True"
+                                IsReadOnly="True"
+                                ItemsSource="{Binding RecurringDates}"
+                                SelectionMode="Single"
+                                Style="{StaticResource MaterialDesignDataGrid}"
+                                VerticalScrollBarVisibility="Auto">
+                                <DataGrid.Resources>
+                                    <!-- Shared Header Style -->
+                                    <Style x:Key="WrappedHeaderStyle" TargetType="DataGridColumnHeader"
+                                           BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                        <Setter Property="ContentTemplate">
+                                            <Setter.Value>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding}"
+                                                               TextWrapping="Wrap"
+                                                               MaxWidth="80"
+                                                               HorizontalAlignment="Center"
+                                                               TextAlignment="Center" />
+                                                </DataTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </DataGrid.Resources>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Binding="{Binding StartDate, StringFormat='yyyy-MM-dd'}"
+                                                        Header="Start Date" />
+                                    <DataGridTextColumn HeaderStyle="{StaticResource WrappedHeaderStyle}"
+                                                        Binding="{Binding Description}" Header="Description" />
+                                    <DataGridTextColumn HeaderStyle="{StaticResource WrappedHeaderStyle}"
+                                                        Binding="{Binding Duration}" Header="Duration in days" />
+                                    <DataGridTextColumn HeaderStyle="{StaticResource WrappedHeaderStyle}"
+                                                        Binding="{Binding Frequency}" Header="Frequency in days" />
+                                    <DataGridTextColumn HeaderStyle="{StaticResource WrappedHeaderStyle}"
+                                                        Binding="{Binding NumberOfRepetitions}" Header="Number of repetitions" />
+
+                                    <DataGridTemplateColumn Width="Auto" Header="Operations">
+
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Button
+                                                        Padding="5,0"
+                                                        Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.EditRecurringDateCommand}"
+                                                        CommandParameter="{Binding RecurringDateId}"
+                                                        Content="{materialDesign:PackIcon Edit}"
+                                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                                        ToolTip="Edit recurring dates" />
+                                                    <Button
+                                                        Padding="5,0"
+                                                        Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.DeleteRecurringDateCommand}"
+                                                        CommandParameter="{Binding RecurringDateId}"
+                                                        Content="{materialDesign:PackIcon Remove}"
+                                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                                        ToolTip="Delete recurring dates" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                        <Grid
+                            Grid.Row="2"
+                            Grid.Column="2"
+                            Width="350"
+                            Visibility="{Binding Path=IsCalendarSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Margin="10, 10, 0, 0">
+                            <StackPanel>
+                                <Grid HorizontalAlignment="Center">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Calendar:" Margin="10,0,10,0"
+                                               HorizontalAlignment="Right"
+                                               Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
+                                    <TextBlock Grid.Column="1" Grid.Row="0"
+                                               Margin="0,0,0,10"
+                                               HorizontalAlignment="Left"
+                                               Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                               Text="{Binding CalendarName}" />
+
+                                </Grid>
+                                <ComboBox
+                                    IsEnabled="False"
+                                    materialDesign:ComboBoxAssist.ShowSelectedItem="False"
+                                    materialDesign:HintAssist.HelperText="Validity Rule"
+                                    SelectedIndex="{Binding CalendarIsOnly, Converter={StaticResource BooleanToIndexConverter}, Mode=OneWay}"
+                                    Style="{StaticResource MaterialDesignFloatingHintComboBox}">
+                                    <ComboBoxItem Content="Allow all dates except those defined in the calendar" IsSelected="True" />
+                                    <ComboBoxItem Content="Only allow dates defined in the calendar" />
+                                </ComboBox>
+
+                                <Calendar materialDesign:CalendarAssist.IsHeaderVisible="False" Margin="0,20,0,10"
+                                          SelectionMode="None">
+                                    <b:Interaction.Behaviors>
+                                        <behaviors:CalendarColorBehavior ColorCodedDates="{Binding ReservedDates}" />
+                                    </b:Interaction.Behaviors>
+                                </Calendar>
+                                <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Margin="0,30,0,10">
+                                    <Button Width="130"
+                                            Margin="0,0,20,0"
+                                            HorizontalAlignment="Right"
+                                            materialDesign:ElevationAssist.Elevation="Dp4"
+                                            Command="{Binding UpdateCalendarCommand}"
+                                            CommandParameter="{Binding SelectedCalendarId}"
+                                            Content="Edit"
+                                            Style="{StaticResource MaterialDesignRaisedButton}"
+                                            ToolTip="Update calendar's name and role" />
+                                    <Button Width="130"
+                                            HorizontalAlignment="Right"
+                                            materialDesign:ElevationAssist.Elevation="Dp4"
+                                            Command="{Binding DeleteCalendarCommand}"
+                                            CommandParameter="{Binding SelectedCalendarId}"
+                                            Content="Delete"
+                                            Style="{StaticResource MaterialDesignRaisedButton}"
+                                            ToolTip="Delete calendar" />
+
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
                     </Grid>
-                    <ComboBox
-                        IsEnabled="False"
-                        materialDesign:ComboBoxAssist.ShowSelectedItem="False"
-                        materialDesign:HintAssist.HelperText="Validity Rule"
-                        SelectedIndex="{Binding CalendarIsOnly, Converter={StaticResource BooleanToIndexConverter}, Mode=OneWay}"
-                        Style="{StaticResource MaterialDesignFloatingHintComboBox}">
-                        <ComboBoxItem Content="Allow all dates except those defined in the calendar" IsSelected="True" />
-                        <ComboBoxItem Content="Only allow dates defined in the calendar" />
-                    </ComboBox>
-
-                    <Calendar materialDesign:CalendarAssist.IsHeaderVisible="False" Margin="0,20,0,10"
-                              SelectionMode="None">
-                        <b:Interaction.Behaviors>
-                            <behaviors:CalendarColorBehavior ColorCodedDates="{Binding ReservedDates}" />
-                        </b:Interaction.Behaviors>
-                    </Calendar>
-                    <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Margin="0,30,0,10">
-                        <Button Width="130"
-                                Margin="0,0,20,0"
-                                HorizontalAlignment="Right"
-                                materialDesign:ElevationAssist.Elevation="Dp4"
-                                Command="{Binding UpdateCalendarCommand}"
-                                CommandParameter="{Binding SelectedCalendarId}"
-                                Content="Edit"
-                                Style="{StaticResource MaterialDesignRaisedButton}"
-                                ToolTip="Update calendar's name and role" />
-                        <Button Width="130"
-                                HorizontalAlignment="Right"
-                                materialDesign:ElevationAssist.Elevation="Dp4"
-                                Command="{Binding DeleteCalendarCommand}"
-                                CommandParameter="{Binding SelectedCalendarId}"
-                                Content="Delete"
-                                Style="{StaticResource MaterialDesignRaisedButton}"
-                                ToolTip="Delete calendar" />
-
-                    </StackPanel>
-                </StackPanel>
-            </Grid>
+                </materialDesign:Card>
+            </ScrollViewer>
         </Grid>
-    </materialDesign:Card>
+    </Border>
 </UserControl>

@@ -26,6 +26,7 @@ public class UpdateCalendarInDbHandler : IRequestHandler<UpdateCalendarInDbReque
 
             var changeDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
 
+            // language=SQLite
             await connection.ExecuteAsync(
                 "UPDATE Calendar SET Name = @Name, IsOnly = @IsOnly, ChangeDate = @ChangeDate WHERE CalendarId = @CalendarId",
                 new { request.CalendarId, request.Name, request.IsOnly, ChangeDate = changeDate }

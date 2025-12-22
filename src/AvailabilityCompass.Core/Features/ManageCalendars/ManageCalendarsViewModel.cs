@@ -27,7 +27,7 @@ namespace AvailabilityCompass.Core.Features.ManageCalendars;
 /// ViewModel for managing calendars, including single and recurring dates.
 /// Handles calendar selection, loading, and CRUD operations.
 /// </summary>
-public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewModel, IDisposable
+public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewModel, IDialogViewModel, IDisposable
 {
     private readonly ICalendarDialogViewModelsFactory _calendarDialogViewModelsFactory;
     private readonly ICalendarViewModelFactory _calendarViewModelFactory;
@@ -40,6 +40,9 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     private IDisposable? _recurringDateAddedSubscription;
     private IDisposable? _recurringDateDeletedSubscription;
     private IDisposable? _recurringDateUpdatedSubscription;
+
+    [ObservableProperty]
+    private bool _isDialogOpen;
 
     [NotifyPropertyChangedFor(nameof(IsCalendarSelected))]
     [NotifyPropertyChangedFor(nameof(CalendarName))]
@@ -399,5 +402,12 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
         var updateSingleDateViewModel = _calendarDialogViewModelsFactory.CreateUpdateSingleDateViewModel();
         updateSingleDateViewModel.LoadData(singleDateViewModel);
         _dialogNavigationService.NavigateTo(updateSingleDateViewModel);
+    }
+
+    [RelayCommand]
+    private void OnClose()
+    {
+        IsDialogOpen = false;
+        _dialogNavigationService.CloseView();
     }
 }

@@ -21,6 +21,7 @@ public class GetRecurringDatesHandler : IRequestHandler<GetRecurringDatesQuery, 
             using var connection = _dbConnectionFactory.Connect();
             connection.Open();
 
+            // language=SQLite
             const string sql = @"
                         SELECT rd.CalendarId, rd.Id as RecurringDateId, rd.Description as RecurringDateDescription, rd.StartDate, rd.Duration, rd.Frequency, rd.NumberOfRepetitions, rd.ChangeDate
                         FROM RecurringDate rd

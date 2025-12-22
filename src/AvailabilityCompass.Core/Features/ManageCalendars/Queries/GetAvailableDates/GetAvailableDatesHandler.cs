@@ -52,6 +52,7 @@ public class GetAvailableDatesHandler : IRequestHandler<GetAvailableDatesQuery, 
             using var connection = _dbConnectionFactory.Connect();
             connection.Open();
 
+            // language=SQLite
             const string sql = @"
                     SELECT c.CalendarId, c.Name, c.IsOnly, c.ChangeDate,
                         sd.Id as SingleDateId, sd.CalendarId, sd.Description as SingleDateDescription, sd.Date, sd.ChangeDate,
@@ -78,7 +79,8 @@ public class GetAvailableDatesHandler : IRequestHandler<GetAvailableDatesQuery, 
                         calendarEntry.SingleDates.Add(singleDate);
                     }
 
-                    if (recurringDate is not null && calendarEntry.RecurringDates.All(x => x.RecurringDateId != recurringDate.RecurringDateId))
+                    if (recurringDate is not null
+                        && calendarEntry.RecurringDates.All(x => x.RecurringDateId != recurringDate.RecurringDateId))
                     {
                         calendarEntry.RecurringDates.Add(recurringDate);
                     }

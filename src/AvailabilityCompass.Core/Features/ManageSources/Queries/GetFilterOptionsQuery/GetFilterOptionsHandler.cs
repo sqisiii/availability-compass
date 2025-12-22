@@ -25,6 +25,7 @@ public class GetFilterOptionsHandler : IRequestHandler<GetFilterOptionsQuery, Ge
 
             foreach (var fieldName in query.FieldNames)
             {
+                // language=SQLite
                 const string sql = $@"
                         SELECT DISTINCT Value 
                         FROM SourceAdditionalData

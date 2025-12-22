@@ -27,6 +27,7 @@ public class UpdateSingleDateInDbHandler : IRequestHandler<UpdateSingleDateInDbR
 
             var changeDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
 
+            // language=SQLite
             await connection.ExecuteAsync(
                 "UPDATE SingleDate SET Description = @Description, Date = @Date, ChangeDate = @ChangeDate WHERE Id = @SingleDateId AND CalendarId = @CalendarId",
                 new { request.SingleDateId, request.CalendarId, request.Date, request.Description, ChangeDate = changeDate }

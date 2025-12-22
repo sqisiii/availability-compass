@@ -21,6 +21,7 @@ public class GetCalendarsHandler : IRequestHandler<GetCalendarsQuery, GetCalenda
             using var connection = _dbConnectionFactory.Connect();
             connection.Open();
 
+            // language=SQLite
             const string sql = @"
                         SELECT c.CalendarId, c.Name, c.IsOnly, c.ChangeDate,
                             sd.Id as SingleDateId, sd.CalendarId, sd.Description as SingleDateDescription, sd.Date, sd.ChangeDate,

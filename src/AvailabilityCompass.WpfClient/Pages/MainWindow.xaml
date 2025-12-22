@@ -1,7 +1,6 @@
-﻿<Window x:Class="AvailabilityCompass.WpfClient.Pages.MainWindow"
+<Window x:Class="AvailabilityCompass.WpfClient.Pages.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -14,134 +13,170 @@
         FontFamily="{materialDesign:MaterialDesignFont}"
         WindowStyle="None"
         AllowsTransparency="True"
+        Background="{DynamicResource ShadcnBackgroundBrush}"
         Loaded="MainWindow_Loaded"
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
         mc:Ignorable="d">
-    <Grid>
-        <Border
-            BorderThickness="1"
-            CornerRadius="10">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="50" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+    <Border BorderThickness="1"
+            BorderBrush="{DynamicResource ShadcnBorderBrush}"
+            CornerRadius="10"
+            Background="{DynamicResource ShadcnBackgroundBrush}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-                <!--  - Left navigation rail.  -->
-                <materialDesign:Card Grid.Row="1" Grid.RowSpan="2" Grid.Column="0">
-                    <TabControl
-                        x:Name="MenuTabControl"
-                        VerticalContentAlignment="Top"
-                        materialDesign:ColorZoneAssist.Mode="PrimaryDark"
-                        ItemsSource="{Binding MainNavigationTabs}"
-                        SnapsToDevicePixels="True"
-                        Style="{StaticResource MaterialDesignNavigationRailTabControl}">
-
-                        <b:Interaction.Triggers>
-                            <b:EventTrigger EventName="SelectionChanged"
-                                            SourceObject="{Binding ElementName=MenuTabControl}">
-                                <b:InvokeCommandAction Command="{Binding TabChangedCommand}"
-                                                       CommandParameter="{Binding SelectedItem, ElementName=MenuTabControl}" />
-                            </b:EventTrigger>
-                        </b:Interaction.Triggers>
-
-                        <TabControl.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Width="Auto" Height="Auto">
-                                    <materialDesign:PackIcon
-                                        Width="24"
-                                        Height="24"
-                                        HorizontalAlignment="Center"
-                                        Kind="{Binding Icon}" />
-                                    <TextBlock HorizontalAlignment="Center" Text="{Binding Name}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </TabControl.ItemTemplate>
-                        <!--  - Remove the content template.  -->
-                        <TabControl.ContentTemplate>
-                            <DataTemplate />
-                        </TabControl.ContentTemplate>
-                    </TabControl>
-                </materialDesign:Card>
-
-                <!--  Header  -->
-                <Grid
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Margin="0,0,5,0"
-                    Panel.ZIndex="1"
-                    Background="Transparent"
+            <!-- Header / Toolbar -->
+            <Border Grid.Row="0"
+                    Background="{DynamicResource ShadcnCardBrush}"
+                    BorderBrush="{DynamicResource ShadcnBorderBrush}"
+                    BorderThickness="0,0,0,1"
+                    CornerRadius="10,10,0,0"
                     MouseEnter="ControlBar_MouseEnter"
                     MouseLeftButtonDown="ControlBar_MouseLeftButtonDown">
+                <Grid Margin="16,0">
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <!--  Logo  -->
-                    <StackPanel Grid.Column="0" Orientation="Horizontal">
 
-                        <Image
-                            Height="30"
-                            Margin="15,0,0,0"
-                            Source="/Images/logo.png" />
-                        <TextBlock
-                            Margin="10,14,0,0"
-                            FontSize="16"
-                            Text="Availability Compass" />
+                    <!-- Logo and App Name -->
+                    <StackPanel Grid.Column="0"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center">
+                        <Image Height="28"
+                               Source="/Images/logo.png"
+                               RenderOptions.BitmapScalingMode="HighQuality" />
+                        <TextBlock Margin="12,0,0,0"
+                                   VerticalAlignment="Center"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource ShadcnForegroundBrush}"
+                                   Text="Availability Compass" />
                     </StackPanel>
-                    <StackPanel
-                        Grid.Column="1"
-                        Margin="0,0,5,0"
-                        Panel.ZIndex="1"
-                        Background="Transparent"
-                        FlowDirection="RightToLeft"
-                        MouseEnter="ControlBar_MouseEnter"
-                        MouseLeftButtonDown="ControlBar_MouseLeftButtonDown"
-                        Orientation="Horizontal">
-                        <Button
-                            Click="BtnClose_Click"
-                            Content="{materialDesign:PackIcon Close}"
-                            Style="{DynamicResource MaterialDesignFlatButton}"
-                            ToolTip="Close" />
-                        <Button
-                            x:Name="BtnMaximize"
-                            Click="BtnMaximize_Click"
-                            Command="{Binding MaximizeButtonPressedCommand}"
-                            Content="{Binding MaximizeIcon}"
-                            Style="{DynamicResource MaterialDesignFlatButton}"
-                            ToolTip="{Binding MaximizeToolTip}" />
-                        <Button
-                            Click="BtnMinimize_Click"
-                            Content="{materialDesign:PackIcon WindowMinimize}"
-                            Style="{DynamicResource MaterialDesignFlatButton}"
-                            ToolTip="Minimize" />
+
+                    <!-- Action Buttons -->
+                    <StackPanel Grid.Column="2"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="0,0,16,0">
+
+                        <!-- Theme Toggle -->
+                        <Button Style="{StaticResource ShadcnGhostButton}"
+                                Command="{Binding ToggleThemeCommand}"
+                                ToolTip="Toggle theme"
+                                Padding="8"
+                                Width="36"
+                                Height="36">
+                            <materialDesign:PackIcon Width="18" Height="18"
+                                                     Kind="{Binding ThemeIcon}"
+                                                     Foreground="{DynamicResource ShadcnForegroundBrush}" />
+                        </Button>
+
+                        <Rectangle Width="1"
+                                   Height="24"
+                                   Fill="{DynamicResource ShadcnBorderBrush}"
+                                   Margin="8,0" />
+
+                        <!-- Calendars Button -->
+                        <Button Style="{StaticResource ShadcnToolbarButton}"
+                                Command="{Binding OpenCalendarsCommand}"
+                                ToolTip="Manage calendars">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Width="16" Height="16"
+                                                         Kind="Calendar"
+                                                         VerticalAlignment="Center"
+                                                         Foreground="{DynamicResource ShadcnForegroundBrush}" />
+                                <TextBlock Text="Calendars"
+                                           Margin="6,0,0,0"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource ShadcnForegroundBrush}" />
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Sources Button -->
+                        <Button Style="{StaticResource ShadcnToolbarButton}"
+                                Command="{Binding OpenSourcesCommand}"
+                                ToolTip="Manage sources"
+                                Margin="4,0,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Width="16" Height="16"
+                                                         Kind="Database"
+                                                         VerticalAlignment="Center"
+                                                         Foreground="{DynamicResource ShadcnForegroundBrush}" />
+                                <TextBlock Text="Sources"
+                                           Margin="6,0,0,0"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource ShadcnForegroundBrush}" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Window Control Buttons -->
+                    <StackPanel Grid.Column="3"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center">
+                        <Button Style="{StaticResource ShadcnIconButton}"
+                                Click="BtnMinimize_Click"
+                                ToolTip="Minimize"
+                                Width="32"
+                                Height="32">
+                            <materialDesign:PackIcon Kind="WindowMinimize"
+                                                     Width="16"
+                                                     Height="16"
+                                                     Foreground="{DynamicResource ShadcnMutedForegroundBrush}" />
+                        </Button>
+                        <Button x:Name="BtnMaximize"
+                                Style="{StaticResource ShadcnIconButton}"
+                                Click="BtnMaximize_Click"
+                                Command="{Binding MaximizeButtonPressedCommand}"
+                                ToolTip="{Binding MaximizeToolTip}"
+                                Width="32"
+                                Height="32">
+                            <ContentControl Content="{Binding MaximizeIcon}">
+                                <ContentControl.Resources>
+                                    <Style TargetType="materialDesign:PackIcon">
+                                        <Setter Property="Width" Value="16" />
+                                        <Setter Property="Height" Value="16" />
+                                        <Setter Property="Foreground" Value="{DynamicResource ShadcnMutedForegroundBrush}" />
+                                    </Style>
+                                </ContentControl.Resources>
+                            </ContentControl>
+                        </Button>
+                        <Button Style="{StaticResource ShadcnIconButton}"
+                                Click="BtnClose_Click"
+                                ToolTip="Close"
+                                Width="32"
+                                Height="32">
+                            <materialDesign:PackIcon Kind="Close"
+                                                     Width="16"
+                                                     Height="16"
+                                                     Foreground="{DynamicResource ShadcnMutedForegroundBrush}" />
+                        </Button>
                     </StackPanel>
                 </Grid>
+            </Border>
 
-                <!--  - Main content area.  -->
-                <materialDesign:DialogHost Grid.Row="1" Grid.Column="1"
-                                           DialogContentUniformCornerRadius="20"
-                                           DialogTheme="Inherit"
-                                           Identifier="AddDeviceDialog"
-                                           IsOpen="{Binding IsDialogOpen, Mode=OneWay}">
-                    <materialDesign:DialogHost.DialogContent>
-                        <ContentControl
-                            Grid.Row="1"
-                            Margin="15"
-                            Content="{Binding CurrentDialogViewModel}" />
-                    </materialDesign:DialogHost.DialogContent>
-                    <ContentControl
-                        Margin="5"
-                        Panel.ZIndex="1"
-                        Content="{Binding CurrentViewModel}" />
-                </materialDesign:DialogHost>
-            </Grid>
-        </Border>
-    </Grid>
+            <!-- Main Content Area -->
+            <materialDesign:DialogHost Grid.Row="1"
+                                       DialogContentUniformCornerRadius="12"
+                                       DialogTheme="Inherit"
+                                       Identifier="MainDialogHost"
+                                       CloseOnClickAway="False"
+                                       IsOpen="{Binding IsDialogOpen, Mode=OneWay}"
+                                       Background="{DynamicResource ShadcnBackgroundBrush}">
+                <materialDesign:DialogHost.DialogContent>
+                    <ContentControl Margin="8"
+                                    Content="{Binding CurrentDialogViewModel}" />
+                </materialDesign:DialogHost.DialogContent>
+
+                <!-- Search View Content -->
+                <ContentControl Margin="16"
+                                Content="{Binding SearchViewModel}" />
+            </materialDesign:DialogHost>
+        </Grid>
+    </Border>
 </Window>

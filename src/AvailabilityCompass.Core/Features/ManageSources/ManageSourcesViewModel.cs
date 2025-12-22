@@ -2,6 +2,7 @@
 using AvailabilityCompass.Core.Features.ManageSources.Queries.GetSourcesMetaDataFromDbQuery;
 using AvailabilityCompass.Core.Features.ManageSources.Sources;
 using AvailabilityCompass.Core.Shared;
+using AvailabilityCompass.Core.Shared.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;
@@ -12,22 +13,28 @@ namespace AvailabilityCompass.Core.Features.ManageSources;
 /// ViewModel for managing data sources in the application.
 /// Provides functionality for viewing, refreshing, and monitoring source data.
 /// </summary>
-public partial class ManageSourcesViewModel : ObservableValidator, IPageViewModel
+public partial class ManageSourcesViewModel : ObservableValidator, IPageViewModel, IDialogViewModel
 {
     private readonly CancellationTokenSource _cancellationTokenSource = new();
+    private readonly INavigationService<IDialogViewModel> _dialogNavigationService;
     private readonly IMediator _mediator;
     private readonly HashSet<string> _refreshingSourceIds = [];
     private readonly ISourceMetaDataViewModelFactory _sourceMetaDataViewModelFactory;
     private readonly ISourceServiceFactory _sourceServiceFactory;
 
+    [ObservableProperty]
+    private bool _isDialogOpen;
+
     public ManageSourcesViewModel(
         ISourceServiceFactory sourceServiceFactory,
         IMediator mediator,
-        ISourceMetaDataViewModelFactory sourceMetaDataViewModelFactory)
+        ISourceMetaDataViewModelFactory sourceMetaDataViewModelFactory,
+        INavigationService<IDialogViewModel> dialogNavigationService)
     {
         _sourceServiceFactory = sourceServiceFactory;
         _mediator = mediator;
         _sourceMetaDataViewModelFactory = sourceMetaDataViewModelFactory;
+        _dialogNavigationService = dialogNavigationService;
     }
 
     public ObservableCollection<SourceMetaDataViewModel> Sources { get; } = [];
@@ -117,5 +124,12 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
         {
             Sources.Add(sourceViewModel);
         }
+    }
+
+    [RelayCommand]
+    private void OnClose()
+    {
+        IsDialogOpen = false;
+        _dialogNavigationService.CloseView();
     }
 }

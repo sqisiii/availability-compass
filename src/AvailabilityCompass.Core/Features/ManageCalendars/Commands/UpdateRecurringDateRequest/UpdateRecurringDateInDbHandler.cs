@@ -27,6 +27,7 @@ public class UpdateRecurringDateInDbHandler : IRequestHandler<UpdateRecurringDat
 
             var changeDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
 
+            // language=SQLite
             await connection.ExecuteAsync(
                     "UPDATE RecurringDate SET StartDate = @StartDate, Duration = @Duration, Frequency = @Frequency, " +
                     "NumberOfRepetitions = @NumberOfRepetitions, Description = @Description, ChangeDate = @ChangeDate " +

@@ -29,6 +29,7 @@ public class GetCalendarsForFilteringHandler : IRequestHandler<GetCalendarsForFi
             using var connection = _dbConnectionFactory.Connect();
             connection.Open();
 
+            // language=SQLite
             const string sql = @"
                         SELECT c.CalendarId as Id , c.Name, c.IsOnly, c.ChangeDate
                         FROM Calendar c";

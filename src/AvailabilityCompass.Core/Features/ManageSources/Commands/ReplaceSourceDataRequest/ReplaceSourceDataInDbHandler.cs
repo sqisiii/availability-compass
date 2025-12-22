@@ -40,12 +40,14 @@ public class ReplaceSourceDataInDbHandler : IRequestHandler<ReplaceSourceDataInD
                 return false;
             }
 
+            // language=SQLite
             const string deleteSourceSql = @"DELETE FROM Source WHERE SourceId IN @SourceIds;";
             await connection.ExecuteAsync(
                     deleteSourceSql,
                     new { SourceIds = sourceIds }, transaction)
                 .ConfigureAwait(false);
 
+            // language=SQLite
             const string deleteAdditionalDataSql = @"DELETE FROM SourceAdditionalData WHERE SourceId IN @SourcesIds;";
             await connection.ExecuteAsync(
                     deleteAdditionalDataSql,
@@ -81,6 +83,7 @@ public class ReplaceSourceDataInDbHandler : IRequestHandler<ReplaceSourceDataInD
 
             if (sourceInserts.Any())
             {
+                // language=SQLite
                 var sourceUpdateSql = @"INSERT INTO Source (SeqNo, SourceId, Title, Url, StartDate, EndDate, ChangeDate) 
                     VALUES (@SeqNo, @SourceId, @Title, @Url, @StartDate, @EndDate, @ChangeDate);";
                 await connection.ExecuteAsync(sourceUpdateSql, sourceInserts, transaction).ConfigureAwait(false);
@@ -88,6 +91,7 @@ public class ReplaceSourceDataInDbHandler : IRequestHandler<ReplaceSourceDataInD
 
             if (additionalDataInserts.Any())
             {
+                // language=SQLite
                 var additionalDataUpdateSql = @"INSERT INTO SourceAdditionalData (SourceSeqNo, SourceId, Key, Value) 
                     VALUES (@SourceSeqNo, @SourceId, @Key, @Value);";
                 await connection.ExecuteAsync(additionalDataUpdateSql, additionalDataInserts, transaction).ConfigureAwait(false);

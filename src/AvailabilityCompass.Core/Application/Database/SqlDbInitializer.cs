@@ -20,6 +20,7 @@ public class SqlDbInitializer : IDbInitializer
         SqlMapper.AddTypeHandler(new SqliteGuidTypeHandler());
         await PrepareSourceTablesAsync();
         await PrepareCalendarTablesAsync();
+        await PrepareSettingsTableAsync();
     }
 
     private async Task PrepareSourceTablesAsync()
@@ -35,6 +36,7 @@ public class SqlDbInitializer : IDbInitializer
                 ChangeDate TEXT NOT NULL,
                 PRIMARY KEY (SourceId, SeqNo)
             );";
+        // language=SQLite
         const string createSourceAdditionalDataTables =
             @"CREATE TABLE IF NOT EXISTS SourceAdditionalData (
                 SourceId TEXT NOT NULL,
@@ -51,6 +53,7 @@ public class SqlDbInitializer : IDbInitializer
 
     private async Task PrepareCalendarTablesAsync()
     {
+        // language=SQLite
         const string createCalendarTable =
             @"CREATE TABLE IF NOT EXISTS Calendar (
                 CalendarId BLOB(16) NOT NULL,
@@ -59,6 +62,7 @@ public class SqlDbInitializer : IDbInitializer
                 ChangeDate TEXT NOT NULL,
                 PRIMARY KEY (CalendarId)
             );";
+        // language=SQLite
         const string createSingleDateTable =
             @"CREATE TABLE IF NOT EXISTS SingleDate (
                 CalendarId BLOB(16) NOT NULL,
@@ -69,6 +73,7 @@ public class SqlDbInitializer : IDbInitializer
                 PRIMARY KEY (CalendarId, Id),
                 FOREIGN KEY (CalendarId) REFERENCES Calendar(CalendarId) ON DELETE CASCADE
             );";
+        // language=SQLite
         const string createRecurringDateTable =
             @"CREATE TABLE IF NOT EXISTS RecurringDate (
                 CalendarId BLOB(16) NOT NULL,
@@ -86,5 +91,18 @@ public class SqlDbInitializer : IDbInitializer
         await database.ExecuteAsync(createCalendarTable);
         await database.ExecuteAsync(createSingleDateTable);
         await database.ExecuteAsync(createRecurringDateTable);
+    }
+
+    private async Task PrepareSettingsTableAsync()
+    {
+        // language=SQLite
+        const string createSettingsTable =
+            @"CREATE TABLE IF NOT EXISTS Setting (
+                Key TEXT NOT NULL PRIMARY KEY,
+                Value TEXT NOT NULL,
+                ChangeDate TEXT NOT NULL
+            );";
+        using var database = _sqliteDbConnectionFactory.Connect();
+        await database.ExecuteAsync(createSettingsTable);
     }
 }

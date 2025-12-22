@@ -21,6 +21,7 @@ public class GetSingleDatesHandler : IRequestHandler<GetSingleDatesQuery, GetSin
             using var connection = _dbConnectionFactory.Connect();
             connection.Open();
 
+            // language=SQLite
             const string sql = @"
             SELECT sd.CalendarId, sd.Id as SingleDateId, sd.Description as SingleDateDescription, sd.Date, sd.ChangeDate
             FROM SingleDate sd

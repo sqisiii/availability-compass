@@ -26,6 +26,7 @@ public class GetSourcesMetaDataFromDbHandler : IRequestHandler<GetSourcesMetaDat
             using var connection = _dbConnectionFactory.Connect();
             connection.Open();
 
+            // language=SQLite
             var query = @"
                         SELECT 
                             SourceId, 
