@@ -67,6 +67,7 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
         _formElementFactory = formElementFactory;
         _searchCommandFactory = searchCommandFactory;
         Sources.CollectionChanged += SourcesOnCollectionChanged;
+        Results.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasResults));
 
         _calendarAddedSubscription = eventBus.ListenToAll()
             .SelectMany(_ => Observable.FromAsync(OnFilterDataChanged))
@@ -90,6 +91,8 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
 
     public List<ResultColumnDefinition> Columns { get; } = [];
     public ObservableCollection<Dictionary<string, object>> Results { get; } = [];
+
+    public bool HasResults => Results.Count > 0;
 
     public void Dispose()
     {
