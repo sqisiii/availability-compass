@@ -37,6 +37,10 @@ public partial class SourceFilterViewModel : ObservableObject, IDisposable
 
     public DateTime? ChangeAt { get; init; }
 
+    public string IconFileName { get; init; } = string.Empty;
+
+    public string IconPath => string.IsNullOrEmpty(IconFileName) ? string.Empty : $"/Images/Sources/{IconFileName}";
+
     public string LastUpdated => GetRelativeTime(ChangeAt);
 
     public void Dispose()

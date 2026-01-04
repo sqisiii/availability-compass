@@ -7,7 +7,7 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Sources.Horyzonty;
 
-[SourceService("Horyzonty", "Horyzonty", "PL")]
+[SourceService("Horyzonty", "Horyzonty", "PL", IconFileName = "horyzonty.png")]
 public sealed class HoryzontyService : ISourceService
 {
     private readonly HttpClient _httpClient;

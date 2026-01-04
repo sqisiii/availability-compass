@@ -6,7 +6,7 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Sources.ViaVerde;
 
-[SourceService("ViaVerde", "Via Verde", "PL")]
+[SourceService("ViaVerde", "Via Verde", "PL", IconFileName = "viaverde.png")]
 public class ViaVerdeService : ISourceService
 {
     private readonly HttpClient _httpClient;

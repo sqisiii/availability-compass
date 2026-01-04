@@ -26,6 +26,8 @@ public class SourceServiceAttribute : Attribute
     public bool IsEnabled { get; }
 
     public string Language { get; }
+
+    public string IconFileName { get; set; } = string.Empty;
 }
 
 public static class SourceServiceAttributeExtensions

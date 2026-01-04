@@ -22,7 +22,8 @@ public class SourceFilterViewModelFactory : ISourceFilterViewModelFactory
             Language = getSourcesResponse.Language,
             IsSelected = false,
             ChangeAt = getSourcesResponse.ChangedAt,
-            Name = getSourcesResponse.Name
+            Name = getSourcesResponse.Name,
+            IconFileName = getSourcesResponse.IconFileName
         };
     }
 }

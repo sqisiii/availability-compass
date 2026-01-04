@@ -64,6 +64,7 @@ public class GetSourcesForFilteringHandler : IRequestHandler<
                 ChangedAt = sourceChangeAtDate,
                 Language = sourceData.Language,
                 IsEnabled = sourceData.IsEnabled,
+                IconFileName = sourceData.IconFileName,
                 Filters = filterOptions.Select(f => new GetSourcesForFilteringResponse.SourceFilter
                     {
                         Label = f.Label,

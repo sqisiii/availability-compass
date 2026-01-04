@@ -7,7 +7,7 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Sources.RowerzystaPodroznik;
 
-[SourceService("RowerzystaPodroznik", "Rowerzysta Podróżnik", "PL")]
+[SourceService("RowerzystaPodroznik", "Rowerzysta Podróżnik", "PL", IconFileName = "rowerzystapodroznik.png")]
 public class RowerzystaPodroznikService : ISourceService
 {
     private readonly HttpClient _httpClient;
