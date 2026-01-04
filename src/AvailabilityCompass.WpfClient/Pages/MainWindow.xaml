@@ -2,25 +2,29 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:AvailabilityCompass.WpfClient.Pages"
+        xmlns:controls="clr-namespace:AvailabilityCompass.WpfClient.Shared.Controls"
         Width="1360"
         Height="950"
         ResizeMode="CanResizeWithGrip"
         WindowStartupLocation="CenterScreen"
-        Style="{StaticResource MaterialDesignWindow}"
-        FontFamily="{materialDesign:MaterialDesignFont}"
+        FontFamily="{DynamicResource GlassFontFamily}"
         WindowStyle="None"
         AllowsTransparency="True"
-        Background="{DynamicResource ShadcnBackgroundBrush}"
+        Background="{DynamicResource GlassBackgroundBrush}"
         Loaded="MainWindow_Loaded"
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
         mc:Ignorable="d">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Window.Resources>
+
     <Border BorderThickness="1"
-            BorderBrush="{DynamicResource ShadcnBorderBrush}"
-            CornerRadius="10"
-            Background="{DynamicResource ShadcnBackgroundBrush}">
+            BorderBrush="{DynamicResource GlassBorderSolidBrush}"
+            CornerRadius="{DynamicResource GlassWindowRadius}"
+            Background="{DynamicResource GlassBackgroundBrush}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="56" />
@@ -29,10 +33,10 @@
 
             <!-- Header / Toolbar -->
             <Border Grid.Row="0"
-                    Background="{DynamicResource ShadcnCardBrush}"
-                    BorderBrush="{DynamicResource ShadcnBorderBrush}"
+                    Background="{DynamicResource GlassCardSolidBrush}"
+                    BorderBrush="{DynamicResource GlassBorderSolidBrush}"
                     BorderThickness="0,0,0,1"
-                    CornerRadius="10,10,0,0"
+                    CornerRadius="{DynamicResource GlassWindowTopRadius}"
                     MouseEnter="ControlBar_MouseEnter"
                     MouseLeftButtonDown="ControlBar_MouseLeftButtonDown">
                 <Grid Margin="16,0">
@@ -54,7 +58,7 @@
                                    VerticalAlignment="Center"
                                    FontSize="16"
                                    FontWeight="SemiBold"
-                                   Foreground="{DynamicResource ShadcnForegroundBrush}"
+                                   Foreground="{DynamicResource GlassForegroundBrush}"
                                    Text="Availability Compass" />
                     </StackPanel>
 
@@ -65,52 +69,55 @@
                                 Margin="0,0,16,0">
 
                         <!-- Theme Toggle -->
-                        <Button Style="{StaticResource ShadcnGhostButton}"
+                        <Button Style="{StaticResource GlassGhostButton}"
                                 Command="{Binding ToggleThemeCommand}"
                                 ToolTip="Toggle theme"
                                 Padding="8"
                                 Width="36"
                                 Height="36">
-                            <materialDesign:PackIcon Width="18" Height="18"
-                                                     Kind="{Binding ThemeIcon}"
-                                                     Foreground="{DynamicResource ShadcnForegroundBrush}" />
+                            <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
+                                       FontSize="18"
+                                       Text="{Binding ThemeIcon}"
+                                       Foreground="{DynamicResource GlassForegroundBrush}" />
                         </Button>
 
                         <Rectangle Width="1"
                                    Height="24"
-                                   Fill="{DynamicResource ShadcnBorderBrush}"
+                                   Fill="{DynamicResource GlassBorderSolidBrush}"
                                    Margin="8,0" />
 
                         <!-- Calendars Button -->
-                        <Button Style="{StaticResource ShadcnToolbarButton}"
+                        <Button Style="{StaticResource GlassToolbarButton}"
                                 Command="{Binding OpenCalendarsCommand}"
                                 ToolTip="Manage calendars">
                             <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Width="16" Height="16"
-                                                         Kind="Calendar"
-                                                         VerticalAlignment="Center"
-                                                         Foreground="{DynamicResource ShadcnForegroundBrush}" />
+                                <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
+                                           FontSize="16"
+                                           Text="{x:Static controls:FluentIcons.Calendar}"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource GlassForegroundBrush}" />
                                 <TextBlock Text="Calendars"
                                            Margin="6,0,0,0"
                                            VerticalAlignment="Center"
-                                           Foreground="{DynamicResource ShadcnForegroundBrush}" />
+                                           Foreground="{DynamicResource GlassForegroundBrush}" />
                             </StackPanel>
                         </Button>
 
                         <!-- Sources Button -->
-                        <Button Style="{StaticResource ShadcnToolbarButton}"
+                        <Button Style="{StaticResource GlassToolbarButton}"
                                 Command="{Binding OpenSourcesCommand}"
                                 ToolTip="Manage sources"
                                 Margin="4,0,0,0">
                             <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Width="16" Height="16"
-                                                         Kind="Database"
-                                                         VerticalAlignment="Center"
-                                                         Foreground="{DynamicResource ShadcnForegroundBrush}" />
+                                <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
+                                           FontSize="16"
+                                           Text="{x:Static controls:FluentIcons.Database}"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource GlassForegroundBrush}" />
                                 <TextBlock Text="Sources"
                                            Margin="6,0,0,0"
                                            VerticalAlignment="Center"
-                                           Foreground="{DynamicResource ShadcnForegroundBrush}" />
+                                           Foreground="{DynamicResource GlassForegroundBrush}" />
                             </StackPanel>
                         </Button>
                     </StackPanel>
@@ -119,64 +126,65 @@
                     <StackPanel Grid.Column="3"
                                 Orientation="Horizontal"
                                 VerticalAlignment="Center">
-                        <Button Style="{StaticResource ShadcnIconButton}"
+                        <Button Style="{StaticResource GlassIconButton}"
                                 Click="BtnMinimize_Click"
                                 ToolTip="Minimize"
                                 Width="32"
                                 Height="32">
-                            <materialDesign:PackIcon Kind="WindowMinimize"
-                                                     Width="16"
-                                                     Height="16"
-                                                     Foreground="{DynamicResource ShadcnMutedForegroundBrush}" />
+                            <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
+                                       FontSize="16"
+                                       Text="{x:Static controls:FluentIcons.ChromeMinimize}"
+                                       Foreground="{DynamicResource GlassMutedForegroundBrush}" />
                         </Button>
                         <Button x:Name="BtnMaximize"
-                                Style="{StaticResource ShadcnIconButton}"
+                                Style="{StaticResource GlassIconButton}"
                                 Click="BtnMaximize_Click"
                                 Command="{Binding MaximizeButtonPressedCommand}"
                                 ToolTip="{Binding MaximizeToolTip}"
                                 Width="32"
                                 Height="32">
-                            <ContentControl Content="{Binding MaximizeIcon}">
-                                <ContentControl.Resources>
-                                    <Style TargetType="materialDesign:PackIcon">
-                                        <Setter Property="Width" Value="16" />
-                                        <Setter Property="Height" Value="16" />
-                                        <Setter Property="Foreground" Value="{DynamicResource ShadcnMutedForegroundBrush}" />
-                                    </Style>
-                                </ContentControl.Resources>
-                            </ContentControl>
+                            <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
+                                       FontSize="16"
+                                       Text="{Binding MaximizeIcon}"
+                                       Foreground="{DynamicResource GlassMutedForegroundBrush}" />
                         </Button>
-                        <Button Style="{StaticResource ShadcnIconButton}"
+                        <Button Style="{StaticResource GlassIconButton}"
                                 Click="BtnClose_Click"
                                 ToolTip="Close"
                                 Width="32"
                                 Height="32">
-                            <materialDesign:PackIcon Kind="Close"
-                                                     Width="16"
-                                                     Height="16"
-                                                     Foreground="{DynamicResource ShadcnMutedForegroundBrush}" />
+                            <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
+                                       FontSize="16"
+                                       Text="{x:Static controls:FluentIcons.Close}"
+                                       Foreground="{DynamicResource GlassMutedForegroundBrush}" />
                         </Button>
                     </StackPanel>
                 </Grid>
             </Border>
 
             <!-- Main Content Area -->
-            <materialDesign:DialogHost Grid.Row="1"
-                                       DialogContentUniformCornerRadius="12"
-                                       DialogTheme="Inherit"
-                                       Identifier="MainDialogHost"
-                                       CloseOnClickAway="False"
-                                       IsOpen="{Binding IsDialogOpen, Mode=OneWay}"
-                                       Background="{DynamicResource ShadcnBackgroundBrush}">
-                <materialDesign:DialogHost.DialogContent>
-                    <ContentControl Margin="8"
-                                    Content="{Binding CurrentDialogViewModel}" />
-                </materialDesign:DialogHost.DialogContent>
-
+            <Grid Grid.Row="1">
                 <!-- Search View Content -->
                 <ContentControl Margin="16"
                                 Content="{Binding SearchViewModel}" />
-            </materialDesign:DialogHost>
+
+                <!-- Dialog Overlay -->
+                <Border x:Name="DialogOverlay"
+                        Background="{DynamicResource GlassOverlayBrush}"
+                        Visibility="{Binding IsDialogOpen, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        MouseDown="DialogOverlay_MouseDown">
+                    <Border Style="{StaticResource GlassDialogCard}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            MinWidth="400"
+                            MaxWidth="1200"
+                            MaxHeight="800"
+                            Margin="40"
+                            MouseDown="DialogContent_MouseDown">
+                        <ContentControl Content="{Binding CurrentDialogViewModel}" />
+                    </Border>
+                </Border>
+            </Grid>
         </Grid>
     </Border>
 </Window>

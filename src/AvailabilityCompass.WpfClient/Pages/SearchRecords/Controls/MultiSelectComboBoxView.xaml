@@ -1,40 +1,47 @@
-﻿<UserControl x:Class="AvailabilityCompass.WpfClient.Pages.SearchRecords.Controls.MultiSelectComboBoxView"
+<UserControl x:Class="AvailabilityCompass.WpfClient.Pages.SearchRecords.Controls.MultiSelectComboBoxView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:AvailabilityCompass.WpfClient.Pages.SearchRecords.Controls"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:filterFormElements1="clr-namespace:AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;assembly=AvailabilityCompass.Core"
+             xmlns:helpers="clr-namespace:AvailabilityCompass.WpfClient.Shared.Helpers"
+             xmlns:sharedControls="clr-namespace:AvailabilityCompass.WpfClient.Shared.Controls"
              mc:Ignorable="d"
              Loaded="MultiSelectComboBoxView_OnLoaded"
              x:Name="Root"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
+        <helpers:StringNotEmptyToVisibilityConverter x:Key="StringNotEmptyToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
-        <controls:MultiSelectComboBox Width="200"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <controls:MultiSelectComboBox x:Name="ComboBox"
+                                      Grid.Column="0"
+                                      Width="200"
                                       IsEditable="True"
                                       DisplayValue="{Binding DisplayValue, ElementName=Root, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       IsReadOnly="True"
                                       Text="{Binding DisplayValue, ElementName=Root, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                      materialDesign:HintAssist.Hint="{Binding Label, ElementName=Root, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                      materialDesign:TextFieldAssist.HasClearButton="True"
-                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}">
+                                      helpers:GlassHint.Hint="{Binding Label, ElementName=Root, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      Style="{StaticResource GlassFloatingHintComboBox}">
             <controls:MultiSelectComboBox.Resources>
-                <DataTemplate
-                    DataType="{x:Type filterFormElements1:FormElementSelectOption}">
+                <DataTemplate DataType="{x:Type filterFormElements1:FormElementSelectOption}">
                     <CheckBox Content="{Binding Name}"
                               Click="ButtonBase_OnClick"
-                              IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                              IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                              Style="{StaticResource GlassCheckBox}" />
                 </DataTemplate>
 
                 <CollectionViewSource x:Key="ItemSource"
                                       Source="{Binding ItemSource, ElementName=Root }" />
 
                 <CompositeCollection x:Key="ItemsSource">
-                    <CollectionContainer
-                        Collection="{Binding Source={StaticResource ItemSource }}" />
+                    <CollectionContainer Collection="{Binding Source={StaticResource ItemSource }}" />
                 </CompositeCollection>
             </controls:MultiSelectComboBox.Resources>
 
@@ -51,13 +58,9 @@
 
             <ComboBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ContentControl}">
-                    <!-- use setters from MaterialDesignComboBoxItemStyle -->
-                    <!-- see https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/blob/master/src/MaterialDesignThemes.Wpf/Themes/MaterialDesignTheme.ComboBox.xaml#L188-L196 -->
                     <Setter Property="Background" Value="Transparent" />
                     <Setter Property="BorderBrush" Value="Transparent" />
                     <Setter Property="BorderThickness" Value="0" />
-                    <Setter Property="FocusVisualStyle"
-                            Value="{StaticResource FocusVisual}" />
                     <Setter Property="HorizontalContentAlignment"
                             Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
                     <Setter Property="Padding" Value="16,8" />
@@ -66,35 +69,48 @@
                             Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
                     <Setter Property="Template">
                         <Setter.Value>
-                            <ControlTemplate
-                                TargetType="{x:Type ContentControl}">
-                                <!-- use modified template from ComboBoxItem -->
-                                <!-- see https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/blob/master/src/MaterialDesignThemes.Wpf/Themes/MaterialDesignTheme.ComboBox.xaml#L75-L79 -->
+                            <ControlTemplate TargetType="{x:Type ContentControl}">
                                 <Grid x:Name="GridWrapper">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
-                                    <!-- see https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/blob/master/src/MaterialDesignThemes.Wpf/Themes/MaterialDesignTheme.ComboBox.xaml#L145-L156 -->
-                                    <materialDesign:Ripple
-                                        Padding="{TemplateBinding Padding}"
-                                        HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Stretch"
-                                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                        Feedback="{TemplateBinding Foreground, Converter={x:Static materialDesign:BrushRoundConverter.Instance}}"
-                                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                        Content="{TemplateBinding Content}"
-                                        ContentTemplate="{TemplateBinding ContentTemplate}"
-                                        ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
-                                        Focusable="False"
-                                        RecognizesAccessKey="False"
-                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                    <Border x:Name="HoverBg"
+                                            Background="Transparent"
+                                            Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                          Content="{TemplateBinding Content}"
+                                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                          ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                    </Border>
                                 </Grid>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="HoverBg" Property="Background" Value="{DynamicResource GlassSurfaceBrush}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
                 </Style>
             </ComboBox.ItemContainerStyle>
         </controls:MultiSelectComboBox>
+
+        <!-- Clear Button -->
+        <Button Grid.Column="1"
+                Style="{StaticResource GlassIconButton}"
+                Command="{x:Static controls:MultiSelectComboBox.ClearCommand}"
+                CommandTarget="{Binding ElementName=ComboBox}"
+                ToolTip="Clear selection"
+                Width="24" Height="24"
+                Margin="4,0,0,0"
+                VerticalAlignment="Center"
+                Visibility="{Binding DisplayValue, ElementName=Root, Converter={StaticResource StringNotEmptyToVisibilityConverter}}">
+            <sharedControls:FluentIcon Glyph="{x:Static sharedControls:FluentIcons.Close}"
+                                       IconSize="12"
+                                       Foreground="{DynamicResource GlassMutedForegroundBrush}" />
+        </Button>
     </Grid>
 </UserControl>

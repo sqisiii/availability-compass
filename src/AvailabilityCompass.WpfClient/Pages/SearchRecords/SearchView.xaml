@@ -1,13 +1,14 @@
-﻿<UserControl
+<UserControl
     x:Class="AvailabilityCompass.WpfClient.Pages.SearchView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Pages.SearchRecords.Converters"
     xmlns:controls="clr-namespace:AvailabilityCompass.WpfClient.Pages.SearchRecords.Controls"
+    xmlns:sharedControls="clr-namespace:AvailabilityCompass.WpfClient.Shared.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:AvailabilityCompass.Core.Features.SearchRecords;assembly=AvailabilityCompass.Core"
+    xmlns:helpers="clr-namespace:AvailabilityCompass.WpfClient.Shared.Helpers"
     Loaded="SearchView_OnLoaded"
     d:DataContext="{d:DesignInstance viewModels:SearchViewModel,
                                      IsDesignTimeCreatable=True}"
@@ -20,146 +21,146 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <!-- ReSharper disable once Xaml.RedundantResource -->
         <DataTemplate x:Key="UrlCellTemplate">
-            <TextBlock>
-                <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-                <Hyperlink NavigateUri="{Binding [Url]}" RequestNavigate="Hyperlink_RequestNavigate">
-                    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-                    <TextBlock Text="{Binding [Url]}" />
-                </Hyperlink>
-            </TextBlock>
+            <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
+            <Button Style="{StaticResource GlassIconButton}"
+                    Click="UrlIcon_Click"
+                    Tag="{Binding [Url]}"
+                    ToolTip="{Binding [Url]}"
+                    HorizontalAlignment="Center">
+                <sharedControls:FluentIcon Glyph="{x:Static sharedControls:FluentIcons.Link}" IconSize="16"
+                                           Foreground="{DynamicResource GlassPrimaryBrush}" />
+            </Button>
         </DataTemplate>
     </UserControl.Resources>
-    <materialDesign:Card
-        Margin="5"
-        Padding="5,5,5,15"
-        materialDesign:ElevationAssist.Elevation="Dp6">
-        <ScrollViewer x:Name="MainScrollViewer">
+    <Border Style="{StaticResource GlassCard}"
+            Margin="5"
+            Padding="5,5,5,15">
+        <ScrollViewer x:Name="MainScrollViewer"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
             <StackPanel>
                 <TextBlock
-                    Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                    Style="{StaticResource GlassHeading3}"
                     Margin="0,10,0,10"
                     Text="Search"
                     HorizontalAlignment="Center" />
 
                 <!-- Calendars section -->
-                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Calendars" />
+                <TextBlock Style="{StaticResource GlassBody}" Text="Calendars" FontWeight="SemiBold" />
                 <TextBlock Margin="0,10,0,0"
                            Text="No calendars available. Go to 'Calendars' section if you want to use calendars."
+                           Style="{StaticResource GlassBodyMuted}"
                            Visibility="{Binding CalendarsUnAvailable, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <WrapPanel Margin="0,10,0,0" Orientation="Horizontal"
-                           Visibility="{Binding CalendarsAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <ListBox ItemsSource="{Binding Calendars}">
-                        <ListBox.ItemContainerStyle>
-                            <!--  Style to get rid of the selection visual  -->
-                            <Style TargetType="{x:Type ListBoxItem}">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                            <ContentPresenter />
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="Margin" Value="5,0,5,5" />
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel Orientation="Horizontal" />
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type viewModels:CalendarFilterViewModel}">
-                                <StackPanel>
-                                    <controls:SelectionCheckBox
-                                        CheckBoxText="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        FullMinHeight="30"
-                                        FullWidth="150"
-                                        IsActive="True"
-                                        HeaderText="{Binding Type}"
-                                        IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <ItemsControl Margin="0,10,0,0"
+                              ItemsSource="{Binding Calendars}"
+                              Visibility="{Binding CalendarsAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type viewModels:CalendarFilterViewModel}">
+                            <ToggleButton Margin="0,0,8,8"
+                                          IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                          Style="{StaticResource GlassFloatingCard}">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0">
+                                    <!-- Icon -->
+                                    <sharedControls:FluentIcon Glyph="{x:Static sharedControls:FluentIcons.Calendar}"
+                                                               IconSize="24"
+                                                               VerticalAlignment="Center"
+                                                               Foreground="{DynamicResource GlassPrimaryBrush}" />
+                                    <!-- Name and Type -->
+                                    <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}"
+                                                   FontWeight="Medium"
+                                                   FontSize="13" />
+                                        <TextBlock Text="{Binding Type}"
+                                                   Style="{StaticResource GlassCaption}"
+                                                   Margin="0,2,0,0" />
+                                    </StackPanel>
                                 </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </WrapPanel>
+                            </ToggleButton>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
 
                 <!-- Sources section -->
-                <TextBlock Margin="0,10,0,0" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Sources" />
+                <TextBlock Margin="0,10,0,0" Style="{StaticResource GlassBody}" Text="Sources" FontWeight="SemiBold" />
                 <TextBlock Margin="0,10,0,0"
                            Text="No sources available. Go to 'Sources' to refresh sources data."
+                           Style="{StaticResource GlassBodyMuted}"
                            Visibility="{Binding SourcesUnAvailable, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <WrapPanel Margin="0,10,0,0" Orientation="Horizontal"
-                           Visibility="{Binding SourcesAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <ListBox ItemsSource="{Binding Sources}">
-                        <ListBox.ItemContainerStyle>
-                            <!--  Style to get rid of the selection visual  -->
-                            <Style TargetType="{x:Type ListBoxItem}">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                            <ContentPresenter />
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="Margin" Value="5,0,5,5" />
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel Orientation="Horizontal" />
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type viewModels:SourceFilterViewModel}">
-                                <StackPanel>
-                                    <controls:SelectionCheckBox
-                                        CheckBoxText="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        FullMinHeight="30"
-                                        FullWidth="180"
-                                        HeaderText="{Binding HeaderText}"
-                                        IsActive="{Binding IsActive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <ItemsControl Margin="0,10,0,0"
+                              ItemsSource="{Binding Sources}"
+                              Visibility="{Binding SourcesAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type viewModels:SourceFilterViewModel}">
+                            <ToggleButton Margin="0,0,8,8"
+                                          IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                          IsEnabled="{Binding IsActive}"
+                                          Style="{StaticResource GlassFloatingCard}">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0">
+                                    <!-- Icon -->
+                                    <Image Source="{Binding IconPath}"
+                                           Width="24" Height="24"
+                                           VerticalAlignment="Center"
+                                           RenderOptions.BitmapScalingMode="HighQuality" />
+                                    <!-- Name and Language -->
+                                    <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}"
+                                                   FontWeight="Medium"
+                                                   FontSize="13" />
+                                        <TextBlock Text="{Binding Language}"
+                                                   Style="{StaticResource GlassCaption}"
+                                                   Margin="0,2,0,0" />
+                                    </StackPanel>
                                 </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </WrapPanel>
+                            </ToggleButton>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
 
                 <!-- Filters section -->
-                <TextBlock Margin="0,10,0,0" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Filters" />
+                <TextBlock Margin="0,10,0,0" Style="{StaticResource GlassBody}" Text="Filters" FontWeight="SemiBold" />
                 <StackPanel Orientation="Horizontal">
                     <TextBox
                         Width="300"
                         Margin="15,0,0,0"
-                        materialDesign:HintAssist.Hint="Search phrase"
-                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                        helpers:GlassHint.Hint="Search phrase"
+                        Style="{StaticResource GlassFloatingHintTextBox}"
                         Text="{Binding SearchPhrase, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                         ToolTip="Phrase to look for." />
                     <DatePicker
                         Width="120"
                         Margin="15,0,0,0"
-                        materialDesign:HintAssist.HelperText="Format: MM/dd/yyyy"
-                        materialDesign:HintAssist.Hint="Start Date"
-                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
-                        Text="{Binding StartDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}" />
+                        Style="{StaticResource GlassDatePicker}"
+                        Text="{Binding StartDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}"
+                        ToolTip="Start Date (Format: MM/dd/yyyy)" />
                     <DatePicker
                         Width="120"
                         Margin="15,0,0,0"
-                        materialDesign:HintAssist.HelperText="Format: MM/dd/yyyy"
-                        materialDesign:HintAssist.Hint="End Date"
-                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
-                        Text="{Binding EndDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}" />
+                        Style="{StaticResource GlassDatePicker}"
+                        Text="{Binding EndDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}"
+                        ToolTip="End Date (Format: MM/dd/yyyy)" />
                 </StackPanel>
 
-                <!-- Source specific filters section -->
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <!-- Source-specific filters section -->
+                <ScrollViewer VerticalScrollBarVisibility="Disabled"
+                              HorizontalScrollBarVisibility="Auto">
                     <StackPanel Margin="10" Orientation="Horizontal">
                         <ItemsControl ItemsSource="{Binding FormGroups}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Margin="5" Orientation="Vertical">
                                         <TextBlock Margin="0,10,0,0"
-                                                   Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                                   Style="{StaticResource GlassBody}"
+                                                   FontWeight="Medium"
                                                    Text="{Binding Title}" />
                                         <ItemsControl ItemsSource="{Binding Elements}">
                                             <ItemsControl.ItemsPanel>
@@ -173,8 +174,8 @@
                                                         <!-- Show TextBlock -->
                                                         <TextBox
                                                             Width="100"
-                                                            materialDesign:HintAssist.Hint="{Binding Label}"
-                                                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                            helpers:GlassHint.Hint="{Binding Label}"
+                                                            Style="{StaticResource GlassFloatingHintTextBox}"
                                                             Text="{Binding TextValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                                             Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=TextBox}"
                                                             ToolTip="{Binding Label}" />
@@ -184,7 +185,7 @@
                                                             Content="{Binding Label}"
                                                             Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=CheckBox}"
                                                             IsChecked="{Binding TextValue, Converter={StaticResource StringToBoolConverter}, Mode=TwoWay}"
-                                                            Style="{StaticResource MaterialDesignSecondaryCheckBox}"
+                                                            Style="{StaticResource GlassCheckBox}"
                                                             ToolTip="{Binding Label}" />
 
                                                         <!-- Show MultiSelect ComboBox -->
@@ -212,31 +213,34 @@
                     Command="{Binding SearchCommand}"
                     Content="Search"
                     Margin="10"
-                    Style="{StaticResource MaterialDesignRaisedButton}" />
+                    Style="{StaticResource GlassPrimaryButton}" />
 
                 <!-- Results section -->
-                <TextBlock Margin="0,10,0,0" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Results" />
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                    <DataGrid
-                        x:Name="ResultsDataGridView"
-                        MaxHeight="500"
-                        AutoGenerateColumns="False"
-                        CanUserAddRows="False"
-                        CanUserDeleteRows="False"
-                        CanUserReorderColumns="True"
-                        CanUserResizeColumns="True"
-                        CanUserResizeRows="True"
-                        CanUserSortColumns="True"
-                        IsReadOnly="True"
-                        ItemsSource="{Binding Results}"
-                        SelectedItem="{Binding SelectedResult, Mode=TwoWay}"
-                        SelectionMode="Single"
-                        SelectionUnit="FullRow"
-                        Style="{StaticResource MaterialDesignDataGrid}"
-                        HorizontalScrollBarVisibility="Auto"
-                        VerticalScrollBarVisibility="Auto" />
-                </ScrollViewer>
+                <StackPanel Visibility="{Binding HasResults, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock Margin="0,10,0,0" Style="{StaticResource GlassBody}" Text="Results"
+                               FontWeight="SemiBold" />
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                        <DataGrid
+                            x:Name="ResultsDataGridView"
+                            MaxHeight="500"
+                            AutoGenerateColumns="False"
+                            CanUserAddRows="False"
+                            CanUserDeleteRows="False"
+                            CanUserReorderColumns="True"
+                            CanUserResizeColumns="True"
+                            CanUserResizeRows="True"
+                            CanUserSortColumns="True"
+                            IsReadOnly="True"
+                            ItemsSource="{Binding Results}"
+                            SelectedItem="{Binding SelectedResult, Mode=TwoWay}"
+                            SelectionMode="Single"
+                            SelectionUnit="FullRow"
+                            Style="{StaticResource GlassDataGrid}"
+                            HorizontalScrollBarVisibility="Auto"
+                            VerticalScrollBarVisibility="Auto" />
+                    </ScrollViewer>
+                </StackPanel>
             </StackPanel>
         </ScrollViewer>
-    </materialDesign:Card>
+    </Border>
 </UserControl>

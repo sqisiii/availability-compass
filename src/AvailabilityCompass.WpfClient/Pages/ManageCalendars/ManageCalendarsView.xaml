@@ -3,12 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewModels="clr-namespace:AvailabilityCompass.Core.Features.ManageCalendars;assembly=AvailabilityCompass.Core"
              xmlns:controls1="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Controls"
              xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Converters"
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:behaviors="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Behaviors"
+             xmlns:helpers="clr-namespace:AvailabilityCompass.WpfClient.Shared.Helpers"
+             xmlns:controls="clr-namespace:AvailabilityCompass.WpfClient.Shared.Controls"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:ManageCalendarsViewModel}"
              d:DesignHeight="700"
@@ -18,10 +19,10 @@
         <converters:BooleanToIndexConverter x:Key="BooleanToIndexConverter" />
     </UserControl.Resources>
 
-    <Border Background="{DynamicResource ShadcnCardBrush}"
-            BorderBrush="{DynamicResource ShadcnBorderBrush}"
+    <Border Background="{DynamicResource GlassCardSolidBrush}"
+            BorderBrush="{DynamicResource GlassBorderSolidBrush}"
             BorderThickness="1"
-            CornerRadius="12"
+            CornerRadius="{DynamicResource GlassRadiusLG}"
             Padding="0"
             MinWidth="1000"
             MaxWidth="1200"
@@ -34,7 +35,7 @@
 
             <!-- Header -->
             <Border Grid.Row="0"
-                    Background="{DynamicResource ShadcnMutedBrush}"
+                    Background="{DynamicResource GlassMutedBrush}"
                     CornerRadius="12,12,0,0"
                     Padding="20,16">
                 <Grid>
@@ -45,21 +46,20 @@
 
                     <TextBlock Grid.Column="0"
                                Text="Manage Calendars"
-                               FontSize="18"
-                               FontWeight="SemiBold"
-                               Foreground="{DynamicResource ShadcnForegroundBrush}"
-                               VerticalAlignment="Center" />
+                               Style="{StaticResource GlassHeading3}"
+                               VerticalAlignment="Center"
+                               Margin="0" />
 
                     <Button Grid.Column="1"
-                            Style="{StaticResource ShadcnIconButton}"
+                            Style="{StaticResource GlassIconButton}"
                             Command="{Binding CloseCommand}"
                             ToolTip="Close"
                             Width="32"
                             Height="32">
-                        <materialDesign:PackIcon Kind="Close"
-                                                 Width="18"
-                                                 Height="18"
-                                                 Foreground="{DynamicResource ShadcnMutedForegroundBrush}" />
+                        <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
+                                   FontSize="18"
+                                   Text="{x:Static controls:FluentIcons.Close}"
+                                   Foreground="{DynamicResource GlassMutedForegroundBrush}" />
                     </Button>
                 </Grid>
             </Border>
@@ -69,10 +69,9 @@
                           VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Auto"
                           Padding="8">
-                <materialDesign:Card
-                    Margin="5"
-                    Padding="5,5,5,15"
-                    materialDesign:ElevationAssist.Elevation="Dp6">
+                <Border Style="{StaticResource GlassCard}"
+                        Margin="5"
+                        Padding="5,5,5,15">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -102,17 +101,16 @@
                                 Grid.Column="0"
                                 Margin="0,10,0,10"
                                 HorizontalAlignment="Center"
-                                Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                Style="{StaticResource GlassHeading3}"
                                 Text="Calendars" />
                             <Button
                                 Grid.Row="0"
                                 Grid.Column="1"
                                 Width="130"
                                 HorizontalAlignment="Right"
-                                materialDesign:ElevationAssist.Elevation="Dp4"
                                 Command="{Binding AddCalendarCommand}"
                                 Content="Add Calendar"
-                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                Style="{StaticResource GlassPrimaryButton}"
                                 ToolTip="Add new calendar" />
 
                             <WrapPanel
@@ -159,23 +157,22 @@
                                    Margin="10,25,10,5"
                                    HorizontalAlignment="Stretch"
                                    Visibility="{Binding Path=IsCalendarSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                   Background="{DynamicResource MaterialDesign.Brush.Primary.Light}" />
+                                   Background="{DynamicResource GlassPrimaryLightBrush}" />
 
                         <StackPanel Grid.Row="2" Grid.Column="0" Margin="10,0,0,0"
                                     Visibility="{Binding Path=IsCalendarSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <TextBlock
                                 Margin="10,10,0,10"
                                 HorizontalAlignment="Center"
-                                Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                Style="{StaticResource GlassHeading3}"
                                 Text="Single Day" />
                             <Button
                                 Width="80"
                                 Margin="0,0,0,10"
                                 HorizontalAlignment="Right"
-                                materialDesign:ElevationAssist.Elevation="Dp4"
                                 Command="{Binding AddSingleDateCommand}"
                                 Content="Add"
-                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                Style="{StaticResource GlassPrimaryButton}"
                                 ToolTip="Add new single date" />
                             <DataGrid
                                 AutoGenerateColumns="False"
@@ -188,7 +185,7 @@
                                 IsReadOnly="True"
                                 ItemsSource="{Binding SingleDates}"
                                 SelectionMode="Single"
-                                Style="{StaticResource MaterialDesignDataGrid}"
+                                Style="{StaticResource GlassDataGrid}"
                                 VerticalScrollBarVisibility="Auto">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Binding="{Binding Description}" Header="Description" />
@@ -202,16 +199,24 @@
                                                         Padding="5,0"
                                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.EditSingleDateCommand}"
                                                         CommandParameter="{Binding SingleDateId}"
-                                                        Content="{materialDesign:PackIcon Edit}"
-                                                        Style="{StaticResource MaterialDesignFlatButton}"
-                                                        ToolTip="Edit single date" />
+                                                        Style="{StaticResource GlassGhostButton}"
+                                                        ToolTip="Edit single date"
+                                                        Height="28">
+                                                        <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
+                                                                   FontSize="14"
+                                                                   Text="{x:Static controls:FluentIcons.Edit}" />
+                                                    </Button>
                                                     <Button
                                                         Padding="5,0"
                                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.DeleteSingleDateCommand}"
                                                         CommandParameter="{Binding SingleDateId}"
-                                                        Content="{materialDesign:PackIcon Remove}"
-                                                        Style="{StaticResource MaterialDesignFlatButton}"
-                                                        ToolTip="Delete single date" />
+                                                        Style="{StaticResource GlassGhostButton}"
+                                                        ToolTip="Delete single date"
+                                                        Height="28">
+                                                        <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
+                                                                   FontSize="14"
+                                                                   Text="{x:Static controls:FluentIcons.Delete}" />
+                                                    </Button>
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
@@ -226,16 +231,15 @@
                             <TextBlock
                                 Margin="10,10,0,10"
                                 HorizontalAlignment="Center"
-                                Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                Style="{StaticResource GlassHeading3}"
                                 Text="Multiple Days and Recurrings" />
                             <Button
                                 Width="80"
                                 Margin="0,0,0,10"
                                 HorizontalAlignment="Right"
-                                materialDesign:ElevationAssist.Elevation="Dp4"
                                 Command="{Binding AddRecurringDateCommand}"
                                 Content="Add"
-                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                Style="{StaticResource GlassPrimaryButton}"
                                 ToolTip="Add new recurring dates" />
                             <DataGrid
                                 AutoGenerateColumns="False"
@@ -248,12 +252,12 @@
                                 IsReadOnly="True"
                                 ItemsSource="{Binding RecurringDates}"
                                 SelectionMode="Single"
-                                Style="{StaticResource MaterialDesignDataGrid}"
+                                Style="{StaticResource GlassDataGrid}"
                                 VerticalScrollBarVisibility="Auto">
                                 <DataGrid.Resources>
                                     <!-- Shared Header Style -->
                                     <Style x:Key="WrappedHeaderStyle" TargetType="DataGridColumnHeader"
-                                           BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                           BasedOn="{StaticResource GlassDataGridColumnHeader}">
                                         <Setter Property="ContentTemplate">
                                             <Setter.Value>
                                                 <DataTemplate>
@@ -288,16 +292,24 @@
                                                         Padding="5,0"
                                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.EditRecurringDateCommand}"
                                                         CommandParameter="{Binding RecurringDateId}"
-                                                        Content="{materialDesign:PackIcon Edit}"
-                                                        Style="{StaticResource MaterialDesignFlatButton}"
-                                                        ToolTip="Edit recurring dates" />
+                                                        Style="{StaticResource GlassGhostButton}"
+                                                        ToolTip="Edit recurring dates"
+                                                        Height="28">
+                                                        <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
+                                                                   FontSize="14"
+                                                                   Text="{x:Static controls:FluentIcons.Edit}" />
+                                                    </Button>
                                                     <Button
                                                         Padding="5,0"
                                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.DeleteRecurringDateCommand}"
                                                         CommandParameter="{Binding RecurringDateId}"
-                                                        Content="{materialDesign:PackIcon Remove}"
-                                                        Style="{StaticResource MaterialDesignFlatButton}"
-                                                        ToolTip="Delete recurring dates" />
+                                                        Style="{StaticResource GlassGhostButton}"
+                                                        ToolTip="Delete recurring dates"
+                                                        Height="28">
+                                                        <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
+                                                                   FontSize="14"
+                                                                   Text="{x:Static controls:FluentIcons.Delete}" />
+                                                    </Button>
                                                 </StackPanel>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
@@ -323,25 +335,24 @@
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" Grid.Row="0" Text="Calendar:" Margin="10,0,10,0"
                                                HorizontalAlignment="Right"
-                                               Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
+                                               Style="{StaticResource GlassHeading3}" />
                                     <TextBlock Grid.Column="1" Grid.Row="0"
                                                Margin="0,0,0,10"
                                                HorizontalAlignment="Left"
-                                               Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                               Style="{StaticResource GlassHeading3}"
                                                Text="{Binding CalendarName}" />
 
                                 </Grid>
                                 <ComboBox
                                     IsEnabled="False"
-                                    materialDesign:ComboBoxAssist.ShowSelectedItem="False"
-                                    materialDesign:HintAssist.HelperText="Validity Rule"
+                                    helpers:GlassHint.HelperText="Validity Rule"
                                     SelectedIndex="{Binding CalendarIsOnly, Converter={StaticResource BooleanToIndexConverter}, Mode=OneWay}"
-                                    Style="{StaticResource MaterialDesignFloatingHintComboBox}">
+                                    Style="{StaticResource GlassComboBox}">
                                     <ComboBoxItem Content="Allow all dates except those defined in the calendar" IsSelected="True" />
                                     <ComboBoxItem Content="Only allow dates defined in the calendar" />
                                 </ComboBox>
 
-                                <Calendar materialDesign:CalendarAssist.IsHeaderVisible="False" Margin="0,20,0,10"
+                                <Calendar Margin="0,20,0,10"
                                           SelectionMode="None">
                                     <b:Interaction.Behaviors>
                                         <behaviors:CalendarColorBehavior ColorCodedDates="{Binding ReservedDates}" />
@@ -351,26 +362,24 @@
                                     <Button Width="130"
                                             Margin="0,0,20,0"
                                             HorizontalAlignment="Right"
-                                            materialDesign:ElevationAssist.Elevation="Dp4"
                                             Command="{Binding UpdateCalendarCommand}"
                                             CommandParameter="{Binding SelectedCalendarId}"
                                             Content="Edit"
-                                            Style="{StaticResource MaterialDesignRaisedButton}"
+                                            Style="{StaticResource GlassPrimaryButton}"
                                             ToolTip="Update calendar's name and role" />
                                     <Button Width="130"
                                             HorizontalAlignment="Right"
-                                            materialDesign:ElevationAssist.Elevation="Dp4"
                                             Command="{Binding DeleteCalendarCommand}"
                                             CommandParameter="{Binding SelectedCalendarId}"
                                             Content="Delete"
-                                            Style="{StaticResource MaterialDesignRaisedButton}"
+                                            Style="{StaticResource GlassDestructiveButton}"
                                             ToolTip="Delete calendar" />
 
                                 </StackPanel>
                             </StackPanel>
                         </Grid>
                     </Grid>
-                </materialDesign:Card>
+                </Border>
             </ScrollViewer>
         </Grid>
     </Border>

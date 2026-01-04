@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:manageSources="clr-namespace:AvailabilityCompass.Core.Features.ManageSources;assembly=AvailabilityCompass.Core"
              xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageSources.Converters"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:controls="clr-namespace:AvailabilityCompass.WpfClient.Shared.Controls"
              d:DataContext="{d:DesignInstance manageSources:ManageSourcesViewModel, IsDesignTimeCreatable=True}"
              mc:Ignorable="d"
              d:DesignHeight="500" d:DesignWidth="900">
@@ -22,10 +22,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Border Background="{DynamicResource ShadcnCardBrush}"
-            BorderBrush="{DynamicResource ShadcnBorderBrush}"
-            BorderThickness="1"
-            CornerRadius="12"
+    <Border Style="{StaticResource GlassCard}"
             Padding="0"
             MinWidth="800"
             MaxWidth="1000"
@@ -38,7 +35,7 @@
 
             <!-- Header -->
             <Border Grid.Row="0"
-                    Background="{DynamicResource ShadcnMutedBrush}"
+                    Background="{DynamicResource GlassSurfaceBrush}"
                     CornerRadius="12,12,0,0"
                     Padding="20,16">
                 <Grid>
@@ -49,21 +46,19 @@
 
                     <TextBlock Grid.Column="0"
                                Text="Manage Sources"
-                               FontSize="18"
-                               FontWeight="SemiBold"
-                               Foreground="{DynamicResource ShadcnForegroundBrush}"
+                               Style="{StaticResource GlassHeading3}"
                                VerticalAlignment="Center" />
 
                     <Button Grid.Column="1"
-                            Style="{StaticResource ShadcnIconButton}"
+                            Style="{StaticResource GlassIconButton}"
                             Command="{Binding CloseCommand}"
                             ToolTip="Close"
                             Width="32"
                             Height="32">
-                        <materialDesign:PackIcon Kind="Close"
-                                                 Width="18"
-                                                 Height="18"
-                                                 Foreground="{DynamicResource ShadcnMutedForegroundBrush}" />
+                        <TextBlock FontFamily="{StaticResource GlassIconFontFamily}"
+                                   FontSize="16"
+                                   Text="{x:Static controls:FluentIcons.Close}"
+                                   Foreground="{DynamicResource GlassMutedForegroundBrush}" />
                     </Button>
                 </Grid>
             </Border>
@@ -73,13 +68,12 @@
                           VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Auto"
                           Padding="8">
-                <materialDesign:Card
-                    Margin="5"
-                    Padding="5,5,5,15"
-                    materialDesign:ElevationAssist.Elevation="Dp6">
+                <Border Style="{StaticResource GlassCard}"
+                        Margin="5"
+                        Padding="5,5,5,15">
                     <StackPanel>
                         <TextBlock
-                            Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                            Style="{StaticResource GlassHeading3}"
                             Margin="0,10,0,10"
                             Text="Available Sources"
                             HorizontalAlignment="Center" />
@@ -87,7 +81,7 @@
                                 Width="120"
                                 Margin="0,10,10,10"
                                 HorizontalAlignment="Right"
-                                Style="{StaticResource MaterialDesignFlatSecondaryMidBgButton}"
+                                Style="{StaticResource GlassSecondaryButton}"
                                 ToolTip="Refresh available trips data"
                                 Command="{Binding DataContext.RefreshAllSourcesCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                         <DataGrid
@@ -102,7 +96,7 @@
                             ItemsSource="{Binding Sources}"
                             SelectionMode="Single"
                             SelectionUnit="FullRow"
-                            Style="{StaticResource MaterialDesignDataGrid}"
+                            Style="{StaticResource GlassDataGrid}"
                             VerticalScrollBarVisibility="Auto">
                             <DataGrid.Columns>
                                 <DataGridTextColumn CellStyle="{StaticResource CenteredVerticallyColumn}"
@@ -116,7 +110,7 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="Refresh"
-                                                    Style="{StaticResource MaterialDesignFlatSecondaryMidBgButton}"
+                                                    Style="{StaticResource GlassSecondaryButton}"
                                                     ToolTip="Refresh available trips data"
                                                     Command="{Binding DataContext.RefreshSourceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                     CommandParameter="{Binding SourceId}" />
@@ -135,8 +129,8 @@
                                                     Width="240"
                                                     Height="{Binding ElementName=ProgressBarTextBlock, Path=ActualHeight}"
                                                     MinHeight="25"
-                                                    Background="{DynamicResource MaterialDesign.Brush.Secondary.Light}"
-                                                    Foreground="{DynamicResource MaterialDesign.Brush.Secondary.Dark}"
+                                                    Background="{DynamicResource GlassSurfaceBrush}"
+                                                    Foreground="{DynamicResource GlassPrimaryBrush}"
                                                     Visibility="{Binding ShowProgress, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                     Value="{Binding ProgressPercent, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
                                                 <TextBlock
@@ -147,7 +141,7 @@
                                                     Padding="5"
                                                     TextAlignment="Center"
                                                     VerticalAlignment="Center"
-                                                    Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                                                    Foreground="{DynamicResource GlassForegroundBrush}"
                                                     Text="{Binding ProgressPercent, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DoubleToPercentageConverter}}"
                                                     TextWrapping="WrapWithOverflow"
                                                     Visibility="{Binding ShowProgress, Converter={StaticResource BooleanToVisibilityConverter}}" />
@@ -158,7 +152,7 @@
                             </DataGrid.Columns>
                         </DataGrid>
                     </StackPanel>
-                </materialDesign:Card>
+                </Border>
             </ScrollViewer>
         </Grid>
     </Border>

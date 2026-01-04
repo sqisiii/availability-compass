@@ -13,7 +13,7 @@
 
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-        <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.1" />
@@ -70,6 +70,8 @@
         <None Remove="Images\logo.jpg" />
         <None Remove="Images\logo.png" />
         <Resource Include="Images\logo.png" />
+        <None Remove="Images\Sources\*.png" />
+        <Resource Include="Images\Sources\*.png" />
     </ItemGroup>
 
 </Project>

@@ -2,14 +2,13 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Navigation;
 using AvailabilityCompass.Core.Features.SearchRecords;
 using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 
 // ReSharper disable once CheckNamespace
 namespace AvailabilityCompass.WpfClient.Pages;
 
-public partial class SearchView : UserControl, IDisposable
+public partial class SearchView : IDisposable
 {
     private IDisposable? _subscription;
 
@@ -58,10 +57,12 @@ public partial class SearchView : UserControl, IDisposable
         }
     }
 
-    private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+    private void UrlIcon_Click(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
-        e.Handled = true;
+        if (sender is Button button && button.Tag is string url && !string.IsNullOrEmpty(url))
+        {
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        }
     }
 
     private void SearchButton_Click(object sender, RoutedEventArgs e)

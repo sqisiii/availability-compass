@@ -1,13 +1,15 @@
-﻿<UserControl x:Class="AvailabilityCompass.WpfClient.Pages.ManageCalendars.Dialogs.BaseCalendarCrudView"
+<UserControl x:Class="AvailabilityCompass.WpfClient.Pages.ManageCalendars.Dialogs.BaseCalendarCrudView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Converters"
+             xmlns:helpers="clr-namespace:AvailabilityCompass.WpfClient.Shared.Helpers"
+             xmlns:dialogs="clr-namespace:AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;assembly=AvailabilityCompass.Core"
              mc:Ignorable="d"
              x:Name="Root"
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance Type=dialogs:AddCalendarViewModel, IsDesignTimeCreatable=False}">
     <UserControl.Resources>
         <converters:BooleanToIndexConverter x:Key="BooleanToIndexConverter" />
     </UserControl.Resources>
@@ -15,24 +17,24 @@
         <TextBlock
             Margin="0,10,0,20"
             HorizontalAlignment="Center"
-            Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+            Style="{StaticResource GlassHeading3}"
             Text="{Binding ViewHeaderText, ElementName=Root}" />
         <TextBox
             Width="200"
             Margin="0,0,0,15"
             HorizontalAlignment="Left"
-            materialDesign:HintAssist.Hint="Calendar Name"
+            helpers:GlassHint.Hint="Calendar Name"
             IsEnabled="{Binding IsViewEnabled, ElementName=Root}"
-            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+            Style="{StaticResource GlassFloatingHintTextBox}"
             Text="{Binding SelectedItem.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"
             ToolTip="Calendar Name visible in Search" />
 
         <ComboBox
-            materialDesign:ComboBoxAssist.ShowSelectedItem="False"
+            helpers:GlassHint.ShowSelectedItem="False"
             IsEnabled="{Binding IsViewEnabled, ElementName=Root}"
-            materialDesign:HintAssist.HelperText="Validity Rule"
+            helpers:GlassHint.HelperText="Validity Rule"
             SelectedIndex="{Binding SelectedItem.IsOnly, Converter={StaticResource BooleanToIndexConverter}, Mode=TwoWay}"
-            Style="{StaticResource MaterialDesignFloatingHintComboBox}">
+            Style="{StaticResource GlassFloatingHintComboBox}">
             <ComboBoxItem Content="Allow all dates except those defined in the calendar" IsSelected="True" />
             <ComboBoxItem Content="Only allow dates defined in the calendar" />
         </ComboBox>
@@ -42,7 +44,7 @@
                 Command="{Binding SaveCommand}"
                 Content="{Binding SaveCommandPrompt, ElementName=Root}"
                 IsDefault="True"
-                Style="{StaticResource MaterialDesignFlatButton}">
+                Style="{StaticResource GlassPrimaryButton}">
                 <Button.CommandParameter>
                     <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                         True
@@ -51,10 +53,10 @@
             </Button>
             <Button
                 Margin="0,0,8,0"
-                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                Command="{Binding CloseCommand}"
                 Content="CANCEL"
                 IsCancel="True"
-                Style="{StaticResource MaterialDesignFlatButton}">
+                Style="{StaticResource GlassOutlineButton}">
                 <Button.CommandParameter>
                     <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                         False

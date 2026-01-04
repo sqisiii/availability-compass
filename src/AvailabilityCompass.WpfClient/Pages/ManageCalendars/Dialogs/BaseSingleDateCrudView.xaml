@@ -1,26 +1,27 @@
-﻿<UserControl x:Class="AvailabilityCompass.WpfClient.Pages.ManageCalendars.Dialogs.BaseSingleDateCrudView"
+<UserControl x:Class="AvailabilityCompass.WpfClient.Pages.ManageCalendars.Dialogs.BaseSingleDateCrudView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Dialogs"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:helpers="clr-namespace:AvailabilityCompass.WpfClient.Shared.Helpers"
+             xmlns:dialogs="clr-namespace:AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;assembly=AvailabilityCompass.Core"
              x:Name="Root"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance Type=dialogs:AddSingleDateViewModel, IsDesignTimeCreatable=False}">
     <StackPanel Margin="10">
         <TextBlock
             Margin="0,10,0,20"
             HorizontalAlignment="Center"
-            Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+            Style="{StaticResource GlassHeading3}"
             Text="{Binding ViewHeaderText, ElementName=Root }" />
         <TextBox
             Width="200"
             Margin="0,0,0,10"
             HorizontalAlignment="Left"
             IsEnabled="{Binding IsViewEnabled, ElementName=Root}"
-            materialDesign:HintAssist.Hint="Short Description"
-            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+            helpers:GlassHint.Hint="Short Description"
+            Style="{StaticResource GlassFloatingHintTextBox}"
             Text="{Binding SelectedItem.Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"
             ToolTip="Short description of the selected day" />
 
@@ -29,9 +30,9 @@
             Margin="0,0,0,15"
             HorizontalAlignment="Left"
             IsEnabled="{Binding IsViewEnabled, ElementName=Root}"
-            materialDesign:HintAssist.HelperText="Format: yyyy-MM-dd"
-            materialDesign:HintAssist.Hint="Date"
-            Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
+            helpers:GlassHint.HelperText="Format: yyyy-MM-dd"
+            helpers:GlassHint.Hint="Date"
+            Style="{StaticResource GlassDatePicker}"
             Text="{Binding SelectedItem.DateString, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
 
 
@@ -41,7 +42,7 @@
                 Command="{Binding SaveCommand}"
                 Content="{Binding SaveCommandPrompt, ElementName=Root}"
                 IsDefault="True"
-                Style="{StaticResource MaterialDesignFlatButton}">
+                Style="{StaticResource GlassPrimaryButton}">
                 <Button.CommandParameter>
                     <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                         True
@@ -50,10 +51,10 @@
             </Button>
             <Button
                 Margin="0,8,8,0"
-                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                Command="{Binding CloseCommand}"
                 Content="CANCEL"
                 IsCancel="True"
-                Style="{StaticResource MaterialDesignFlatButton}">
+                Style="{StaticResource GlassOutlineButton}">
                 <Button.CommandParameter>
                     <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                         False

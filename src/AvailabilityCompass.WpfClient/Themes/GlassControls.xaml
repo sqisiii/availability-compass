@@ -80,7 +80,7 @@
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
     </Style>
 
-    <!-- Primary Button - Gradient with glow -->
+    <!-- Primary Button - Gradient with a glow -->
     <Style x:Key="GlassPrimaryButton" TargetType="Button" BasedOn="{StaticResource GlassButtonBase}">
         <Setter Property="Foreground" Value="White" />
         <Setter Property="BorderThickness" Value="0" />
@@ -501,7 +501,7 @@
 
                                 <!-- Dropdown Arrow -->
                                 <TextBlock x:Name="PART_Arrow"
-                                           Text="&#xE70D;"
+                                           Text="{x:Static controls:FluentIcons.ChevronDown}"
                                            FontFamily="{DynamicResource GlassIconFontFamily}"
                                            FontSize="12"
                                            Foreground="{DynamicResource GlassMutedForegroundBrush}"
@@ -514,6 +514,7 @@
 
                         <!-- Dropdown Popup -->
                         <Popup x:Name="PART_Popup"
+                               Grid.Column="0"
                                Placement="Bottom"
                                IsOpen="{TemplateBinding IsDropDownOpen}"
                                AllowsTransparency="True"
@@ -534,7 +535,8 @@
                                                   SnapsToDevicePixels="True"
                                                   VerticalScrollBarVisibility="Auto"
                                                   HorizontalScrollBarVisibility="Disabled">
-                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                        <StackPanel IsItemsHost="True"
+                                                    KeyboardNavigation.DirectionalNavigation="Contained" />
                                     </ScrollViewer>
                                 </Border>
                             </Grid>
@@ -542,6 +544,7 @@
 
                         <!-- Toggle Button (invisible, covers entire control) -->
                         <ToggleButton x:Name="ToggleButton"
+                                      Grid.Column="0"
                                       Focusable="False"
                                       IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                       ClickMode="Press">
@@ -697,9 +700,6 @@
                                                Margin="{TemplateBinding Padding}"
                                                Focusable="{TemplateBinding Focusable}"
                                                Foreground="{TemplateBinding Foreground}"
-                                               Background="Transparent"
-                                               BorderThickness="0"
-                                               VerticalContentAlignment="Center"
                                                Style="{StaticResource GlassDatePickerTextBox}" />
 
                             <Button x:Name="PART_Button"
@@ -710,7 +710,7 @@
                                     BorderThickness="0"
                                     Cursor="Hand"
                                     Margin="0,0,4,0">
-                                <TextBlock Text="&#xE787;"
+                                <TextBlock Text="{x:Static controls:FluentIcons.Calendar}"
                                            FontFamily="{DynamicResource GlassIconFontFamily}"
                                            FontSize="14"
                                            Foreground="{DynamicResource GlassMutedForegroundBrush}"
@@ -719,6 +719,7 @@
                             </Button>
 
                             <Popup x:Name="PART_Popup"
+                                   Grid.Column="0"
                                    AllowsTransparency="True"
                                    Placement="Bottom"
                                    PlacementTarget="{Binding ElementName=PART_Border}"
@@ -841,7 +842,7 @@
                                 CornerRadius="4"
                                 SnapsToDevicePixels="True">
                             <TextBlock x:Name="PART_Check"
-                                       Text="&#xE73E;"
+                                       Text="{x:Static controls:FluentIcons.CheckMark}"
                                        FontFamily="{DynamicResource GlassIconFontFamily}"
                                        FontSize="12"
                                        Foreground="White"
@@ -1059,7 +1060,7 @@
     </Style>
 
     <!-- ========================================== -->
-    <!-- SCROLLVIEWER STYLES                        -->
+    <!-- SCROLL VIEWER STYLES                        -->
     <!-- ========================================== -->
 
     <Style x:Key="GlassScrollViewer" TargetType="ScrollViewer">
@@ -1116,7 +1117,7 @@
     </Style>
 
     <!-- ========================================== -->
-    <!-- FLUENTICON STYLE                           -->
+    <!-- FLUENT ICON STYLE                           -->
     <!-- ========================================== -->
 
     <Style TargetType="{x:Type controls:FluentIcon}">
@@ -1157,7 +1158,7 @@
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}">
                             <Grid>
-                                <!-- Highlight border at top -->
+                                <!-- Highlight border at the top -->
                                 <Border CornerRadius="11,11,0,0"
                                         Height="1"
                                         VerticalAlignment="Top"

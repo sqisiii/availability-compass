@@ -1,8 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using MaterialDesignThemes.Wpf.Internal;
 
 namespace AvailabilityCompass.WpfClient.Pages.SearchRecords.Controls;
 
@@ -20,10 +19,17 @@ public sealed class MultiSelectComboBox : ComboBox
     public static readonly DependencyProperty DisplayValueProperty = DependencyProperty.Register(
         nameof(DisplayValue), typeof(string), typeof(MultiSelectComboBox), new PropertyMetadata(default(string)));
 
+    public static readonly RoutedCommand ClearCommand = new("Clear", typeof(MultiSelectComboBox));
+
     static MultiSelectComboBox()
     {
-        //required for the delete selection button to work
-        ClearText.HandlesClearCommandProperty.OverrideMetadata(typeof(MultiSelectComboBox), new FrameworkPropertyMetadata(OnHandlesClearCommandChanged));
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(MultiSelectComboBox),
+            new FrameworkPropertyMetadata(typeof(ComboBox)));
+    }
+
+    public MultiSelectComboBox()
+    {
+        CommandBindings.Add(new CommandBinding(ClearCommand, OnClearCommand, CanExecuteClearCommand));
     }
 
     public string DisplayValue
@@ -38,7 +44,6 @@ public sealed class MultiSelectComboBox : ComboBox
         set => SetValue(SelectedValuesProperty, value);
     }
 
-
     protected override DependencyObject GetContainerForItemOverride()
     {
         //required so clicking on the element on the list doesn't trigger the selection
@@ -51,46 +56,23 @@ public sealed class MultiSelectComboBox : ComboBox
         return item is UIElement;
     }
 
-    private static void OnHandlesClearCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    private static void CanExecuteClearCommand(object sender, CanExecuteRoutedEventArgs e)
     {
-        if (d is not MultiSelectComboBox element)
+        if (sender is MultiSelectComboBox comboBox)
+        {
+            e.CanExecute = !string.IsNullOrEmpty(comboBox.DisplayValue);
+        }
+    }
+
+    private static void OnClearCommand(object sender, ExecutedRoutedEventArgs e)
+    {
+        if (sender is not MultiSelectComboBox multiSelectComboBox)
         {
             return;
         }
 
-        if ((bool)e.NewValue)
-        {
-            RemoveClearTextCommand(element);
-            element.CommandBindings.Add(new CommandBinding(ClearText.ClearCommand, OnClearCommand));
-        }
-        else
-        {
-            RemoveClearTextCommand(element);
-        }
-
-        return;
-
-        static void RemoveClearTextCommand(MultiSelectComboBox element)
-        {
-            for (var i = element.CommandBindings.Count - 1; i >= 0; i--)
-            {
-                if (element.CommandBindings[i].Command == ClearText.ClearCommand)
-                {
-                    element.CommandBindings.RemoveAt(i);
-                }
-            }
-        }
-
-        static void OnClearCommand(object sender, ExecutedRoutedEventArgs eventArgs)
-        {
-            if (sender is not MultiSelectComboBox multiSelectComboBox)
-            {
-                return;
-            }
-
-            multiSelectComboBox.SelectedValues?.Clear();
-            multiSelectComboBox.DisplayValue = string.Empty;
-            eventArgs.Handled = true;
-        }
+        multiSelectComboBox.SelectedValues?.Clear();
+        multiSelectComboBox.DisplayValue = string.Empty;
+        e.Handled = true;
     }
 }

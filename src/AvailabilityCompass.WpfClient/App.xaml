@@ -4,26 +4,20 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:views="clr-namespace:AvailabilityCompass.WpfClient.Pages"
     xmlns:vms="clr-namespace:AvailabilityCompass.Core.Features;assembly=AvailabilityCompass.Core"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:manageSources="clr-namespace:AvailabilityCompass.Core.Features.ManageSources;assembly=AvailabilityCompass.Core"
     xmlns:searchRecords="clr-namespace:AvailabilityCompass.Core.Features.SearchRecords;assembly=AvailabilityCompass.Core"
     xmlns:dialogs="clr-namespace:AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;assembly=AvailabilityCompass.Core"
     xmlns:dialogsViews="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Dialogs">
     <Application.Resources>
-        <ResourceDictionary x:Key="MaterialDesignResources">
+        <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary
-                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/materialdesign3.defaults.xaml" />
-
-                <materialDesign:BundledTheme
-                    BaseTheme="Light"
-                    PrimaryColor="DeepPurple"
-                    SecondaryColor="Purple" />
-
-                <!-- Shadcn Theme Resources -->
-                <ResourceDictionary Source="/Themes/ShadcnLightTheme.xaml" />
-                <ResourceDictionary Source="/Themes/ShadcnStyles.xaml" />
+                <!-- Glassmorphism Theme Resources -->
+                <ResourceDictionary Source="/Themes/GlassLightTheme.xaml" />
+                <ResourceDictionary Source="/Themes/GlassBase.xaml" />
+                <ResourceDictionary Source="/Themes/GlassControls.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- View-ViewModel DataTemplates -->
             <DataTemplate DataType="{x:Type vms:ManageCalendars.ManageCalendarsViewModel}">
                 <views:ManageCalendarsView />
             </DataTemplate>
@@ -63,8 +57,6 @@
             <DataTemplate DataType="{x:Type dialogs:UpdateSingleDateViewModel}">
                 <dialogsViews:UpdateSingleDateView />
             </DataTemplate>
-
         </ResourceDictionary>
     </Application.Resources>
-
 </Application>
