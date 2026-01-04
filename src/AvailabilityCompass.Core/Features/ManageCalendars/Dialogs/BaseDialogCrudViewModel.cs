@@ -53,6 +53,12 @@ public abstract partial class BaseDialogCrudViewModel<T> : ObservableValidator, 
         }
     }
 
+    [RelayCommand]
+    private void OnClose()
+    {
+        _dialogNavigationService.CloseView();
+    }
+
     protected virtual Task<IProcessResult> ProcessDataAsync(CancellationToken ct)
     {
         throw new NotImplementedException();
