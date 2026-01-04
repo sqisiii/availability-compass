@@ -145,4 +145,16 @@ public partial class MainWindow : Window
     {
         WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
     }
+
+    private void DialogOverlay_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        // Close dialog when clicking on overlay background
+        // This is handled in DialogContent_MouseDown to prevent closing when clicking dialog content
+    }
+
+    private void DialogContent_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        // Prevent click from bubbling up to overlay
+        e.Handled = true;
+    }
 }

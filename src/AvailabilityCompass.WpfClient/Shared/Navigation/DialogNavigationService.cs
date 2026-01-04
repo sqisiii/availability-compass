@@ -1,6 +1,5 @@
-﻿using AvailabilityCompass.Core.Shared;
+using AvailabilityCompass.Core.Shared;
 using AvailabilityCompass.Core.Shared.Navigation;
-using MaterialDesignThemes.Wpf;
 
 namespace AvailabilityCompass.WpfClient.Shared.Navigation;
 
@@ -39,7 +38,6 @@ public class DialogNavigationService : INavigationService<IDialogViewModel>
             return;
         }
 
-        DialogHost.CloseDialogCommand.Execute(null, null);
         _dialogNavigationStore.CurrentViewModel = null;
     }
 }

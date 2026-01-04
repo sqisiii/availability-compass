@@ -4,9 +4,9 @@ using AvailabilityCompass.Core.Features.ManageSources;
 using AvailabilityCompass.Core.Features.SearchRecords;
 using AvailabilityCompass.Core.Shared;
 using AvailabilityCompass.Core.Shared.Navigation;
+using AvailabilityCompass.WpfClient.Shared.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MaterialDesignThemes.Wpf;
 
 namespace AvailabilityCompass.WpfClient.Pages;
 
@@ -19,9 +19,7 @@ public partial class MainViewModel : ObservableObject
     private readonly ManageSourcesViewModel _manageSourcesViewModel;
     private readonly ManageCalendarsViewModel _manageCalendarsViewModel;
 
-    [NotifyPropertyChangedFor(nameof(MaximizeToolTip))]
-    [ObservableProperty]
-    private PackIcon _maximizeIcon = new() { Kind = PackIconKind.WindowMaximize };
+    private bool _isMaximized;
 
     [NotifyPropertyChangedFor(nameof(ThemeIcon))]
     [ObservableProperty]
@@ -47,9 +45,11 @@ public partial class MainViewModel : ObservableObject
         _isDarkTheme = _themeService.IsDarkTheme;
     }
 
-    public string MaximizeToolTip => MaximizeIcon.Kind == PackIconKind.WindowMaximize ? "Maximize" : "Restore";
+    public string MaximizeIcon => _isMaximized ? FluentIcons.ChromeRestore : FluentIcons.ChromeMaximize;
 
-    public PackIconKind ThemeIcon => IsDarkTheme ? PackIconKind.WeatherSunny : PackIconKind.WeatherNight;
+    public string MaximizeToolTip => _isMaximized ? "Restore" : "Maximize";
+
+    public string ThemeIcon => IsDarkTheme ? FluentIcons.Brightness : FluentIcons.ClearNight;
 
     public SearchViewModel SearchViewModel => _searchViewModel;
 
@@ -68,6 +68,8 @@ public partial class MainViewModel : ObservableObject
     private void OnCurrentDialogViewModelChanged()
     {
         OnPropertyChanged(nameof(CurrentDialogViewModel));
+        OnPropertyChanged(nameof(IsDialogOpen));
+
         if (CurrentDialogViewModel is null)
         {
             return;
@@ -80,9 +82,9 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void OnMaximizeButtonPressed()
     {
-        MaximizeIcon = MaximizeIcon.Kind == PackIconKind.WindowMaximize
-            ? new PackIcon { Kind = PackIconKind.WindowRestore }
-            : new PackIcon { Kind = PackIconKind.WindowMaximize };
+        _isMaximized = !_isMaximized;
+        OnPropertyChanged(nameof(MaximizeIcon));
+        OnPropertyChanged(nameof(MaximizeToolTip));
     }
 
     [RelayCommand]
@@ -102,5 +104,11 @@ public partial class MainViewModel : ObservableObject
     private void OnOpenSources()
     {
         _dialogNavigationService.NavigateTo(_manageSourcesViewModel);
+    }
+
+    [RelayCommand]
+    private void OnCloseDialog()
+    {
+        _dialogNavigationService.CloseView();
     }
 }
