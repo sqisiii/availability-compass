@@ -1,0 +1,1197 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:helpers="clr-namespace:AvailabilityCompass.WpfClient.Shared.Helpers"
+                    xmlns:controls="clr-namespace:AvailabilityCompass.WpfClient.Shared.Controls">
+
+    <!-- ========================================== -->
+    <!-- GLASSMORPHISM CONTROL STYLES               -->
+    <!-- Complete UI component library              -->
+    <!-- ========================================== -->
+
+    <!-- ========================================== -->
+    <!-- TYPOGRAPHY STYLES                          -->
+    <!-- ========================================== -->
+
+    <Style x:Key="GlassHeading1" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSize2XL}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="Margin" Value="0,0,0,8" />
+    </Style>
+
+    <Style x:Key="GlassHeading2" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSizeXL}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="Margin" Value="0,0,0,6" />
+    </Style>
+
+    <Style x:Key="GlassHeading3" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSizeLG}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="Margin" Value="0,0,0,4" />
+    </Style>
+
+    <Style x:Key="GlassBody" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="GlassBodyMuted" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassMutedForegroundBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="GlassSmall" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSizeSM}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassMutedForegroundBrush}" />
+    </Style>
+
+    <Style x:Key="GlassCaption" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSizeXS}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassMutedForegroundBrush}" />
+        <Setter Property="TextWrapping" Value="NoWrap" />
+    </Style>
+
+    <!-- ========================================== -->
+    <!-- BUTTON STYLES                              -->
+    <!-- ========================================== -->
+
+    <!-- Base Button Style -->
+    <Style x:Key="GlassButtonBase" TargetType="Button">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSize}" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Height" Value="{DynamicResource GlassButtonHeight}" />
+        <Setter Property="Padding" Value="16,8" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    </Style>
+
+    <!-- Primary Button - Gradient with glow -->
+    <Style x:Key="GlassPrimaryButton" TargetType="Button" BasedOn="{StaticResource GlassButtonBase}">
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="PART_Border"
+                            CornerRadius="{DynamicResource GlassRadius}"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="True">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{DynamicResource GlassPrimaryColor}" Offset="0" />
+                                <GradientStop Color="{DynamicResource GlassSecondaryColor}" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16"
+                                              ShadowDepth="4"
+                                              Direction="270"
+                                              Opacity="0.3"
+                                              Color="{DynamicResource GlassPrimaryColor}" />
+                        </Border.Effect>
+                        <Border.RenderTransform>
+                            <TranslateTransform x:Name="TranslateTransform" Y="0" />
+                        </Border.RenderTransform>
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_Border" Property="RenderTransform">
+                                <Setter.Value>
+                                    <TranslateTransform Y="-2" />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter TargetName="PART_Border" Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect BlurRadius="24"
+                                                      ShadowDepth="8"
+                                                      Direction="270"
+                                                      Opacity="0.4"
+                                                      Color="{DynamicResource GlassPrimaryColor}" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="PART_Border" Property="RenderTransform">
+                                <Setter.Value>
+                                    <TranslateTransform Y="1" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PART_Border" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Secondary Button -->
+    <Style x:Key="GlassSecondaryButton" TargetType="Button" BasedOn="{StaticResource GlassButtonBase}">
+        <Setter Property="Background" Value="{DynamicResource GlassMutedBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="PART_Border"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{DynamicResource GlassRadius}"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_Border" Property="Background"
+                                    Value="{DynamicResource GlassInputBorderBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="PART_Border" Property="Background"
+                                    Value="{DynamicResource GlassBorderSolidBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PART_Border" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Outline Button -->
+    <Style x:Key="GlassOutlineButton" TargetType="Button" BasedOn="{StaticResource GlassButtonBase}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource GlassBorderSolidBrush}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="PART_Border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource GlassRadius}"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_Border" Property="Background"
+                                    Value="{DynamicResource GlassMutedBrush}" />
+                            <Setter TargetName="PART_Border" Property="BorderBrush"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="PART_Border" Property="Background"
+                                    Value="{DynamicResource GlassInputBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PART_Border" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Ghost Button -->
+    <Style x:Key="GlassGhostButton" TargetType="Button" BasedOn="{StaticResource GlassButtonBase}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="PART_Border"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{DynamicResource GlassRadius}"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_Border" Property="Background"
+                                    Value="{DynamicResource GlassMutedBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="PART_Border" Property="Background"
+                                    Value="{DynamicResource GlassInputBorderBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PART_Border" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Destructive Button -->
+    <Style x:Key="GlassDestructiveButton" TargetType="Button" BasedOn="{StaticResource GlassButtonBase}">
+        <Setter Property="Background" Value="{DynamicResource GlassDestructiveBrush}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="PART_Border"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{DynamicResource GlassRadius}"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="True">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="12"
+                                              ShadowDepth="2"
+                                              Direction="270"
+                                              Opacity="0.25"
+                                              Color="{DynamicResource GlassDestructiveColor}" />
+                        </Border.Effect>
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_Border" Property="Background"
+                                    Value="{DynamicResource GlassDestructiveHoverBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PART_Border" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Icon Button -->
+    <Style x:Key="GlassIconButton" TargetType="Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="Width" Value="36" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Padding" Value="6" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="PART_Border"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{DynamicResource GlassRadius}"
+                            Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_Border" Property="Background"
+                                    Value="{DynamicResource GlassMutedBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="PART_Border" Property="Background"
+                                    Value="{DynamicResource GlassInputBorderBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PART_Border" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Toolbar Button -->
+    <Style x:Key="GlassToolbarButton" TargetType="Button" BasedOn="{StaticResource GlassGhostButton}">
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="12,6" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <!-- ========================================== -->
+    <!-- TEXTBOX STYLES                             -->
+    <!-- ========================================== -->
+
+    <Style x:Key="GlassTextBox" TargetType="TextBox">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSize}" />
+        <Setter Property="Background" Value="{DynamicResource GlassInputBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource GlassInputBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="CaretBrush" Value="{DynamicResource GlassPrimaryBrush}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource GlassPrimaryLightBrush}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border x:Name="PART_Border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource GlassRadius}"
+                            SnapsToDevicePixels="True">
+                        <ScrollViewer x:Name="PART_ContentHost"
+                                      Margin="{TemplateBinding Padding}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="PART_Border" Property="BorderBrush"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                            <Setter TargetName="PART_Border" Property="BorderThickness" Value="2" />
+                            <Setter TargetName="PART_Border" Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect BlurRadius="8"
+                                                      ShadowDepth="0"
+                                                      Opacity="0.2"
+                                                      Color="{DynamicResource GlassPrimaryColor}" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PART_Border" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- TextBox with Placeholder Hint (simplified, not floating) -->
+    <Style x:Key="GlassFloatingHintTextBox" TargetType="TextBox" BasedOn="{StaticResource GlassTextBox}">
+        <Setter Property="Padding" Value="10,8" />
+        <Setter Property="MinHeight" Value="36" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border x:Name="PART_Border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource GlassRadius}"
+                            SnapsToDevicePixels="True">
+                        <Grid Margin="{TemplateBinding Padding}">
+                            <!-- Placeholder (visible when no text) -->
+                            <TextBlock x:Name="PART_Placeholder"
+                                       Text="{Binding (helpers:GlassHint.Hint), RelativeSource={RelativeSource TemplatedParent}}"
+                                       Foreground="{DynamicResource GlassMutedForegroundBrush}"
+                                       FontSize="{DynamicResource GlassFontSize}"
+                                       VerticalAlignment="Center"
+                                       IsHitTestVisible="False"
+                                       Visibility="Collapsed" />
+
+                            <!-- Content -->
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          VerticalAlignment="Center" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- Show placeholder when empty -->
+                        <Trigger Property="Text" Value="">
+                            <Setter TargetName="PART_Placeholder" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter TargetName="PART_Placeholder" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <!-- Hide placeholder when focused -->
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="PART_Placeholder" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="PART_Border" Property="BorderBrush"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                            <Setter TargetName="PART_Border" Property="BorderThickness" Value="2" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PART_Border" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ========================================== -->
+    <!-- COMBOBOX STYLES                            -->
+    <!-- ========================================== -->
+
+    <Style x:Key="GlassComboBox" TargetType="ComboBox">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSize}" />
+        <Setter Property="Background" Value="{DynamicResource GlassInputBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource GlassInputBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="MinHeight" Value="36" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <!-- ComboBox with Label (simplified, shows selected value) -->
+    <Style x:Key="GlassFloatingHintComboBox" TargetType="ComboBox">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSize}" />
+        <Setter Property="Background" Value="{DynamicResource GlassInputBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource GlassInputBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="10,8,30,8" />
+        <Setter Property="MinHeight" Value="36" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                        <Border x:Name="PART_Border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{DynamicResource GlassRadius}"
+                                SnapsToDevicePixels="True">
+                            <Grid>
+                                <!-- Selected value display -->
+                                <TextBlock x:Name="ContentSite"
+                                           Text="{TemplateBinding Text}"
+                                           Foreground="{TemplateBinding Foreground}"
+                                           Margin="{TemplateBinding Padding}"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                           IsHitTestVisible="False" />
+
+                                <!-- Editable TextBox (hidden by default) -->
+                                <TextBox x:Name="PART_EditableTextBox"
+                                         Style="{x:Null}"
+                                         HorizontalAlignment="Stretch"
+                                         VerticalAlignment="Center"
+                                         Margin="{TemplateBinding Padding}"
+                                         Focusable="True"
+                                         Background="Transparent"
+                                         Foreground="{TemplateBinding Foreground}"
+                                         Visibility="Hidden"
+                                         IsReadOnly="{TemplateBinding IsReadOnly}" />
+
+                                <!-- Dropdown Arrow -->
+                                <TextBlock x:Name="PART_Arrow"
+                                           Text="&#xE70D;"
+                                           FontFamily="{DynamicResource GlassIconFontFamily}"
+                                           FontSize="12"
+                                           Foreground="{DynamicResource GlassMutedForegroundBrush}"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Right"
+                                           Margin="0,0,10,0"
+                                           IsHitTestVisible="False" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Dropdown Popup -->
+                        <Popup x:Name="PART_Popup"
+                               Placement="Bottom"
+                               IsOpen="{TemplateBinding IsDropDownOpen}"
+                               AllowsTransparency="True"
+                               Focusable="False"
+                               PopupAnimation="Slide">
+                            <Grid x:Name="DropDown"
+                                  SnapsToDevicePixels="True"
+                                  MinWidth="{TemplateBinding ActualWidth}"
+                                  MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                <Border x:Name="DropDownBorder"
+                                        Background="{DynamicResource GlassCardSolidBrush}"
+                                        BorderBrush="{DynamicResource GlassBorderSolidBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="{DynamicResource GlassRadius}"
+                                        Margin="0,2,0,0"
+                                        Effect="{DynamicResource GlassShadowMD}">
+                                    <ScrollViewer Margin="4"
+                                                  SnapsToDevicePixels="True"
+                                                  VerticalScrollBarVisibility="Auto"
+                                                  HorizontalScrollBarVisibility="Disabled">
+                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Border>
+                            </Grid>
+                        </Popup>
+
+                        <!-- Toggle Button (invisible, covers entire control) -->
+                        <ToggleButton x:Name="ToggleButton"
+                                      Focusable="False"
+                                      IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                      ClickMode="Press">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Border Background="Transparent" />
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsDropDownOpen" Value="True">
+                            <Setter TargetName="PART_Border" Property="BorderBrush"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                            <Setter TargetName="PART_Border" Property="BorderThickness" Value="2" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_Border" Property="BorderBrush"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PART_Border" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                        <Trigger Property="IsEditable" Value="True">
+                            <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ComboBoxItem style for GlassFloatingHintComboBox -->
+    <Style x:Key="GlassComboBoxItem" TargetType="ComboBoxItem">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBoxItem">
+                    <Border x:Name="PART_Border"
+                            Background="{TemplateBinding Background}"
+                            Padding="{TemplateBinding Padding}"
+                            CornerRadius="4">
+                        <ContentPresenter VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_Border" Property="Background"
+                                    Value="{DynamicResource GlassMutedBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="PART_Border" Property="Background"
+                                    Value="{DynamicResource GlassPrimaryLightBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ========================================== -->
+    <!-- DATEPICKER STYLES                          -->
+    <!-- ========================================== -->
+
+    <Style x:Key="GlassDatePickerTextBox" TargetType="DatePickerTextBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DatePickerTextBox">
+                    <Grid>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="WatermarkStates">
+                                <VisualState x:Name="Unwatermarked" />
+                                <VisualState x:Name="Watermarked">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ContentElement"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0" Duration="0" />
+                                        <DoubleAnimation Storyboard.TargetName="PART_Watermark"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="1" Duration="0" />
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Border x:Name="Border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="0">
+                            <Grid>
+                                <ContentControl x:Name="PART_Watermark"
+                                                Content="Select a date"
+                                                Foreground="{DynamicResource GlassMutedForegroundBrush}"
+                                                IsHitTestVisible="False"
+                                                Opacity="0"
+                                                VerticalAlignment="Center"
+                                                Padding="2,0,0,0" />
+                                <ScrollViewer x:Name="PART_ContentHost"
+                                              HorizontalScrollBarVisibility="Hidden"
+                                              VerticalScrollBarVisibility="Hidden"
+                                              VerticalAlignment="Center" />
+                                <TextBlock x:Name="ContentElement"
+                                           Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}"
+                                           Foreground="{TemplateBinding Foreground}"
+                                           VerticalAlignment="Center"
+                                           Visibility="Collapsed" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="GlassDatePicker" TargetType="DatePicker">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSize}" />
+        <Setter Property="Background" Value="{DynamicResource GlassInputBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource GlassInputBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="6,4" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="IsTodayHighlighted" Value="True" />
+        <Setter Property="SelectedDateFormat" Value="Short" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DatePicker">
+                    <Border x:Name="PART_Border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="4"
+                            SnapsToDevicePixels="True">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <DatePickerTextBox x:Name="PART_TextBox"
+                                               Grid.Column="0"
+                                               Margin="{TemplateBinding Padding}"
+                                               Focusable="{TemplateBinding Focusable}"
+                                               Foreground="{TemplateBinding Foreground}"
+                                               Background="Transparent"
+                                               BorderThickness="0"
+                                               VerticalContentAlignment="Center"
+                                               Style="{StaticResource GlassDatePickerTextBox}" />
+
+                            <Button x:Name="PART_Button"
+                                    Grid.Column="1"
+                                    Width="24"
+                                    Focusable="False"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Margin="0,0,4,0">
+                                <TextBlock Text="&#xE787;"
+                                           FontFamily="{DynamicResource GlassIconFontFamily}"
+                                           FontSize="14"
+                                           Foreground="{DynamicResource GlassMutedForegroundBrush}"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center" />
+                            </Button>
+
+                            <Popup x:Name="PART_Popup"
+                                   AllowsTransparency="True"
+                                   Placement="Bottom"
+                                   PlacementTarget="{Binding ElementName=PART_Border}"
+                                   StaysOpen="False" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_Border" Property="BorderBrush"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PART_Border" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ========================================== -->
+    <!-- DATAGRID STYLES                            -->
+    <!-- ========================================== -->
+
+    <Style x:Key="GlassDataGrid" TargetType="DataGrid">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSize}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource GlassBorderSolidBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="GridLinesVisibility" Value="Horizontal" />
+        <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource GlassBorderSolidBrush}" />
+        <Setter Property="VerticalGridLinesBrush" Value="{DynamicResource GlassBorderSolidBrush}" />
+        <Setter Property="RowBackground" Value="Transparent" />
+        <Setter Property="AlternatingRowBackground" Value="{DynamicResource GlassMutedBrush}" />
+        <Setter Property="HeadersVisibility" Value="Column" />
+        <Setter Property="RowHeaderWidth" Value="0" />
+    </Style>
+
+    <Style x:Key="GlassDataGridColumnHeader" TargetType="DataGridColumnHeader">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Background" Value="{DynamicResource GlassMutedBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource GlassBorderSolidBrush}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="GlassDataGridCell" TargetType="DataGridCell">
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{DynamicResource GlassPrimaryLightBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="GlassDataGridRow" TargetType="DataGridRow">
+        <Setter Property="Background" Value="Transparent" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource GlassMutedBrush}" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{DynamicResource GlassPrimaryLightBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- ========================================== -->
+    <!-- CARD STYLES                                -->
+    <!-- ========================================== -->
+
+    <Style x:Key="GlassCard" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource GlassCardSolidBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource GlassBorderSolidBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{DynamicResource GlassRadiusMD}" />
+        <Setter Property="Padding" Value="10" />
+        <Setter Property="Effect" Value="{DynamicResource GlassShadowSM}" />
+    </Style>
+
+    <Style x:Key="GlassCardElevated" TargetType="Border" BasedOn="{StaticResource GlassCard}">
+        <Setter Property="Effect" Value="{DynamicResource GlassShadowLG}" />
+    </Style>
+
+    <!-- Dialog Card -->
+    <Style x:Key="GlassDialogCard" TargetType="Border" BasedOn="{StaticResource GlassCard}">
+        <Setter Property="CornerRadius" Value="{DynamicResource GlassRadiusXL}" />
+        <Setter Property="Padding" Value="24" />
+        <Setter Property="Effect" Value="{DynamicResource GlassShadowXL}" />
+    </Style>
+
+    <!-- ========================================== -->
+    <!-- CHECKBOX STYLES                            -->
+    <!-- ========================================== -->
+
+    <Style x:Key="GlassCheckBox" TargetType="CheckBox">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <StackPanel Orientation="Horizontal">
+                        <Border x:Name="PART_Border"
+                                Width="18"
+                                Height="18"
+                                Background="{DynamicResource GlassInputBrush}"
+                                BorderBrush="{DynamicResource GlassInputBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4"
+                                SnapsToDevicePixels="True">
+                            <TextBlock x:Name="PART_Check"
+                                       Text="&#xE73E;"
+                                       FontFamily="{DynamicResource GlassIconFontFamily}"
+                                       FontSize="12"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Visibility="Collapsed" />
+                        </Border>
+                        <ContentPresenter Margin="8,0,0,0"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          RecognizesAccessKey="True" />
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="PART_Border" Property="Background"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                            <Setter TargetName="PART_Border" Property="BorderBrush"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                            <Setter TargetName="PART_Check" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_Border" Property="BorderBrush"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ========================================== -->
+    <!-- RADIOBUTTON STYLES                         -->
+    <!-- ========================================== -->
+
+    <Style x:Key="GlassRadioButton" TargetType="RadioButton">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <StackPanel Orientation="Horizontal">
+                        <Border x:Name="PART_Border"
+                                Width="18"
+                                Height="18"
+                                Background="{DynamicResource GlassInputBrush}"
+                                BorderBrush="{DynamicResource GlassInputBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="9"
+                                SnapsToDevicePixels="True">
+                            <Ellipse x:Name="PART_Check"
+                                     Width="8"
+                                     Height="8"
+                                     Fill="White"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     Visibility="Collapsed" />
+                        </Border>
+                        <ContentPresenter Margin="8,0,0,0"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          RecognizesAccessKey="True" />
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="PART_Border" Property="Background"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                            <Setter TargetName="PART_Border" Property="BorderBrush"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                            <Setter TargetName="PART_Check" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_Border" Property="BorderBrush"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Chip-style RadioButton (rectangular with small radius) -->
+    <Style x:Key="GlassChipRadioButton" TargetType="RadioButton">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border x:Name="PART_Border"
+                            Background="{DynamicResource GlassCardSolidBrush}"
+                            BorderBrush="{DynamicResource GlassBorderSolidBrush}"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Padding="12,8"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="PART_Border" Property="Background"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                            <Setter TargetName="PART_Border" Property="BorderBrush"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                            <Setter Property="Foreground" Value="White" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_Border" Property="BorderBrush"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Chip-style CheckBox (rectangular with small radius) -->
+    <Style x:Key="GlassChipCheckBox" TargetType="CheckBox">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <Border x:Name="PART_Border"
+                            Background="{DynamicResource GlassCardSolidBrush}"
+                            BorderBrush="{DynamicResource GlassBorderSolidBrush}"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Padding="12,8"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="PART_Border" Property="Background"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                            <Setter TargetName="PART_Border" Property="BorderBrush"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                            <Setter Property="Foreground" Value="White" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_Border" Property="BorderBrush"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ========================================== -->
+    <!-- TOGGLEBUTTON / SWITCH STYLES               -->
+    <!-- ========================================== -->
+
+    <Style x:Key="GlassToggleSwitch" TargetType="ToggleButton">
+        <Setter Property="Width" Value="44" />
+        <Setter Property="Height" Value="24" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Grid>
+                        <Border x:Name="PART_Track"
+                                Background="{DynamicResource GlassInputBorderBrush}"
+                                CornerRadius="12"
+                                SnapsToDevicePixels="True" />
+                        <Border x:Name="PART_Thumb"
+                                Width="20"
+                                Height="20"
+                                Background="White"
+                                CornerRadius="10"
+                                HorizontalAlignment="Left"
+                                Margin="2,0,0,0"
+                                SnapsToDevicePixels="True">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="4"
+                                                  ShadowDepth="1"
+                                                  Opacity="0.2"
+                                                  Color="#000000" />
+                            </Border.Effect>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="PART_Track" Property="Background"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                            <Setter TargetName="PART_Thumb" Property="Margin" Value="22,0,0,0" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ========================================== -->
+    <!-- SCROLLVIEWER STYLES                        -->
+    <!-- ========================================== -->
+
+    <Style x:Key="GlassScrollViewer" TargetType="ScrollViewer">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
+    </Style>
+
+    <!-- ========================================== -->
+    <!-- SEPARATOR STYLES                           -->
+    <!-- ========================================== -->
+
+    <Style x:Key="GlassSeparator" TargetType="Separator">
+        <Setter Property="Background" Value="{DynamicResource GlassBorderSolidBrush}" />
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Margin" Value="0,8" />
+    </Style>
+
+    <Style x:Key="GlassVerticalSeparator" TargetType="Rectangle">
+        <Setter Property="Fill" Value="{DynamicResource GlassBorderSolidBrush}" />
+        <Setter Property="Width" Value="1" />
+        <Setter Property="Margin" Value="8,0" />
+    </Style>
+
+    <!-- ========================================== -->
+    <!-- PROGRESSBAR STYLES                         -->
+    <!-- ========================================== -->
+
+    <Style x:Key="GlassProgressBar" TargetType="ProgressBar">
+        <Setter Property="Background" Value="{DynamicResource GlassMutedBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassPrimaryBrush}" />
+        <Setter Property="Height" Value="4" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ProgressBar">
+                    <Grid>
+                        <Border x:Name="PART_Track"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="2" />
+                        <Border x:Name="PART_Indicator"
+                                HorizontalAlignment="Left"
+                                CornerRadius="2">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="{DynamicResource GlassPrimaryColor}" Offset="0" />
+                                    <GradientStop Color="{DynamicResource GlassSecondaryColor}" Offset="1" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ========================================== -->
+    <!-- FLUENTICON STYLE                           -->
+    <!-- ========================================== -->
+
+    <Style TargetType="{x:Type controls:FluentIcon}">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassIconFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassIconSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+
+    <!-- ========================================== -->
+    <!-- GLASSMORPHISM FLOATING CARD                -->
+    <!-- ========================================== -->
+
+    <Style x:Key="GlassFloatingCard" TargetType="ToggleButton">
+        <Setter Property="MinWidth" Value="120" />
+        <Setter Property="Height" Value="50" />
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource GlassCardBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource GlassBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Grid>
+                        <!-- Shadow layer -->
+                        <Border x:Name="ShadowBorder"
+                                CornerRadius="12"
+                                Margin="4"
+                                Background="Transparent" />
+                        <!-- Main card -->
+                        <Border x:Name="MainBorder"
+                                CornerRadius="12"
+                                Margin="4"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid>
+                                <!-- Highlight border at top -->
+                                <Border CornerRadius="11,11,0,0"
+                                        Height="1"
+                                        VerticalAlignment="Top"
+                                        Margin="1,1,1,0"
+                                        Background="{DynamicResource GlassHighlightGradientBrush}" />
+                                <ContentPresenter VerticalAlignment="Center"
+                                                  HorizontalAlignment="Center" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="MainBorder" Property="BorderBrush"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                            <Setter TargetName="ShadowBorder" Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect Color="{DynamicResource GlassPrimaryColor}"
+                                                      BlurRadius="20"
+                                                      ShadowDepth="0"
+                                                      Opacity="0.4" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="MainBorder" Property="BorderBrush"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

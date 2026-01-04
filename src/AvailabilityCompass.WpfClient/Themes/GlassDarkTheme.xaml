@@ -1,0 +1,141 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ========================================== -->
+    <!-- WARM NEUTRAL DARK THEME                    -->
+    <!-- Stone/Zinc with Amber accents              -->
+    <!-- ========================================== -->
+
+    <!-- Background Colors -->
+    <Color x:Key="GlassBackgroundColor">#0C0A09</Color>
+    <Color x:Key="GlassSurfaceColor">#1C1917</Color>
+
+    <!-- Card Colors -->
+    <Color x:Key="GlassCardColor">#292524</Color>
+    <Color x:Key="GlassCardSolidColor">#292524</Color>
+    <Color x:Key="GlassBorderColor">#44403C</Color>
+    <Color x:Key="GlassHighlightColor">#292524</Color>
+    <Color x:Key="GlassOverlayColor">#CC0C0A09</Color>
+
+    <!-- Text Colors -->
+    <Color x:Key="GlassForegroundColor">#FAFAF9</Color>
+    <Color x:Key="GlassMutedForegroundColor">#A8A29E</Color>
+    <Color x:Key="GlassSubtleForegroundColor">#78716C</Color>
+
+    <!-- Primary Accent - Amber (brighter for dark mode) -->
+    <Color x:Key="GlassPrimaryColor">#FBBF24</Color>
+    <Color x:Key="GlassPrimaryHoverColor">#FCD34D</Color>
+    <Color x:Key="GlassPrimaryLightColor">#451A03</Color>
+    <Color x:Key="GlassPrimaryForegroundColor">#0C0A09</Color>
+
+    <!-- Secondary - Stone -->
+    <Color x:Key="GlassSecondaryColor">#A8A29E</Color>
+    <Color x:Key="GlassSecondaryHoverColor">#D6D3D1</Color>
+    <Color x:Key="GlassSecondaryForegroundColor">#0C0A09</Color>
+
+    <!-- Accent - Teal -->
+    <Color x:Key="GlassAccentColor">#2DD4BF</Color>
+    <Color x:Key="GlassAccentHoverColor">#5EEAD4</Color>
+    <Color x:Key="GlassAccentForegroundColor">#0C0A09</Color>
+
+    <!-- Semantic Colors -->
+    <Color x:Key="GlassDestructiveColor">#F87171</Color>
+    <Color x:Key="GlassDestructiveHoverColor">#FCA5A5</Color>
+    <Color x:Key="GlassDestructiveForegroundColor">#0C0A09</Color>
+    <Color x:Key="GlassSuccessColor">#4ADE80</Color>
+    <Color x:Key="GlassWarningColor">#FBBF24</Color>
+
+    <!-- Border and Input -->
+    <Color x:Key="GlassBorderSolidColor">#44403C</Color>
+    <Color x:Key="GlassInputColor">#1C1917</Color>
+    <Color x:Key="GlassInputBorderColor">#57534E</Color>
+    <Color x:Key="GlassRingColor">#FBBF24</Color>
+
+    <!-- Shadow Colors -->
+    <Color x:Key="GlassShadowColor">#40000000</Color>
+    <Color x:Key="GlassShadowDarkColor">#60000000</Color>
+
+    <!-- Muted/Disabled -->
+    <Color x:Key="GlassMutedColor">#292524</Color>
+    <Color x:Key="GlassDisabledColor">#57534E</Color>
+
+    <!-- ========================================== -->
+    <!-- SOLID COLOR BRUSHES                        -->
+    <!-- ========================================== -->
+
+    <!-- Background Brushes -->
+    <SolidColorBrush x:Key="GlassBackgroundBrush" Color="{DynamicResource GlassBackgroundColor}" />
+    <SolidColorBrush x:Key="GlassSurfaceBrush" Color="{DynamicResource GlassSurfaceColor}" />
+    <SolidColorBrush x:Key="GlassCardBrush" Color="{DynamicResource GlassCardColor}" />
+    <SolidColorBrush x:Key="GlassCardSolidBrush" Color="{DynamicResource GlassCardSolidColor}" />
+    <SolidColorBrush x:Key="GlassBorderBrush" Color="{DynamicResource GlassBorderColor}" />
+    <SolidColorBrush x:Key="GlassHighlightBrush" Color="{DynamicResource GlassHighlightColor}" />
+    <SolidColorBrush x:Key="GlassOverlayBrush" Color="{DynamicResource GlassOverlayColor}" />
+
+    <!-- Text Brushes -->
+    <SolidColorBrush x:Key="GlassForegroundBrush" Color="{DynamicResource GlassForegroundColor}" />
+    <SolidColorBrush x:Key="GlassMutedForegroundBrush" Color="{DynamicResource GlassMutedForegroundColor}" />
+    <SolidColorBrush x:Key="GlassSubtleForegroundBrush" Color="{DynamicResource GlassSubtleForegroundColor}" />
+
+    <!-- Primary Brushes -->
+    <SolidColorBrush x:Key="GlassPrimaryBrush" Color="{DynamicResource GlassPrimaryColor}" />
+    <SolidColorBrush x:Key="GlassPrimaryHoverBrush" Color="{DynamicResource GlassPrimaryHoverColor}" />
+    <SolidColorBrush x:Key="GlassPrimaryLightBrush" Color="{DynamicResource GlassPrimaryLightColor}" />
+    <SolidColorBrush x:Key="GlassPrimaryForegroundBrush" Color="{DynamicResource GlassPrimaryForegroundColor}" />
+
+    <!-- Secondary Brushes -->
+    <SolidColorBrush x:Key="GlassSecondaryBrush" Color="{DynamicResource GlassSecondaryColor}" />
+    <SolidColorBrush x:Key="GlassSecondaryHoverBrush" Color="{DynamicResource GlassSecondaryHoverColor}" />
+    <SolidColorBrush x:Key="GlassSecondaryForegroundBrush" Color="{DynamicResource GlassSecondaryForegroundColor}" />
+
+    <!-- Accent Brushes -->
+    <SolidColorBrush x:Key="GlassAccentBrush" Color="{DynamicResource GlassAccentColor}" />
+    <SolidColorBrush x:Key="GlassAccentHoverBrush" Color="{DynamicResource GlassAccentHoverColor}" />
+    <SolidColorBrush x:Key="GlassAccentForegroundBrush" Color="{DynamicResource GlassAccentForegroundColor}" />
+
+    <!-- Semantic Brushes -->
+    <SolidColorBrush x:Key="GlassDestructiveBrush" Color="{DynamicResource GlassDestructiveColor}" />
+    <SolidColorBrush x:Key="GlassDestructiveHoverBrush" Color="{DynamicResource GlassDestructiveHoverColor}" />
+    <SolidColorBrush x:Key="GlassDestructiveForegroundBrush" Color="{DynamicResource GlassDestructiveForegroundColor}" />
+    <SolidColorBrush x:Key="GlassSuccessBrush" Color="{DynamicResource GlassSuccessColor}" />
+    <SolidColorBrush x:Key="GlassWarningBrush" Color="{DynamicResource GlassWarningColor}" />
+
+    <!-- Border and Input Brushes -->
+    <SolidColorBrush x:Key="GlassBorderSolidBrush" Color="{DynamicResource GlassBorderSolidColor}" />
+    <SolidColorBrush x:Key="GlassInputBrush" Color="{DynamicResource GlassInputColor}" />
+    <SolidColorBrush x:Key="GlassInputBorderBrush" Color="{DynamicResource GlassInputBorderColor}" />
+    <SolidColorBrush x:Key="GlassRingBrush" Color="{DynamicResource GlassRingColor}" />
+
+    <!-- Muted Brushes -->
+    <SolidColorBrush x:Key="GlassMutedBrush" Color="{DynamicResource GlassMutedColor}" />
+    <SolidColorBrush x:Key="GlassDisabledBrush" Color="{DynamicResource GlassDisabledColor}" />
+
+    <!-- ========================================== -->
+    <!-- GRADIENT BRUSHES                           -->
+    <!-- ========================================== -->
+
+    <!-- Primary Gradient (Amber) -->
+    <LinearGradientBrush x:Key="GlassPrimaryGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="{DynamicResource GlassPrimaryColor}" Offset="0" />
+        <GradientStop Color="{DynamicResource GlassPrimaryHoverColor}" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- Card Gradient (darker for dark mode) -->
+    <LinearGradientBrush x:Key="GlassCardGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#292524" Offset="0" />
+        <GradientStop Color="#1C1917" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- Highlight Gradient (Top edge shine) -->
+    <LinearGradientBrush x:Key="GlassHighlightGradientBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#15FFFFFF" Offset="0" />
+        <GradientStop Color="#00FFFFFF" Offset="0.5" />
+    </LinearGradientBrush>
+
+    <!-- Header/Toolbar Gradient -->
+    <LinearGradientBrush x:Key="GlassHeaderGradientBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#1C1917" Offset="0" />
+        <GradientStop Color="#0C0A09" Offset="1" />
+    </LinearGradientBrush>
+
+</ResourceDictionary>

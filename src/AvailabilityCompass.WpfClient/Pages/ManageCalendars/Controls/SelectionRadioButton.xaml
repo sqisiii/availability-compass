@@ -1,44 +1,40 @@
-﻿<UserControl x:Class="AvailabilityCompass.WpfClient.Pages.ManageCalendars.Controls.SelectionRadioButton"
+<UserControl x:Class="AvailabilityCompass.WpfClient.Pages.ManageCalendars.Controls.SelectionRadioButton"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              x:Name="Root">
     <StackPanel Margin="0,0,0,0">
-
-        <materialDesign:Card
-            Height="16"
-            MinWidth="40"
-            MaxWidth="120"
-            Padding="1"
-            HorizontalAlignment="Center"
-            HorizontalContentAlignment="Center"
-            Panel.ZIndex="1"
-            Background="{DynamicResource MaterialDesign.Brush.Primary.Light}"
-            Content="{Binding HeaderText, ElementName=Root}"
-            FontSize="10"
-            Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
+        <!-- Header badge -->
+        <Border Height="16"
+                MinWidth="40"
+                MaxWidth="120"
+                Padding="4,1"
+                HorizontalAlignment="Center"
+                Panel.ZIndex="1"
+                Background="{DynamicResource GlassPrimaryBrush}"
+                CornerRadius="4">
+            <TextBlock Text="{Binding HeaderText, ElementName=Root}"
+                       FontSize="10"
+                       Foreground="White"
+                       HorizontalAlignment="Center" />
+        </Border>
 
         <StackPanel>
-            <RadioButton
-                Width="{Binding FullWidth, ElementName=Root}"
-                MinHeight="{Binding FullMinHeight, ElementName=Root}"
-                Margin="0,-10,0,0"
-                GroupName="{Binding GroupName, ElementName=Root}"
-                IsChecked="{Binding IsChecked, ElementName=Root}"
-                IsEnabled="{Binding IsActive, ElementName=Root}"
-                Style="{StaticResource MaterialDesignChoiceChipSecondaryRadioButton}">
+            <RadioButton Width="{Binding FullWidth, ElementName=Root}"
+                         MinHeight="{Binding FullMinHeight, ElementName=Root}"
+                         Margin="0,-10,0,0"
+                         GroupName="{Binding GroupName, ElementName=Root}"
+                         IsChecked="{Binding IsChecked, ElementName=Root}"
+                         IsEnabled="{Binding IsActive, ElementName=Root}"
+                         Style="{StaticResource GlassChipRadioButton}">
                 <RadioButton.Content>
                     <WrapPanel>
-                        <TextBlock
-                            Padding="0,10,0,5"
-                            HorizontalAlignment="Center"
-                            Text="{Binding RadioButtonText, ElementName=Root}"
-                            TextWrapping="Wrap" />
+                        <TextBlock Padding="0,10,0,5"
+                                   HorizontalAlignment="Center"
+                                   Text="{Binding RadioButtonText, ElementName=Root}"
+                                   TextWrapping="Wrap" />
                     </WrapPanel>
                 </RadioButton.Content>
             </RadioButton>
-
-
         </StackPanel>
     </StackPanel>
 </UserControl>

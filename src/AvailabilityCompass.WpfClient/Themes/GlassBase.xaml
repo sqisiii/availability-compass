@@ -1,0 +1,172 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!-- ========================================== -->
+    <!-- GLASSMORPHISM BASE RESOURCES               -->
+    <!-- Constants, shadows, and base effects       -->
+    <!-- ========================================== -->
+
+    <!-- ========================================== -->
+    <!-- CORNER RADIUS                              -->
+    <!-- ========================================== -->
+
+    <CornerRadius x:Key="GlassRadiusNone">0</CornerRadius>
+    <CornerRadius x:Key="GlassRadiusXS">4</CornerRadius>
+    <CornerRadius x:Key="GlassRadiusSM">6</CornerRadius>
+    <CornerRadius x:Key="GlassRadius">8</CornerRadius>
+    <CornerRadius x:Key="GlassRadiusMD">10</CornerRadius>
+    <CornerRadius x:Key="GlassRadiusLG">12</CornerRadius>
+    <CornerRadius x:Key="GlassRadiusXL">16</CornerRadius>
+    <CornerRadius x:Key="GlassRadius2XL">20</CornerRadius>
+    <CornerRadius x:Key="GlassRadiusFull">9999</CornerRadius>
+
+    <!-- Window-specific corner radius -->
+    <CornerRadius x:Key="GlassWindowRadius">10</CornerRadius>
+    <CornerRadius x:Key="GlassWindowTopRadius">10,10,0,0</CornerRadius>
+
+    <!-- ========================================== -->
+    <!-- SPACING                                    -->
+    <!-- ========================================== -->
+
+    <Thickness x:Key="GlassSpacingNone">0</Thickness>
+    <Thickness x:Key="GlassSpacingXS">4</Thickness>
+    <Thickness x:Key="GlassSpacingSM">8</Thickness>
+    <Thickness x:Key="GlassSpacing">12</Thickness>
+    <Thickness x:Key="GlassSpacingMD">16</Thickness>
+    <Thickness x:Key="GlassSpacingLG">20</Thickness>
+    <Thickness x:Key="GlassSpacingXL">24</Thickness>
+    <Thickness x:Key="GlassSpacing2XL">32</Thickness>
+    <Thickness x:Key="GlassSpacing3XL">48</Thickness>
+
+    <!-- ========================================== -->
+    <!-- TYPOGRAPHY                                 -->
+    <!-- ========================================== -->
+
+    <FontFamily x:Key="GlassFontFamily">Segoe UI Variable, Segoe UI, Arial</FontFamily>
+    <FontFamily x:Key="GlassMonoFontFamily">Cascadia Code, Consolas, Courier New</FontFamily>
+    <FontFamily x:Key="GlassIconFontFamily">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
+
+    <system:Double x:Key="GlassFontSizeXS">10</system:Double>
+    <system:Double x:Key="GlassFontSizeSM">12</system:Double>
+    <system:Double x:Key="GlassFontSize">14</system:Double>
+    <system:Double x:Key="GlassFontSizeMD">16</system:Double>
+    <system:Double x:Key="GlassFontSizeLG">18</system:Double>
+    <system:Double x:Key="GlassFontSizeXL">22</system:Double>
+    <system:Double x:Key="GlassFontSize2XL">28</system:Double>
+    <system:Double x:Key="GlassFontSize3XL">36</system:Double>
+
+    <!-- ========================================== -->
+    <!-- SHADOWS (DropShadowEffect)                 -->
+    <!-- ========================================== -->
+
+    <!-- Subtle shadow for cards -->
+    <DropShadowEffect x:Key="GlassShadowSM"
+                      BlurRadius="8"
+                      ShadowDepth="2"
+                      Direction="270"
+                      Opacity="0.1"
+                      Color="#000000" />
+
+    <!-- Medium shadow for elevated elements -->
+    <DropShadowEffect x:Key="GlassShadowMD"
+                      BlurRadius="16"
+                      ShadowDepth="4"
+                      Direction="270"
+                      Opacity="0.15"
+                      Color="#000000" />
+
+    <!-- Large shadow for dialogs and popovers -->
+    <DropShadowEffect x:Key="GlassShadowLG"
+                      BlurRadius="24"
+                      ShadowDepth="8"
+                      Direction="270"
+                      Opacity="0.2"
+                      Color="#000000" />
+
+    <!-- Extra large shadow for modals -->
+    <DropShadowEffect x:Key="GlassShadowXL"
+                      BlurRadius="40"
+                      ShadowDepth="12"
+                      Direction="270"
+                      Opacity="0.25"
+                      Color="#000000" />
+
+    <!-- Colored glow shadows -->
+    <DropShadowEffect x:Key="GlassPrimaryGlow"
+                      BlurRadius="20"
+                      ShadowDepth="0"
+                      Opacity="0.4"
+                      Color="#6366F1" />
+
+    <DropShadowEffect x:Key="GlassSecondaryGlow"
+                      BlurRadius="20"
+                      ShadowDepth="0"
+                      Opacity="0.4"
+                      Color="#8B5CF6" />
+
+    <DropShadowEffect x:Key="GlassAccentGlow"
+                      BlurRadius="20"
+                      ShadowDepth="0"
+                      Opacity="0.4"
+                      Color="#06B6D4" />
+
+    <DropShadowEffect x:Key="GlassDestructiveGlow"
+                      BlurRadius="20"
+                      ShadowDepth="0"
+                      Opacity="0.4"
+                      Color="#EF4444" />
+
+    <!-- ========================================== -->
+    <!-- ANIMATION DURATIONS                        -->
+    <!-- ========================================== -->
+
+    <Duration x:Key="GlassAnimationFast">0:0:0.15</Duration>
+    <Duration x:Key="GlassAnimation">0:0:0.2</Duration>
+    <Duration x:Key="GlassAnimationSlow">0:0:0.3</Duration>
+
+    <KeyTime x:Key="GlassKeyTimeFast">0:0:0.15</KeyTime>
+    <KeyTime x:Key="GlassKeyTime">0:0:0.2</KeyTime>
+    <KeyTime x:Key="GlassKeyTimeSlow">0:0:0.3</KeyTime>
+
+    <!-- ========================================== -->
+    <!-- EASING FUNCTIONS                           -->
+    <!-- ========================================== -->
+
+    <QuadraticEase x:Key="GlassEaseOut" EasingMode="EaseOut" />
+    <QuadraticEase x:Key="GlassEaseIn" EasingMode="EaseIn" />
+    <QuadraticEase x:Key="GlassEaseInOut" EasingMode="EaseInOut" />
+    <CubicEase x:Key="GlassEaseCubic" EasingMode="EaseOut" />
+    <BackEase x:Key="GlassEaseBounce" EasingMode="EaseOut" Amplitude="0.3" />
+
+    <!-- ========================================== -->
+    <!-- BORDER THICKNESS                           -->
+    <!-- ========================================== -->
+
+    <Thickness x:Key="GlassBorderNone">0</Thickness>
+    <Thickness x:Key="GlassBorderThin">1</Thickness>
+    <Thickness x:Key="GlassBorder">1</Thickness>
+    <Thickness x:Key="GlassBorderMedium">2</Thickness>
+    <Thickness x:Key="GlassBorderThick">3</Thickness>
+
+    <!-- ========================================== -->
+    <!-- SIZES                                      -->
+    <!-- ========================================== -->
+
+    <!-- Button heights -->
+    <system:Double x:Key="GlassButtonHeightSM">28</system:Double>
+    <system:Double x:Key="GlassButtonHeight">36</system:Double>
+    <system:Double x:Key="GlassButtonHeightLG">44</system:Double>
+
+    <!-- Icon sizes -->
+    <system:Double x:Key="GlassIconSizeXS">12</system:Double>
+    <system:Double x:Key="GlassIconSizeSM">14</system:Double>
+    <system:Double x:Key="GlassIconSize">16</system:Double>
+    <system:Double x:Key="GlassIconSizeMD">18</system:Double>
+    <system:Double x:Key="GlassIconSizeLG">20</system:Double>
+    <system:Double x:Key="GlassIconSizeXL">24</system:Double>
+
+    <!-- Header height -->
+    <system:Double x:Key="GlassHeaderHeight">56</system:Double>
+
+</ResourceDictionary>
