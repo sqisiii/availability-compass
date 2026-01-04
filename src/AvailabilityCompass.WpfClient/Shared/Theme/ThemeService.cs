@@ -2,8 +2,8 @@ using System.Windows;
 using AvailabilityCompass.Core.Features.ManageSettings;
 using AvailabilityCompass.Core.Features.ManageSettings.Commands.SaveSetting;
 using AvailabilityCompass.Core.Features.ManageSettings.Queries.GetSetting;
-using MaterialDesignThemes.Wpf;
 using MediatR;
+using WpfApp = System.Windows.Application;
 
 namespace AvailabilityCompass.WpfClient.Shared.Theme;
 
@@ -14,70 +14,62 @@ public class ThemeService : IThemeService
     private const string LightThemeValue = "Light";
 
     private readonly IMediator _mediator;
-    private readonly PaletteHelper _paletteHelper;
-    private bool _isDarkTheme;
 
     public ThemeService(IMediator mediator)
     {
         _mediator = mediator;
-        _paletteHelper = new PaletteHelper();
     }
 
-    public bool IsDarkTheme => _isDarkTheme;
+    public bool IsDarkTheme { get; private set; }
 
     public async Task LoadThemeAsync()
     {
         var response = await _mediator.Send(new GetSettingQuery(ThemeSettingKey, LightThemeValue));
-        _isDarkTheme = response.Value == DarkThemeValue;
-        ApplyTheme(_isDarkTheme);
+        IsDarkTheme = response.Value == DarkThemeValue;
+        ApplyTheme(IsDarkTheme);
     }
 
     public async Task SaveThemeAsync(bool isDark)
     {
-        _isDarkTheme = isDark;
+        IsDarkTheme = isDark;
         ApplyTheme(isDark);
 
         var value = isDark ? DarkThemeValue : LightThemeValue;
         await _mediator.Send(new SaveSettingRequest(ThemeSettingKey, value));
     }
 
-    private void ApplyTheme(bool isDark)
+    private static void ApplyTheme(bool isDark)
     {
-        System.Windows.Application.Current.Dispatcher.Invoke(() =>
-        {
-            var theme = _paletteHelper.GetTheme();
-            theme.SetBaseTheme(isDark ? BaseTheme.Dark : BaseTheme.Light);
-            _paletteHelper.SetTheme(theme);
-
-            UpdateShadcnTheme(isDark);
-        });
+        WpfApp.Current.Dispatcher.Invoke(() => { UpdateGlassTheme(isDark); });
     }
 
-    private void UpdateShadcnTheme(bool isDark)
+    private static void UpdateGlassTheme(bool isDark)
     {
-        var resources = System.Windows.Application.Current.Resources;
-        var lightTheme = new Uri("pack://application:,,,/AvailabilityCompass.WpfClient;component/Themes/ShadcnLightTheme.xaml", UriKind.Absolute);
-        var darkTheme = new Uri("pack://application:,,,/AvailabilityCompass.WpfClient;component/Themes/ShadcnDarkTheme.xaml", UriKind.Absolute);
+        var resources = WpfApp.Current.Resources;
+        var darkTheme = new Uri("pack://application:,,,/AvailabilityCompass.WpfClient;component/Themes/GlassDarkTheme.xaml",
+            UriKind.Absolute);
+        var lightTheme = new Uri("pack://application:,,,/AvailabilityCompass.WpfClient;component/Themes/GlassLightTheme.xaml",
+            UriKind.Absolute);
 
-        ResourceDictionary? existingTheme = null;
-        foreach (var dict in resources.MergedDictionaries)
-        {
-            if (dict.Source == lightTheme || dict.Source == darkTheme)
-            {
-                existingTheme = dict;
-                break;
-            }
-        }
-
-        if (existingTheme is not null)
-        {
-            resources.MergedDictionaries.Remove(existingTheme);
-        }
+        // Find ALL theme dictionaries (match by filename, not full URI)
+        // This handles both relative paths from App.xaml and absolute pack:// URIs
+        var themesToRemove = resources.MergedDictionaries
+            .Where(dict => dict.Source?.OriginalString.EndsWith("GlassLightTheme.xaml") == true ||
+                           dict.Source?.OriginalString.EndsWith("GlassDarkTheme.xaml") == true)
+            .ToList();
 
         var newTheme = new ResourceDictionary
         {
             Source = isDark ? darkTheme : lightTheme
         };
-        resources.MergedDictionaries.Add(newTheme);
+
+        // Insert new theme FIRST to ensure resources are always available
+        resources.MergedDictionaries.Insert(0, newTheme);
+
+        // Then remove old themes
+        foreach (var theme in themesToRemove)
+        {
+            resources.MergedDictionaries.Remove(theme);
+        }
     }
 }
