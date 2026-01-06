@@ -18,6 +18,9 @@
     <UserControl.Resources>
         <converters:FormGroupVisibilityConverter x:Key="VisibilityConverter" />
         <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
+        <converters:CalendarTypeToIconConverter x:Key="CalendarTypeToIconConverter" />
+        <converters:CalendarTypeToStyleConverter x:Key="CalendarTypeToStyleConverter" />
+        <converters:CalendarTypeToColorConverter x:Key="CalendarTypeToColorConverter" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <!-- ReSharper disable once Xaml.RedundantResource -->
         <DataTemplate x:Key="UrlCellTemplate">
@@ -63,13 +66,13 @@
                         <DataTemplate DataType="{x:Type viewModels:CalendarFilterViewModel}">
                             <ToggleButton Margin="0,0,8,8"
                                           IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                          Style="{StaticResource GlassFloatingCard}">
+                                          Style="{Binding IsOnly, Converter={StaticResource CalendarTypeToStyleConverter}}">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0">
-                                    <!-- Icon -->
-                                    <sharedControls:FluentIcon Glyph="{x:Static sharedControls:FluentIcons.Calendar}"
+                                    <!-- Icon: Accept (green) for Include, Blocked (amber) for Exclude -->
+                                    <sharedControls:FluentIcon Glyph="{Binding IsOnly, Converter={StaticResource CalendarTypeToIconConverter}}"
                                                                IconSize="24"
                                                                VerticalAlignment="Center"
-                                                               Foreground="{DynamicResource GlassPrimaryBrush}" />
+                                                               Foreground="{Binding IsOnly, Converter={StaticResource CalendarTypeToColorConverter}}" />
                                     <!-- Name and Type -->
                                     <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding Name}"

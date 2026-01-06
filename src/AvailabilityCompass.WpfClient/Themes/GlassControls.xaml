@@ -1132,6 +1132,56 @@
     <!-- GLASSMORPHISM FLOATING CARD                -->
     <!-- ========================================== -->
 
+    <!-- Base floating card style (reusable template) -->
+    <ControlTemplate x:Key="GlassFloatingCardTemplate" TargetType="ToggleButton">
+        <Grid>
+            <!-- Shadow layer -->
+            <Border x:Name="ShadowBorder"
+                    CornerRadius="12"
+                    Margin="4"
+                    Background="Transparent" />
+            <!-- Main card -->
+            <Border x:Name="MainBorder"
+                    CornerRadius="12"
+                    Margin="4"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+                <Grid>
+                    <!-- Highlight border at the top -->
+                    <Border CornerRadius="11,11,0,0"
+                            Height="1"
+                            VerticalAlignment="Top"
+                            Margin="1,1,1,0"
+                            Background="{DynamicResource GlassHighlightGradientBrush}" />
+                    <ContentPresenter VerticalAlignment="Center"
+                                      HorizontalAlignment="Center" />
+                </Grid>
+            </Border>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter TargetName="MainBorder" Property="BorderBrush"
+                        Value="{DynamicResource GlassPrimaryBrush}" />
+                <Setter TargetName="ShadowBorder" Property="Effect">
+                    <Setter.Value>
+                        <DropShadowEffect Color="{DynamicResource GlassPrimaryColor}"
+                                          BlurRadius="20"
+                                          ShadowDepth="0"
+                                          Opacity="0.4" />
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="MainBorder" Property="BorderBrush"
+                        Value="{DynamicResource GlassPrimaryBrush}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.5" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
     <Style x:Key="GlassFloatingCard" TargetType="ToggleButton">
         <Setter Property="MinWidth" Value="120" />
         <Setter Property="Height" Value="50" />
@@ -1193,6 +1243,24 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <!-- Calendar Include (IsOnly=true) floating card with green tint when selected -->
+    <Style x:Key="GlassFloatingCardInclude" TargetType="ToggleButton" BasedOn="{StaticResource GlassFloatingCard}">
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="{DynamicResource GlassSuccessLightBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Calendar Exclude (IsOnly=false) floating card with amber tint when selected -->
+    <Style x:Key="GlassFloatingCardExclude" TargetType="ToggleButton" BasedOn="{StaticResource GlassFloatingCard}">
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="{DynamicResource GlassPrimaryLightBrush}" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
 </ResourceDictionary>

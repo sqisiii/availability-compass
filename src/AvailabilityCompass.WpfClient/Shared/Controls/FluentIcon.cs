@@ -156,4 +156,8 @@ public static class FluentIcons
     public const string Share = "\uE72D";
     public const string Download = "\uE896";
     public const string Upload = "\uE898";
+
+    // Calendar types
+    public const string Accept = "\uE8FB";      // Checkmark in circle (for Include calendars)
+    public const string Blocked = "\uE8D8";     // Prohibited sign (for Exclude calendars)
 }

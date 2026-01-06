@@ -1,8 +1,8 @@
-﻿using AvailabilityCompass.Core.Application.Database;
+﻿using System.Runtime.InteropServices;
+using AvailabilityCompass.Core.Application.Database;
 using AvailabilityCompass.Core.Features.ManageSettings;
 using AvailabilityCompass.WpfClient.Pages;
 using Serilog;
-using System.Runtime.InteropServices;
 
 namespace AvailabilityCompass.WpfClient.Application.Initialization;
 
@@ -12,9 +12,9 @@ namespace AvailabilityCompass.WpfClient.Application.Initialization;
 public class Bootstrapper
 {
     private readonly IDbInitializer _dbInitializer;
-    private readonly IThemeService _themeService;
     private readonly MainViewModel _mainViewModel;
     private readonly MainWindow _mainWindow;
+    private readonly IThemeService _themeService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Bootstrapper"/> class.
@@ -23,7 +23,11 @@ public class Bootstrapper
     /// <param name="mainViewModel">The main view model of the application.</param>
     /// <param name="dbInitializer">The database initializer.</param>
     /// <param name="themeService">The theme service.</param>
-    public Bootstrapper(MainWindow mainWindow, MainViewModel mainViewModel, IDbInitializer dbInitializer, IThemeService themeService)
+    public Bootstrapper(
+        MainWindow mainWindow,
+        MainViewModel mainViewModel,
+        IDbInitializer dbInitializer,
+        IThemeService themeService)
     {
         _mainWindow = mainWindow;
         _mainViewModel = mainViewModel;
@@ -39,7 +43,7 @@ public class Bootstrapper
         Introduce();
         _dbInitializer.InitializeAsync().Wait();
 
-        // Load saved theme before showing the window
+        // Load a saved theme before showing the window
         _themeService.LoadThemeAsync().Wait();
 
         _mainViewModel.InitializeAsync().Wait();
@@ -56,6 +60,7 @@ public class Bootstrapper
         Log.Information("-----------------------------------------------------------------------------------------");
         Log.Information("Application starting up. Version: {version}", typeof(App).Assembly.GetName().Version);
 
-        Log.Information($"Runtime data: .Net version: {RuntimeInformation.FrameworkDescription}; OS description: {RuntimeInformation.OSDescription}; OS Architecture: {RuntimeInformation.OSArchitecture}; Process Architecture: {RuntimeInformation.ProcessArchitecture}; Runtime Identifier: {RuntimeInformation.RuntimeIdentifier};");
+        Log.Information(
+            $"Runtime data: .Net version: {RuntimeInformation.FrameworkDescription}; OS description: {RuntimeInformation.OSDescription}; OS Architecture: {RuntimeInformation.OSArchitecture}; Process Architecture: {RuntimeInformation.ProcessArchitecture}; Runtime Identifier: {RuntimeInformation.RuntimeIdentifier};");
     }
 }

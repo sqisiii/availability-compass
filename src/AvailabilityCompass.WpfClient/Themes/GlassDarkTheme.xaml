@@ -98,6 +98,7 @@
     <SolidColorBrush x:Key="GlassDestructiveHoverBrush" Color="{DynamicResource GlassDestructiveHoverColor}" />
     <SolidColorBrush x:Key="GlassDestructiveForegroundBrush" Color="{DynamicResource GlassDestructiveForegroundColor}" />
     <SolidColorBrush x:Key="GlassSuccessBrush" Color="{DynamicResource GlassSuccessColor}" />
+    <SolidColorBrush x:Key="GlassSuccessLightBrush" Color="#052E16" />
     <SolidColorBrush x:Key="GlassWarningBrush" Color="{DynamicResource GlassWarningColor}" />
 
     <!-- Border and Input Brushes -->
