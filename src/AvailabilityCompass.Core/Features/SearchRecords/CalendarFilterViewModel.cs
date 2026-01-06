@@ -18,7 +18,7 @@ public partial class CalendarFilterViewModel : ObservableObject
         Id = id;
     }
 
-    public string Type => IsOnly ? "Only" : "Exclude";
+    public string Type => IsOnly ? "Available days" : "Blocked days";
 
     public Guid Id { get; }
 }

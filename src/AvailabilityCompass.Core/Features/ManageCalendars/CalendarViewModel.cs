@@ -16,7 +16,7 @@ public partial class CalendarViewModel : ObservableValidator
     [Required(ErrorMessage = "Name is required")]
     private string _name = string.Empty;
 
-    public string Type => IsOnly ? "Only" : "Except";
+    public string Type => IsOnly ? "Available days" : "Blocked days";
 
     public Guid CalendarId { get; init; }
 
