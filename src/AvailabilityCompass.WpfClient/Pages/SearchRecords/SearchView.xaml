@@ -107,7 +107,7 @@
                             <ToggleButton Margin="0,0,8,8"
                                           IsChecked="{Binding IsSelected, Mode=TwoWay}"
                                           IsEnabled="{Binding IsActive}"
-                                          Style="{StaticResource GlassFloatingCard}">
+                                          Style="{StaticResource GlassFloatingCardSource}">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0">
                                     <!-- Icon -->
                                     <Image Source="{Binding IconPath}"

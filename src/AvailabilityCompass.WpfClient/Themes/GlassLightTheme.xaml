@@ -92,6 +92,7 @@
     <SolidColorBrush x:Key="GlassAccentBrush" Color="{DynamicResource GlassAccentColor}" />
     <SolidColorBrush x:Key="GlassAccentHoverBrush" Color="{DynamicResource GlassAccentHoverColor}" />
     <SolidColorBrush x:Key="GlassAccentForegroundBrush" Color="{DynamicResource GlassAccentForegroundColor}" />
+    <SolidColorBrush x:Key="GlassAccentLightBrush" Color="#8B5CF6" Opacity="0.1" />
 
     <!-- Semantic Brushes -->
     <SolidColorBrush x:Key="GlassDestructiveBrush" Color="{DynamicResource GlassDestructiveColor}" />

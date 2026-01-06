@@ -1263,4 +1263,13 @@
         </Style.Triggers>
     </Style>
 
+    <!-- Source floating card with teal tint when selected -->
+    <Style x:Key="GlassFloatingCardSource" TargetType="ToggleButton" BasedOn="{StaticResource GlassFloatingCard}">
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="{DynamicResource GlassAccentLightBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
 </ResourceDictionary>
