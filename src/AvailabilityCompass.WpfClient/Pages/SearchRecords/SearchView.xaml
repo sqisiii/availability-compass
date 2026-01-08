@@ -12,8 +12,8 @@
     Loaded="SearchView_OnLoaded"
     d:DataContext="{d:DesignInstance viewModels:SearchViewModel,
                                      IsDesignTimeCreatable=True}"
-    d:DesignHeight="300"
-    d:DesignWidth="600"
+    d:DesignHeight="600"
+    d:DesignWidth="800"
     mc:Ignorable="d">
     <UserControl.Resources>
         <converters:FormGroupVisibilityConverter x:Key="VisibilityConverter" />
@@ -21,6 +21,7 @@
         <converters:CalendarTypeToIconConverter x:Key="CalendarTypeToIconConverter" />
         <converters:CalendarTypeToStyleConverter x:Key="CalendarTypeToStyleConverter" />
         <converters:CalendarTypeToColorConverter x:Key="CalendarTypeToColorConverter" />
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <!-- ReSharper disable once Xaml.RedundantResource -->
         <DataTemplate x:Key="UrlCellTemplate">
@@ -38,194 +39,188 @@
     <Border Style="{StaticResource GlassCard}"
             Margin="5"
             Padding="5,5,5,15">
-        <ScrollViewer x:Name="MainScrollViewer"
-                      VerticalScrollBarVisibility="Auto"
-                      HorizontalScrollBarVisibility="Disabled">
-            <StackPanel>
-                <TextBlock
-                    Style="{StaticResource GlassHeading3}"
-                    Margin="0,10,0,10"
-                    Text="Search"
-                    HorizontalAlignment="Center" />
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-                <!-- Calendars section -->
-                <TextBlock Style="{StaticResource GlassBody}" Text="Calendars" FontWeight="SemiBold" />
-                <TextBlock Margin="0,10,0,0"
-                           Text="No calendars available. Go to 'Calendars' section if you want to use calendars."
-                           Style="{StaticResource GlassBodyMuted}"
-                           Visibility="{Binding CalendarsUnAvailable, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <ItemsControl Margin="0,10,0,0"
-                              ItemsSource="{Binding Calendars}"
-                              Visibility="{Binding CalendarsAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="{x:Type viewModels:CalendarFilterViewModel}">
-                            <ToggleButton Margin="0,0,8,8"
-                                          IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                          Style="{Binding IsOnly, Converter={StaticResource CalendarTypeToStyleConverter}}">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0">
-                                    <!-- Icon: Accept (green) for Include, Blocked (amber) for Exclude -->
-                                    <sharedControls:FluentIcon Glyph="{Binding IsOnly, Converter={StaticResource CalendarTypeToIconConverter}}"
-                                                               IconSize="24"
-                                                               VerticalAlignment="Center"
-                                                               Foreground="{Binding IsOnly, Converter={StaticResource CalendarTypeToColorConverter}}" />
-                                    <!-- Name and Type -->
-                                    <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Name}"
-                                                   FontWeight="Medium"
-                                                   FontSize="13" />
-                                        <TextBlock Text="{Binding Type}"
-                                                   Style="{StaticResource GlassCaption}"
-                                                   Margin="0,2,0,0" />
+            <!-- Header -->
+            <TextBlock Grid.Row="0"
+                       Style="{StaticResource GlassHeading3}"
+                       Margin="0,10,0,10"
+                       Text="Search"
+                       HorizontalAlignment="Center" />
+
+            <!-- Main content area with overlay -->
+            <Grid Grid.Row="1">
+                <!-- Layer 0: Base layout (headers with search button, results) -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Headers and Search Button in single row -->
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Calendars Header with dual-chip support -->
+                        <Border Grid.Column="0" CornerRadius="8" Padding="4">
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="2" BlurRadius="6" Opacity="0.15" Direction="270" />
+                            </Border.Effect>
+                            <ToggleButton IsChecked="{Binding IsCalendarsSectionExpanded, Mode=TwoWay}"
+                                          Background="Transparent"
+                                          BorderThickness="0"
+                                          Cursor="Hand"
+                                          HorizontalContentAlignment="Stretch"
+                                          MinHeight="36"
+                                          Padding="0,8">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border Background="{TemplateBinding Background}"
+                                                Padding="{TemplateBinding Padding}"
+                                                CornerRadius="4">
+                                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource GlassMutedBrush}" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Expand/Collapse Icon -->
+                                    <sharedControls:FluentIcon x:Name="ExpandIcon"
+                                                               Grid.Column="0"
+                                                               Glyph="{x:Static sharedControls:FluentIcons.ChevronDown}"
+                                                               IconSize="12"
+                                                               Foreground="{DynamicResource GlassMutedForegroundBrush}"
+                                                               Margin="0,0,8,0"
+                                                               RenderTransformOrigin="0.5,0.5">
+                                        <sharedControls:FluentIcon.Style>
+                                            <Style TargetType="sharedControls:FluentIcon">
+                                                <Setter Property="RenderTransform">
+                                                    <Setter.Value>
+                                                        <RotateTransform Angle="0" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsCalendarsSectionExpanded}" Value="False">
+                                                        <Setter Property="RenderTransform">
+                                                            <Setter.Value>
+                                                                <RotateTransform Angle="-90" />
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </sharedControls:FluentIcon.Style>
+                                    </sharedControls:FluentIcon>
+
+                                    <!-- Section Title -->
+                                    <TextBlock Grid.Column="1"
+                                               Text="Calendars"
+                                               Style="{StaticResource GlassBody}"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center" />
+
+                                    <!-- Summary Chips (visible when collapsed) -->
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="12,0,0,0"
+                                                Visibility="{Binding IsCalendarsSectionExpanded, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                                        <!-- Green chip for Available days -->
+                                        <Border Background="{DynamicResource GlassSuccessBrush}"
+                                                Visibility="{Binding HasAvailableDaysSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                CornerRadius="12" Padding="12,4" Margin="0,0,4,0">
+                                            <TextBlock Text="{Binding AvailableDaysSummary}"
+                                                       Style="{StaticResource GlassCaption}"
+                                                       Foreground="{DynamicResource GlassForegroundBrush}"
+                                                       FontWeight="SemiBold"
+                                                       MaxWidth="200"
+                                                       TextTrimming="CharacterEllipsis" />
+                                        </Border>
+                                        <!-- Amber chip for Blocked days -->
+                                        <Border Background="{DynamicResource GlassPrimaryBrush}"
+                                                Visibility="{Binding HasBlockedDaysSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                CornerRadius="12" Padding="12,4">
+                                            <TextBlock Text="{Binding BlockedDaysSummary}"
+                                                       Style="{StaticResource GlassCaption}"
+                                                       Foreground="{DynamicResource GlassForegroundBrush}"
+                                                       FontWeight="SemiBold"
+                                                       MaxWidth="200"
+                                                       TextTrimming="CharacterEllipsis" />
+                                        </Border>
+                                        <!-- Gray chip when none selected -->
+                                        <Border Background="{DynamicResource GlassMutedBrush}"
+                                                Visibility="{Binding HasCalendarsSelected, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                                                CornerRadius="12" Padding="12,4">
+                                            <TextBlock Text="None selected"
+                                                       Style="{StaticResource GlassCaption}"
+                                                       Foreground="{DynamicResource GlassForegroundBrush}"
+                                                       MaxWidth="200"
+                                                       TextTrimming="CharacterEllipsis" />
+                                        </Border>
                                     </StackPanel>
-                                </StackPanel>
+                                </Grid>
                             </ToggleButton>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                        </Border>
 
-                <!-- Sources section -->
-                <TextBlock Margin="0,10,0,0" Style="{StaticResource GlassBody}" Text="Sources" FontWeight="SemiBold" />
-                <TextBlock Margin="0,10,0,0"
-                           Text="No sources available. Go to 'Sources' to refresh sources data."
-                           Style="{StaticResource GlassBodyMuted}"
-                           Visibility="{Binding SourcesUnAvailable, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <ItemsControl Margin="0,10,0,0"
-                              ItemsSource="{Binding Sources}"
-                              Visibility="{Binding SourcesAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="{x:Type viewModels:SourceFilterViewModel}">
-                            <ToggleButton Margin="0,0,8,8"
-                                          IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                          IsEnabled="{Binding IsActive}"
-                                          Style="{StaticResource GlassFloatingCardSource}">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0">
-                                    <!-- Icon -->
-                                    <Image Source="{Binding IconPath}"
-                                           Width="24" Height="24"
-                                           VerticalAlignment="Center"
-                                           RenderOptions.BitmapScalingMode="HighQuality" />
-                                    <!-- Name and Language -->
-                                    <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Name}"
-                                                   FontWeight="Medium"
-                                                   FontSize="13" />
-                                        <TextBlock Text="{Binding Language}"
-                                                   Style="{StaticResource GlassCaption}"
-                                                   Margin="0,2,0,0" />
-                                    </StackPanel>
-                                </StackPanel>
-                            </ToggleButton>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                        <Rectangle Grid.Column="1" Style="{StaticResource GlassVerticalSeparator}" />
 
-                <!-- Filters section -->
-                <TextBlock Margin="0,10,0,0" Style="{StaticResource GlassBody}" Text="Filters" FontWeight="SemiBold" />
-                <StackPanel Orientation="Horizontal">
-                    <TextBox
-                        Width="300"
-                        Margin="15,0,0,0"
-                        helpers:GlassHint.Hint="Search phrase"
-                        Style="{StaticResource GlassFloatingHintTextBox}"
-                        Text="{Binding SearchPhrase, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                        ToolTip="Phrase to look for." />
-                    <DatePicker
-                        Width="120"
-                        Margin="15,0,0,0"
-                        Style="{StaticResource GlassDatePicker}"
-                        Text="{Binding StartDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}"
-                        ToolTip="Start Date (Format: MM/dd/yyyy)" />
-                    <DatePicker
-                        Width="120"
-                        Margin="15,0,0,0"
-                        Style="{StaticResource GlassDatePicker}"
-                        Text="{Binding EndDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}"
-                        ToolTip="End Date (Format: MM/dd/yyyy)" />
-                </StackPanel>
+                        <!-- Sources Header -->
+                        <sharedControls:CollapsibleSection
+                            Grid.Column="2"
+                            Header="Sources"
+                            Summary="{Binding SourcesSummary}"
+                            HasSelection="{Binding HasSourcesSelected}"
+                            IsExpanded="{Binding IsSourcesSectionExpanded, Mode=TwoWay}" />
 
-                <!-- Source-specific filters section -->
-                <ScrollViewer VerticalScrollBarVisibility="Disabled"
-                              HorizontalScrollBarVisibility="Auto">
-                    <StackPanel Margin="10" Orientation="Horizontal">
-                        <ItemsControl ItemsSource="{Binding FormGroups}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Margin="5" Orientation="Vertical">
-                                        <TextBlock Margin="0,10,0,0"
-                                                   Style="{StaticResource GlassBody}"
-                                                   FontWeight="Medium"
-                                                   Text="{Binding Title}" />
-                                        <ItemsControl ItemsSource="{Binding Elements}">
-                                            <ItemsControl.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <StackPanel Orientation="Horizontal" />
-                                                </ItemsPanelTemplate>
-                                            </ItemsControl.ItemsPanel>
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Margin="15, 5, 5, 5" Orientation="Horizontal">
-                                                        <!-- Show TextBlock -->
-                                                        <TextBox
-                                                            Width="100"
-                                                            helpers:GlassHint.Hint="{Binding Label}"
-                                                            Style="{StaticResource GlassFloatingHintTextBox}"
-                                                            Text="{Binding TextValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                                            Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=TextBox}"
-                                                            ToolTip="{Binding Label}" />
+                        <Rectangle Grid.Column="3" Style="{StaticResource GlassVerticalSeparator}" />
 
-                                                        <!-- Show CheckBox -->
-                                                        <CheckBox
-                                                            Content="{Binding Label}"
-                                                            Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=CheckBox}"
-                                                            IsChecked="{Binding TextValue, Converter={StaticResource StringToBoolConverter}, Mode=TwoWay}"
-                                                            Style="{StaticResource GlassCheckBox}"
-                                                            ToolTip="{Binding Label}" />
+                        <!-- Global Filters Header -->
+                        <sharedControls:CollapsibleSection
+                            Grid.Column="4"
+                            Header="Filters"
+                            Summary="{Binding FiltersSummary}"
+                            HasSelection="{Binding HasFiltersSet}"
+                            IsExpanded="{Binding IsFiltersSectionExpanded, Mode=TwoWay}" />
 
-                                                        <!-- Show MultiSelect ComboBox -->
-                                                        <controls:MultiSelectComboBoxView
-                                                            ItemSource="{Binding Options}"
-                                                            Label="{Binding Label}"
-                                                            SelectedItems="{Binding SelectedOptions}"
-                                                            Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=MultiSelect}" />
+                        <!-- Search Button -->
+                        <Button
+                            Grid.Column="5"
+                            Width="120"
+                            Command="{Binding SearchCommand}"
+                            Content="Search"
+                            Margin="15,0,0,0"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource GlassPrimaryButton}" />
+                    </Grid>
 
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                </ScrollViewer>
-
-                <!-- Search button -->
-                <Button
-                    Width="200"
-                    Click="SearchButton_Click"
-                    Command="{Binding SearchCommand}"
-                    Content="Search"
-                    Margin="10"
-                    Style="{StaticResource GlassPrimaryButton}" />
-
-                <!-- Results section -->
-                <StackPanel Visibility="{Binding HasResults, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <TextBlock Margin="0,10,0,0" Style="{StaticResource GlassBody}" Text="Results"
-                               FontWeight="SemiBold" />
-                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                    <!-- Results Section - Fills remaining space -->
+                    <DockPanel Grid.Row="1"
+                               Visibility="{Binding HasResults, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock DockPanel.Dock="Top"
+                                   Margin="0,10,0,10"
+                                   Style="{StaticResource GlassBody}"
+                                   Text="Results"
+                                   FontWeight="SemiBold" />
                         <DataGrid
                             x:Name="ResultsDataGridView"
-                            MaxHeight="500"
                             AutoGenerateColumns="False"
                             CanUserAddRows="False"
                             CanUserDeleteRows="False"
@@ -239,11 +234,178 @@
                             SelectionMode="Single"
                             SelectionUnit="FullRow"
                             Style="{StaticResource GlassDataGrid}"
-                            HorizontalScrollBarVisibility="Auto"
-                            VerticalScrollBarVisibility="Auto" />
-                    </ScrollViewer>
+                            VerticalScrollBarVisibility="Auto"
+                            HorizontalScrollBarVisibility="Auto" />
+                    </DockPanel>
+                </Grid>
+
+                <!-- Layer 1: Expanded content overlay (renders on top) -->
+                <Border Margin="0,50,0,0" VerticalAlignment="Top" CornerRadius="8">
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="4" BlurRadius="12" Opacity="0.25" Direction="270" />
+                    </Border.Effect>
+                    <StackPanel>
+                    <!-- Full-width Calendars Content -->
+                    <Border CornerRadius="8" Padding="12,8" Margin="0,0,0,8"
+                            Background="{DynamicResource GlassBackgroundBrush}"
+                            Visibility="{Binding IsCalendarsSectionExpanded, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel>
+                            <TextBlock Text="No calendars available."
+                                       Style="{StaticResource GlassBodyMuted}"
+                                       Visibility="{Binding CalendarsUnAvailable, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            <ItemsControl ItemsSource="{Binding Calendars}"
+                                          Visibility="{Binding CalendarsAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type viewModels:CalendarFilterViewModel}">
+                                        <ToggleButton Margin="0,0,8,8"
+                                                      IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                      Style="{Binding IsOnly, Converter={StaticResource CalendarTypeToStyleConverter}}">
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0">
+                                                <sharedControls:FluentIcon Glyph="{Binding IsOnly, Converter={StaticResource CalendarTypeToIconConverter}}"
+                                                                           IconSize="24"
+                                                                           VerticalAlignment="Center"
+                                                                           Foreground="{Binding IsOnly, Converter={StaticResource CalendarTypeToColorConverter}}" />
+                                                <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Name}"
+                                                               FontWeight="Medium"
+                                                               FontSize="13" />
+                                                    <TextBlock Text="{Binding Type}"
+                                                               Style="{StaticResource GlassCaption}"
+                                                               Margin="0,2,0,0" />
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </ToggleButton>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Full-width Sources Content -->
+                    <Border CornerRadius="8" Padding="12,8" Margin="0,0,0,8"
+                            Background="{DynamicResource GlassBackgroundBrush}"
+                            Visibility="{Binding IsSourcesSectionExpanded, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel>
+                            <TextBlock Text="No sources available."
+                                       Style="{StaticResource GlassBodyMuted}"
+                                       Visibility="{Binding SourcesUnAvailable, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            <!-- Source cards -->
+                            <ItemsControl ItemsSource="{Binding Sources}"
+                                          Visibility="{Binding SourcesAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type viewModels:SourceFilterViewModel}">
+                                        <ToggleButton Margin="0,0,8,8"
+                                                      IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                      IsEnabled="{Binding IsActive}"
+                                                      Style="{StaticResource GlassFloatingCardSource}">
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0">
+                                                <Image Source="{Binding IconPath}"
+                                                       Width="24" Height="24"
+                                                       VerticalAlignment="Center"
+                                                       RenderOptions.BitmapScalingMode="HighQuality" />
+                                                <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Name}"
+                                                               FontWeight="Medium"
+                                                               FontSize="13" />
+                                                    <TextBlock Text="{Binding Language}"
+                                                               Style="{StaticResource GlassCaption}"
+                                                               Margin="0,2,0,0" />
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </ToggleButton>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <!-- Source filters (separate from cards) -->
+                            <ItemsControl ItemsSource="{Binding Sources}"
+                                          Visibility="{Binding SourcesAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type viewModels:SourceFilterViewModel}">
+                                        <Border Style="{StaticResource GlassNestedFilterPanel}"
+                                                Margin="0,4,0,0"
+                                                Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <StackPanel Visibility="{Binding HasFilters, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <TextBlock Text="{Binding Name, StringFormat='{}{0} filters:'}"
+                                                           Style="{StaticResource GlassCaption}"
+                                                           FontWeight="SemiBold"
+                                                           Margin="0,0,0,8" />
+                                                <ItemsControl ItemsSource="{Binding FilterFormGroup.Elements}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <WrapPanel Orientation="Horizontal" />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Margin="0,0,15,5" Orientation="Horizontal">
+                                                                <TextBox
+                                                                    Width="100"
+                                                                    helpers:GlassHint.Hint="{Binding Label}"
+                                                                    Style="{StaticResource GlassFloatingHintTextBox}"
+                                                                    Text="{Binding TextValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                                    Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=TextBox}"
+                                                                    ToolTip="{Binding Label}" />
+                                                                <CheckBox
+                                                                    Content="{Binding Label}"
+                                                                    Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=CheckBox}"
+                                                                    IsChecked="{Binding TextValue, Converter={StaticResource StringToBoolConverter}, Mode=TwoWay}"
+                                                                    Style="{StaticResource GlassCheckBox}"
+                                                                    ToolTip="{Binding Label}" />
+                                                                <controls:MultiSelectComboBoxView
+                                                                    ItemSource="{Binding Options}"
+                                                                    Label="{Binding Label}"
+                                                                    SelectedItems="{Binding SelectedOptions}"
+                                                                    Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=MultiSelect}" />
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Full-width Global Filters Content -->
+                    <Border CornerRadius="8" Padding="12,8" Margin="0,0,0,8"
+                            Background="{DynamicResource GlassBackgroundBrush}"
+                            Visibility="{Binding IsFiltersSectionExpanded, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox
+                                Width="200"
+                                helpers:GlassHint.Hint="Search phrase"
+                                Style="{StaticResource GlassFloatingHintTextBox}"
+                                Text="{Binding SearchPhrase, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                ToolTip="Phrase to look for." />
+                            <DatePicker
+                                Width="120"
+                                Margin="15,0,0,0"
+                                Style="{StaticResource GlassDatePicker}"
+                                Text="{Binding StartDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}"
+                                ToolTip="Start Date" />
+                            <DatePicker
+                                Width="120"
+                                Margin="15,0,0,0"
+                                Style="{StaticResource GlassDatePicker}"
+                                Text="{Binding EndDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}"
+                                ToolTip="End Date" />
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
-            </StackPanel>
-        </ScrollViewer>
+                </Border>
+            </Grid>
+        </Grid>
     </Border>
 </UserControl>

@@ -64,13 +64,4 @@ public partial class SearchView : IDisposable
             Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
     }
-
-    private void SearchButton_Click(object sender, RoutedEventArgs e)
-    {
-        // Scroll to the bottom
-        if (FindName("MainScrollViewer") is ScrollViewer scrollViewer)
-        {
-            scrollViewer.ScrollToEnd();
-        }
-    }
 }

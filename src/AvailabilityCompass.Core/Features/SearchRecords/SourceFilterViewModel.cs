@@ -1,4 +1,5 @@
 ﻿using System.Timers;
+using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 using AvailabilityCompass.Core.Shared;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Timer = System.Timers.Timer;
@@ -22,6 +23,9 @@ public partial class SourceFilterViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _name = string.Empty;
 
+    [ObservableProperty]
+    private FormGroup? _filterFormGroup;
+
     public SourceFilterViewModel(IDateTimeProvider dateTimeProvider)
     {
         _dateTimeProvider = dateTimeProvider;
@@ -42,6 +46,8 @@ public partial class SourceFilterViewModel : ObservableObject, IDisposable
     public string IconPath => string.IsNullOrEmpty(IconFileName) ? string.Empty : $"/Images/Sources/{IconFileName}";
 
     public string LastUpdated => GetRelativeTime(ChangeAt);
+
+    public bool HasFilters => FilterFormGroup?.Elements.Count > 0;
 
     public void Dispose()
     {
