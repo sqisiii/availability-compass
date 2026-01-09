@@ -2,62 +2,62 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- ========================================== -->
-    <!-- WARM NEUTRAL DARK THEME                    -->
-    <!-- Stone/Zinc with Amber accents              -->
+    <!-- SAGE + WARM GRAY DARK THEME                -->
+    <!-- Calm, earthy palette with muted sage       -->
     <!-- ========================================== -->
 
     <!-- Background Colors -->
-    <Color x:Key="GlassBackgroundColor">#0C0A09</Color>
-    <Color x:Key="GlassSurfaceColor">#1C1917</Color>
+    <Color x:Key="GlassBackgroundColor">#141414</Color>
+    <Color x:Key="GlassSurfaceColor">#1F1F1F</Color>
 
     <!-- Card Colors -->
-    <Color x:Key="GlassCardColor">#292524</Color>
-    <Color x:Key="GlassCardSolidColor">#292524</Color>
-    <Color x:Key="GlassBorderColor">#44403C</Color>
-    <Color x:Key="GlassHighlightColor">#292524</Color>
-    <Color x:Key="GlassOverlayColor">#CC0C0A09</Color>
+    <Color x:Key="GlassCardColor">#2A2A2A</Color>
+    <Color x:Key="GlassCardSolidColor">#2A2A2A</Color>
+    <Color x:Key="GlassBorderColor">#3D3D3D</Color>
+    <Color x:Key="GlassHighlightColor">#2A2A2A</Color>
+    <Color x:Key="GlassOverlayColor">#CC141414</Color>
 
     <!-- Text Colors -->
-    <Color x:Key="GlassForegroundColor">#FAFAF9</Color>
-    <Color x:Key="GlassMutedForegroundColor">#A8A29E</Color>
-    <Color x:Key="GlassSubtleForegroundColor">#78716C</Color>
+    <Color x:Key="GlassForegroundColor">#F5F5F5</Color>
+    <Color x:Key="GlassMutedForegroundColor">#9CA3AF</Color>
+    <Color x:Key="GlassSubtleForegroundColor">#6B6B6B</Color>
 
-    <!-- Primary Accent - Amber (brighter for dark mode) -->
-    <Color x:Key="GlassPrimaryColor">#FBBF24</Color>
-    <Color x:Key="GlassPrimaryHoverColor">#FCD34D</Color>
-    <Color x:Key="GlassPrimaryLightColor">#451A03</Color>
-    <Color x:Key="GlassPrimaryForegroundColor">#0C0A09</Color>
+    <!-- Primary Accent - Light Sage (brighter for dark mode) -->
+    <Color x:Key="GlassPrimaryColor">#8FB4A0</Color>
+    <Color x:Key="GlassPrimaryHoverColor">#A8C9B8</Color>
+    <Color x:Key="GlassPrimaryLightColor">#1F2D26</Color>
+    <Color x:Key="GlassPrimaryForegroundColor">#141414</Color>
 
-    <!-- Secondary - Stone -->
-    <Color x:Key="GlassSecondaryColor">#A8A29E</Color>
-    <Color x:Key="GlassSecondaryHoverColor">#D6D3D1</Color>
-    <Color x:Key="GlassSecondaryForegroundColor">#0C0A09</Color>
+    <!-- Secondary - Light Gray -->
+    <Color x:Key="GlassSecondaryColor">#9CA3AF</Color>
+    <Color x:Key="GlassSecondaryHoverColor">#D1D5DB</Color>
+    <Color x:Key="GlassSecondaryForegroundColor">#141414</Color>
 
-    <!-- Accent - Teal -->
-    <Color x:Key="GlassAccentColor">#2DD4BF</Color>
-    <Color x:Key="GlassAccentHoverColor">#5EEAD4</Color>
-    <Color x:Key="GlassAccentForegroundColor">#0C0A09</Color>
+    <!-- Accent - Light Taupe -->
+    <Color x:Key="GlassAccentColor">#C4B8AB</Color>
+    <Color x:Key="GlassAccentHoverColor">#D4C8BB</Color>
+    <Color x:Key="GlassAccentForegroundColor">#141414</Color>
 
     <!-- Semantic Colors -->
     <Color x:Key="GlassDestructiveColor">#F87171</Color>
     <Color x:Key="GlassDestructiveHoverColor">#FCA5A5</Color>
-    <Color x:Key="GlassDestructiveForegroundColor">#0C0A09</Color>
+    <Color x:Key="GlassDestructiveForegroundColor">#141414</Color>
     <Color x:Key="GlassSuccessColor">#4ADE80</Color>
-    <Color x:Key="GlassWarningColor">#FBBF24</Color>
+    <Color x:Key="GlassWarningColor">#8FB4A0</Color>
 
     <!-- Border and Input -->
-    <Color x:Key="GlassBorderSolidColor">#44403C</Color>
-    <Color x:Key="GlassInputColor">#1C1917</Color>
-    <Color x:Key="GlassInputBorderColor">#57534E</Color>
-    <Color x:Key="GlassRingColor">#FBBF24</Color>
+    <Color x:Key="GlassBorderSolidColor">#3D3D3D</Color>
+    <Color x:Key="GlassInputColor">#1F1F1F</Color>
+    <Color x:Key="GlassInputBorderColor">#4A4A4A</Color>
+    <Color x:Key="GlassRingColor">#8FB4A0</Color>
 
     <!-- Shadow Colors -->
     <Color x:Key="GlassShadowColor">#40000000</Color>
     <Color x:Key="GlassShadowDarkColor">#60000000</Color>
 
     <!-- Muted/Disabled -->
-    <Color x:Key="GlassMutedColor">#292524</Color>
-    <Color x:Key="GlassDisabledColor">#57534E</Color>
+    <Color x:Key="GlassMutedColor">#2A2A2A</Color>
+    <Color x:Key="GlassDisabledColor">#4A4A4A</Color>
 
     <!-- ========================================== -->
     <!-- SOLID COLOR BRUSHES                        -->
@@ -92,14 +92,14 @@
     <SolidColorBrush x:Key="GlassAccentBrush" Color="{DynamicResource GlassAccentColor}" />
     <SolidColorBrush x:Key="GlassAccentHoverBrush" Color="{DynamicResource GlassAccentHoverColor}" />
     <SolidColorBrush x:Key="GlassAccentForegroundBrush" Color="{DynamicResource GlassAccentForegroundColor}" />
-    <SolidColorBrush x:Key="GlassAccentLightBrush" Color="#2E1065" />
+    <SolidColorBrush x:Key="GlassAccentLightBrush" Color="#2A2520" />
 
     <!-- Semantic Brushes -->
     <SolidColorBrush x:Key="GlassDestructiveBrush" Color="{DynamicResource GlassDestructiveColor}" />
     <SolidColorBrush x:Key="GlassDestructiveHoverBrush" Color="{DynamicResource GlassDestructiveHoverColor}" />
     <SolidColorBrush x:Key="GlassDestructiveForegroundBrush" Color="{DynamicResource GlassDestructiveForegroundColor}" />
     <SolidColorBrush x:Key="GlassSuccessBrush" Color="{DynamicResource GlassSuccessColor}" />
-    <SolidColorBrush x:Key="GlassSuccessLightBrush" Color="#052E16" />
+    <SolidColorBrush x:Key="GlassSuccessLightBrush" Color="#1A2E1F" />
     <SolidColorBrush x:Key="GlassWarningBrush" Color="{DynamicResource GlassWarningColor}" />
 
     <!-- Border and Input Brushes -->
