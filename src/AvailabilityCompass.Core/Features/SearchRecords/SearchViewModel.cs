@@ -58,6 +58,9 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     private object? _selectedResult;
 
     [ObservableProperty]
+    private string _selectedSortOption = "Date";
+
+    [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SearchCommand))]
     private bool _sourceSelected;
 
@@ -110,6 +113,7 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
 
     public List<ResultColumnDefinition> Columns { get; } = [];
     public ObservableCollection<Dictionary<string, object>> Results { get; } = [];
+    public List<string> SortOptions { get; } = ["Date", "Source", "Title"];
 
     public bool HasResults => Results.Count > 0;
 
@@ -203,6 +207,30 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
 
         IsCalendarsSectionExpanded = false;
         IsSourcesSectionExpanded = false;
+    }
+
+    partial void OnSelectedSortOptionChanged(string value)
+    {
+        SortResults();
+    }
+
+    private void SortResults()
+    {
+        if (Results.Count == 0) return;
+
+        var sorted = SelectedSortOption switch
+        {
+            "Date" => Results.OrderBy(r => r.TryGetValue("StartDate", out var d) ? d?.ToString() ?? "" : "").ToList(),
+            "Source" => Results.OrderBy(r => r.TryGetValue("SourceName", out var s) ? s?.ToString() ?? "" : "").ToList(),
+            "Title" => Results.OrderBy(r => r.TryGetValue("Title", out var t) ? t?.ToString() ?? "" : "").ToList(),
+            _ => Results.ToList()
+        };
+
+        Results.Clear();
+        foreach (var item in sorted)
+        {
+            Results.Add(item);
+        }
     }
 
     private bool CanSearch()
