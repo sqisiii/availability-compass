@@ -241,6 +241,10 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     [RelayCommand(CanExecute = nameof(CanSearch))]
     private async Task OnSearch()
     {
+        IsCalendarsSectionExpanded = false;
+        IsSourcesSectionExpanded = false;
+        IsFiltersSectionExpanded = false;
+
         await _searchCommandFactory.Create().ExecuteAsync();
     }
 
