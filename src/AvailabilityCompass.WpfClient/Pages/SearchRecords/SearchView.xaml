@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:AvailabilityCompass.Core.Features.SearchRecords;assembly=AvailabilityCompass.Core"
     xmlns:helpers="clr-namespace:AvailabilityCompass.WpfClient.Shared.Helpers"
+    xmlns:vwp="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
     d:DataContext="{d:DesignInstance viewModels:SearchViewModel,
                                      IsDesignTimeCreatable=True}"
     d:DesignHeight="600"
@@ -75,9 +76,6 @@
 
                         <!-- Calendars Header with dual-chip support -->
                         <Border Grid.Column="0" CornerRadius="8" Padding="4">
-                            <Border.Effect>
-                                <DropShadowEffect ShadowDepth="2" BlurRadius="6" Opacity="0.15" Direction="270" />
-                            </Border.Effect>
                             <ToggleButton IsChecked="{Binding IsCalendarsSectionExpanded, Mode=TwoWay}"
                                           Background="Transparent"
                                           BorderThickness="0"
@@ -240,10 +238,13 @@
                                  Background="Transparent"
                                  BorderThickness="0"
                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                 ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                 VirtualizingPanel.IsVirtualizing="True"
+                                 VirtualizingPanel.VirtualizationMode="Recycling"
+                                 VirtualizingPanel.ScrollUnit="Pixel">
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <WrapPanel Orientation="Horizontal" />
+                                    <vwp:VirtualizingWrapPanel Orientation="Horizontal" />
                                 </ItemsPanelTemplate>
                             </ListBox.ItemsPanel>
                             <ListBox.ItemContainerStyle>
@@ -269,22 +270,14 @@
                                             BorderBrush="{DynamicResource GlassBorderSolidBrush}"
                                             BorderThickness="1"
                                             Cursor="Hand">
-                                        <Border.Effect>
-                                            <DropShadowEffect ShadowDepth="2" BlurRadius="8" Opacity="0.1"
-                                                              Direction="270" />
-                                        </Border.Effect>
                                         <Border.Style>
                                             <Style TargetType="Border">
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
                                                         <Setter Property="BorderBrush"
                                                                 Value="{DynamicResource GlassPrimaryBrush}" />
-                                                        <Setter Property="Effect">
-                                                            <Setter.Value>
-                                                                <DropShadowEffect ShadowDepth="4" BlurRadius="16"
-                                                                        Opacity="0.2" Direction="270" />
-                                                            </Setter.Value>
-                                                        </Setter>
+                                                        <Setter Property="Background"
+                                                                Value="{DynamicResource GlassPrimaryLightBrush}" />
                                                     </Trigger>
                                                     <DataTrigger
                                                         Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
@@ -294,13 +287,6 @@
                                                         <Setter Property="BorderThickness" Value="2" />
                                                         <Setter Property="Background"
                                                                 Value="{DynamicResource GlassPrimaryLightBrush}" />
-                                                        <Setter Property="Effect">
-                                                            <Setter.Value>
-                                                                <DropShadowEffect ShadowDepth="4" BlurRadius="16"
-                                                                        Opacity="0.25" Direction="270"
-                                                                        Color="{DynamicResource GlassPrimaryColor}" />
-                                                            </Setter.Value>
-                                                        </Setter>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -388,9 +374,6 @@
 
                 <!-- Layer 1: Expanded content overlay (renders on top) -->
                 <Border Margin="0,50,0,0" VerticalAlignment="Top" CornerRadius="8">
-                    <Border.Effect>
-                        <DropShadowEffect ShadowDepth="4" BlurRadius="12" Opacity="0.25" Direction="270" />
-                    </Border.Effect>
                     <StackPanel>
                         <!-- Full-width Calendars Content -->
                         <Border CornerRadius="8" Padding="12,8" Margin="0,0,0,8"

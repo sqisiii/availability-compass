@@ -112,7 +112,7 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     public ObservableCollection<FormGroup> FormGroups { get; } = [];
 
     public List<ResultColumnDefinition> Columns { get; } = [];
-    public ObservableCollection<Dictionary<string, object>> Results { get; } = [];
+    public RangeObservableCollection<Dictionary<string, object>> Results { get; } = [];
     public List<string> SortOptions { get; } = ["Date", "Source", "Title"];
 
     public bool HasResults => Results.Count > 0;
@@ -209,28 +209,31 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
         IsSourcesSectionExpanded = false;
     }
 
+    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnSelectedSortOptionChanged(string value)
     {
-        SortResults();
+        _ = SortResultsAsync();
     }
 
-    private void SortResults()
+    private async Task SortResultsAsync()
     {
         if (Results.Count == 0) return;
 
-        var sorted = SelectedSortOption switch
-        {
-            "Date" => Results.OrderBy(r => r.TryGetValue("StartDate", out var d) ? d?.ToString() ?? "" : "").ToList(),
-            "Source" => Results.OrderBy(r => r.TryGetValue("SourceName", out var s) ? s?.ToString() ?? "" : "").ToList(),
-            "Title" => Results.OrderBy(r => r.TryGetValue("Title", out var t) ? t?.ToString() ?? "" : "").ToList(),
-            _ => Results.ToList()
-        };
+        // Capture current items for sorting on a background thread
+        var itemsToSort = Results.ToList();
+        var sortOption = SelectedSortOption;
 
-        Results.Clear();
-        foreach (var item in sorted)
+        // Sort on background thread to avoid blocking UI
+        var sorted = await Task.Run(() => sortOption switch
         {
-            Results.Add(item);
-        }
+            "Date" => itemsToSort.OrderBy(r => r.TryGetValue("StartDate", out var d) ? d.ToString() ?? "" : "").ToList(),
+            "Source" => itemsToSort.OrderBy(r => r.TryGetValue("SourceName", out var s) ? s.ToString() ?? "" : "").ToList(),
+            "Title" => itemsToSort.OrderBy(r => r.TryGetValue("Title", out var t) ? t.ToString() ?? "" : "").ToList(),
+            _ => itemsToSort
+        });
+
+        // Single batch update with one CollectionChanged notification
+        Results.ReplaceAll(sorted);
     }
 
     private bool CanSearch()
