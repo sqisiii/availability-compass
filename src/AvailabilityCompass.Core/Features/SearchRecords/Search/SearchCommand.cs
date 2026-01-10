@@ -135,6 +135,8 @@ public class SearchCommand : ISearchCommand
 
     private void AddSearchResults(IReadOnlyCollection<SearchSourcesResponse.SourceDataItem> sourceDataItems)
     {
+        var sourceIconLookup = _viewModel.Value.Sources.ToDictionary(s => s.SourceId, s => s.IconPath);
+
         foreach (var sourceDataItem in sourceDataItems)
         {
             if (sourceDataItem.Title is null)
@@ -142,9 +144,12 @@ public class SearchCommand : ISearchCommand
                 continue;
             }
 
+            var iconPath = sourceIconLookup.GetValueOrDefault(sourceDataItem.SourceId, string.Empty);
+
             var singleSourceResults = new Dictionary<string, object>
             {
                 { "SourceName", sourceDataItem.SourceId },
+                { "SourceIconPath", iconPath },
                 { "Title", sourceDataItem.Title },
                 { "Url", sourceDataItem.Url ?? string.Empty },
                 { "StartDate", sourceDataItem.StartDate.ToString("yyyy-MM-dd") },
