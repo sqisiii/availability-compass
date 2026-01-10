@@ -20,4 +20,12 @@ public partial class SearchView
             Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
     }
+
+    private void ResultCard_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (sender is Border border && border.Tag is string url && !string.IsNullOrEmpty(url))
+        {
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        }
+    }
 }

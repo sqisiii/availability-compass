@@ -22,8 +22,9 @@
         <converters:CalendarTypeToStyleConverter x:Key="CalendarTypeToStyleConverter" />
         <converters:CalendarTypeToColorConverter x:Key="CalendarTypeToColorConverter" />
         <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+        <converters:ContainerWidthToCardWidthConverter x:Key="CardWidthConverter" CardsPerRow="5" CardMargin="8"
+                                                       MinCardWidth="150" />
         <converters:DictionaryToAdditionalFieldsConverter x:Key="AdditionalFieldsConverter" />
-        <helpers:StringNotEmptyToVisibilityConverter x:Key="StringNotEmptyToVisibilityConverter" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <!-- ReSharper disable once Xaml.RedundantResource -->
         <DataTemplate x:Key="UrlCellTemplate">
@@ -233,7 +234,8 @@
                         </Grid>
 
                         <!-- Card Grid -->
-                        <ListBox ItemsSource="{Binding Results}"
+                        <ListBox x:Name="ResultsListBox"
+                                 ItemsSource="{Binding Results}"
                                  SelectedItem="{Binding SelectedResult, Mode=TwoWay}"
                                  Background="Transparent"
                                  BorderThickness="0"
@@ -264,12 +266,17 @@
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <!-- Result Card -->
-                                    <Border Width="220" MinHeight="140" Margin="8"
-                                            CornerRadius="12" Padding="12"
-                                            Background="{DynamicResource GlassCardBrush}"
-                                            BorderBrush="{DynamicResource GlassBorderSolidBrush}"
-                                            BorderThickness="1"
-                                            Cursor="Hand">
+                                    <Border
+                                        Width="{Binding ActualWidth, ElementName=ResultsListBox, Converter={StaticResource CardWidthConverter}}"
+                                        MinHeight="140" Margin="8"
+                                        CornerRadius="12" Padding="12"
+                                        Background="{DynamicResource GlassCardBrush}"
+                                        BorderBrush="{DynamicResource GlassBorderSolidBrush}"
+                                        BorderThickness="1"
+                                        Cursor="Hand"
+                                        MouseLeftButtonUp="ResultCard_Click"
+                                        Tag="{Binding [Url]}"
+                                        ToolTip="{Binding [Url]}">
                                         <Border.Style>
                                             <Style TargetType="Border">
                                                 <Style.Triggers>
@@ -298,7 +305,6 @@
                                                 <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="*" />
-                                                <RowDefinition Height="Auto" />
                                             </Grid.RowDefinitions>
 
                                             <!-- Row 0: Source Badge -->
@@ -319,7 +325,7 @@
                                                        Style="{StaticResource GlassBody}"
                                                        FontWeight="SemiBold"
                                                        TextTrimming="CharacterEllipsis"
-                                                       MaxHeight="40"
+                                                       MaxHeight="60"
                                                        Margin="0,8,0,4" />
 
                                             <!-- Row 2: Date Range -->
@@ -350,20 +356,6 @@
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
 
-                                            <!-- Row 4: URL Button -->
-                                            <Button Grid.Row="4"
-                                                    Style="{StaticResource GlassIconButton}"
-                                                    HorizontalAlignment="Right"
-                                                    Margin="0,8,0,0"
-                                                    Click="UrlIcon_Click"
-                                                    Tag="{Binding [Url]}"
-                                                    ToolTip="{Binding [Url]}"
-                                                    Visibility="{Binding [Url], Converter={StaticResource StringNotEmptyToVisibilityConverter}}">
-                                                <sharedControls:FluentIcon
-                                                    Glyph="{x:Static sharedControls:FluentIcons.Link}"
-                                                    IconSize="16"
-                                                    Foreground="{DynamicResource GlassPrimaryBrush}" />
-                                            </Button>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>

@@ -1286,12 +1286,12 @@
 
     <!-- Nested filter panel for source-specific filters -->
     <Style x:Key="GlassNestedFilterPanel" TargetType="Border">
-        <Setter Property="Background" Value="{DynamicResource GlassSurfaceBrush}" />
+        <Setter Property="Background" Value="{DynamicResource GlassCardBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource GlassBorderSolidBrush}" />
-        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="8" />
         <Setter Property="Padding" Value="12,8" />
-        <Setter Property="Margin" Value="36,4,0,8" />
+        <Setter Property="Margin" Value="0,4,0,8" />
     </Style>
 
     <!-- CollapsibleSection control style -->
@@ -1300,9 +1300,6 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:CollapsibleSection}">
                     <Border CornerRadius="8" Padding="4">
-                        <Border.Effect>
-                            <DropShadowEffect ShadowDepth="2" BlurRadius="6" Opacity="0.15" Direction="270" />
-                        </Border.Effect>
                         <StackPanel>
                             <!-- Header with toggle - fixed height -->
                             <ToggleButton x:Name="PART_HeaderToggle"
