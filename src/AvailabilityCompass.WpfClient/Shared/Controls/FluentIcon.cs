@@ -137,6 +137,7 @@ public static class FluentIcons
     public const string Folder = "\uE8B7";
     public const string Document = "\uE8A5";
     public const string Link = "\uE71B";
+    public const string Location = "\uE81D";
 
     // Arrows
     public const string ChevronUp = "\uE70E";
@@ -158,6 +159,6 @@ public static class FluentIcons
     public const string Upload = "\uE898";
 
     // Calendar types
-    public const string Accept = "\uE8FB";      // Checkmark in circle (for Include calendars)
-    public const string Blocked = "\uE8D8";     // Prohibited sign (for Exclude calendars)
+    public const string Accept = "\uE8FB"; // Checkmark in circle (for Include calendars)
+    public const string Blocked = "\uE8D8"; // Prohibited sign (for Exclude calendars)
 }

@@ -22,8 +22,8 @@
         <converters:CalendarTypeToStyleConverter x:Key="CalendarTypeToStyleConverter" />
         <converters:CalendarTypeToColorConverter x:Key="CalendarTypeToColorConverter" />
         <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
-        <converters:ContainerWidthToCardWidthConverter x:Key="CardWidthConverter" CardsPerRow="5" CardMargin="8"
-                                                       MinCardWidth="150" />
+        <converters:ContainerWidthToCardWidthConverter x:Key="CardWidthConverter" CardsPerRow="4" CardMargin="8"
+                                                       MinCardWidth="180" />
         <converters:DictionaryToAdditionalFieldsConverter x:Key="AdditionalFieldsConverter" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <!-- ReSharper disable once Xaml.RedundantResource -->
@@ -268,15 +268,15 @@
                                     <!-- Result Card -->
                                     <Border
                                         Width="{Binding ActualWidth, ElementName=ResultsListBox, Converter={StaticResource CardWidthConverter}}"
-                                        MinHeight="140" Margin="8"
+                                        MinHeight="200"
+                                        Margin="8"
                                         CornerRadius="12" Padding="12"
                                         Background="{DynamicResource GlassCardBrush}"
                                         BorderBrush="{DynamicResource GlassBorderSolidBrush}"
                                         BorderThickness="1"
                                         Cursor="Hand"
                                         MouseLeftButtonUp="ResultCard_Click"
-                                        Tag="{Binding [Url]}"
-                                        ToolTip="{Binding [Url]}">
+                                        Tag="{Binding [Url]}">
                                         <Border.Style>
                                             <Style TargetType="Border">
                                                 <Style.Triggers>
@@ -329,39 +329,59 @@
                                                 <TextBlock Text="{Binding [SourceLanguage]}"
                                                            HorizontalAlignment="Right"
                                                            VerticalAlignment="Center"
-                                                           Style="{StaticResource GlassCaption}"
-                                                           Foreground="{DynamicResource GlassMutedForegroundBrush}" />
+                                                           Style="{StaticResource GlassCaption}" />
                                             </Grid>
 
-                                            <!-- Row 1: Title -->
-                                            <TextBlock Grid.Row="1"
+                                            <!-- Row 1: Info Strip (Destination left, Dates right) -->
+                                            <Grid Grid.Row="1" Margin="0,8,0,4">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <!-- Destination (left) -->
+                                                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                                    <sharedControls:FluentIcon
+                                                        Glyph="{x:Static sharedControls:FluentIcons.Location}"
+                                                        IconSize="14"
+                                                        Margin="0,0,4,0"
+                                                        Foreground="{DynamicResource GlassPrimaryBrush}" />
+                                                    <TextBlock Text="{Binding [Destination]}"
+                                                               Style="{StaticResource GlassSmall}"
+                                                               FontWeight="SemiBold"
+                                                               TextTrimming="CharacterEllipsis" />
+                                                </StackPanel>
+                                                <!-- Dates (right) -->
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,0,0">
+                                                    <sharedControls:FluentIcon
+                                                        Glyph="{x:Static sharedControls:FluentIcons.Calendar}"
+                                                        IconSize="14"
+                                                        Margin="0,0,4,0"
+                                                        Foreground="{DynamicResource GlassPrimaryBrush}" />
+                                                    <TextBlock Style="{StaticResource GlassSmall}"
+                                                               FontWeight="SemiBold">
+                                                        <Run Text="{Binding [StartDate], Mode=OneWay}" />
+                                                        <Run Text="—"
+                                                             Foreground="{DynamicResource GlassMutedForegroundBrush}" />
+                                                        <Run Text="{Binding [EndDate], Mode=OneWay}" />
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <!-- Row 2: Title (multiline, more prominent than additional fields) -->
+                                            <TextBlock Grid.Row="2"
                                                        Text="{Binding [Title]}"
-                                                       Style="{StaticResource GlassBody}"
-                                                       FontWeight="SemiBold"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       MaxHeight="60"
-                                                       Margin="0,8,0,4" />
+                                                       Style="{StaticResource GlassSmall}"
+                                                       TextWrapping="Wrap"
+                                                       Margin="0,4,0,4" />
 
-                                            <!-- Row 2: Date Range -->
-                                            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,4,0,8">
-                                                <sharedControls:FluentIcon
-                                                    Glyph="{x:Static sharedControls:FluentIcons.Calendar}"
-                                                    IconSize="14"
-                                                    Margin="0,0,6,0"
-                                                    Foreground="{DynamicResource GlassMutedForegroundBrush}" />
-                                                <TextBlock Style="{StaticResource GlassCaption}">
-                                                    <Run Text="{Binding [StartDate], Mode=OneWay}" />
-                                                    <Run Text=" - " />
-                                                    <Run Text="{Binding [EndDate], Mode=OneWay}" />
-                                                </TextBlock>
-                                            </StackPanel>
-
-                                            <!-- Row 3: Additional Fields -->
+                                            <!-- Row 3: Additional Fields (Type, Price, then rest) -->
                                             <ItemsControl Grid.Row="3"
                                                           ItemsSource="{Binding Converter={StaticResource AdditionalFieldsConverter}}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
-                                                        <TextBlock Style="{StaticResource GlassCaption}" Margin="0,1">
+                                                        <TextBlock Style="{StaticResource GlassCaption}"
+
+                                                                   Margin="0,1">
                                                             <Run Text="{Binding Key, Mode=OneWay}" FontWeight="Medium" />
                                                             <Run Text=": " />
                                                             <Run Text="{Binding Value, Mode=OneWay}" />

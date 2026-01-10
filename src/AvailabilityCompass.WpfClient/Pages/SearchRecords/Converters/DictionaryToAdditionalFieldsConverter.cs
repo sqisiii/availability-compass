@@ -17,8 +17,16 @@ public class DictionaryToAdditionalFieldsConverter : IValueConverter
         "Title",
         "Url",
         "StartDate",
-        "EndDate"
+        "EndDate",
+        "Destination"
     ];
+
+    // Priority order for additional fields (lower = higher priority)
+    private static readonly Dictionary<string, int> FieldPriority = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Type"] = 0,
+        ["Price"] = 1
+    };
 
     public object? Convert(
         object? value,
@@ -33,6 +41,7 @@ public class DictionaryToAdditionalFieldsConverter : IValueConverter
 
         return dict
             .Where(kvp => !CoreFields.Contains(kvp.Key) && !string.IsNullOrEmpty(kvp.Value.ToString()))
+            .OrderBy(kvp => FieldPriority.GetValueOrDefault(kvp.Key, 100))
             .Select(kvp => new KeyValuePair<string, string>(FormatKey(kvp.Key), kvp.Value.ToString() ?? ""))
             .ToList();
     }
