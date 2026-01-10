@@ -560,6 +560,7 @@
                             <Setter TargetName="PART_Border" Property="BorderBrush"
                                     Value="{DynamicResource GlassPrimaryBrush}" />
                             <Setter TargetName="PART_Border" Property="BorderThickness" Value="2" />
+                            <Setter Property="Padding" Value="9,7,29,7" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="PART_Border" Property="BorderBrush"
