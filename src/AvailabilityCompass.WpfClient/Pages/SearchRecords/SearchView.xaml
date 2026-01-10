@@ -59,7 +59,7 @@
                 <!-- Layer 0: Base layout (headers with search button, results) -->
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="50" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
