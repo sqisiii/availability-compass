@@ -180,14 +180,14 @@ public class BarentsEngService : ISourceService
                     var price = cells[4].InnerText.Trim();
                     var remarks = cells[5].InnerText.Trim();
 
-                    var dateParts = dateText.Split(" to ");
+                    var dateParts = dateText.Split([" to ", " do "], StringSplitOptions.None);
                     var startDate = DateOnly.MinValue;
                     var endDate = DateOnly.MinValue;
 
                     if (dateParts.Length == 2)
                     {
-                        DateOnly.TryParseExact(dateParts[0], "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out startDate);
-                        DateOnly.TryParseExact(dateParts[1], "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out endDate);
+                        DateOnly.TryParseExact(dateParts[0].Trim(), "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out startDate);
+                        DateOnly.TryParseExact(dateParts[1].Trim(), "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out endDate);
                     }
 
                     var tour = new SourceDataItem
