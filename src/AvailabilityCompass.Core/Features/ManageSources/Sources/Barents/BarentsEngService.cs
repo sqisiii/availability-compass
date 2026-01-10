@@ -7,7 +7,7 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Sources.Barents;
 
-[SourceService("Barents", "Barents", "ENG", IconFileName = "barents.png")]
+[SourceService("BarentsEng", "Barents", "ENG", IconFileName = "barents.png")]
 public class BarentsEngService : ISourceService
 {
     private readonly HttpClient _httpClient;
@@ -125,7 +125,9 @@ public class BarentsEngService : ISourceService
                         ? "Trekking"
                         : "Other";
 
-                (var parsedSourceDataItems, counter) = await ExtractTripDataAsync($"https://barents.pl{tripUrl}", counter, title, destination, isNew, type, ct);
+                (var parsedSourceDataItems, counter) =
+                    await ExtractTripDataAsync($"https://barents.pl{tripUrl}", counter, title, destination, isNew, type,
+                        ct);
                 sourceDataItems.AddRange(parsedSourceDataItems);
                 OnRefreshProgressChanged((double)(index + 1) / tripsData.Count * 100);
             }
@@ -186,8 +188,13 @@ public class BarentsEngService : ISourceService
 
                     if (dateParts.Length == 2)
                     {
-                        DateOnly.TryParseExact(dateParts[0].Trim(), "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out startDate);
-                        DateOnly.TryParseExact(dateParts[1].Trim(), "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out endDate);
+                        var startDateText = dateParts[0].Trim();
+                        if (startDateText.StartsWith("od ", StringComparison.OrdinalIgnoreCase))
+                            startDateText = startDateText[3..];
+                        DateOnly.TryParseExact(startDateText, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None,
+                            out startDate);
+                        DateOnly.TryParseExact(dateParts[1].Trim(), "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None,
+                            out endDate);
                     }
 
                     var tour = new SourceDataItem
