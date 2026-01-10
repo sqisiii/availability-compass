@@ -307,25 +307,31 @@
                                                 <RowDefinition Height="*" />
                                             </Grid.RowDefinitions>
 
-                                            <!-- Row 0: Source Badge -->
-                                            <Border Grid.Row="0"
-                                                    Background="{DynamicResource GlassAccentLightBrush}"
-                                                    CornerRadius="10"
-                                                    Padding="8,2"
-                                                    HorizontalAlignment="Left">
-                                                <StackPanel Orientation="Horizontal">
-                                                    <Image Source="{Binding [SourceIconPath]}"
-                                                           Width="16" Height="16"
-                                                           VerticalAlignment="Center"
-                                                           Margin="0,0,6,0"
-                                                           RenderOptions.BitmapScalingMode="HighQuality" />
-                                                    <TextBlock Text="{Binding [SourceName]}"
-                                                               Style="{StaticResource GlassCaption}"
-                                                               FontWeight="SemiBold"
+                                            <!-- Row 0: Source Badge + Language -->
+                                            <Grid Grid.Row="0">
+                                                <Border Background="{DynamicResource GlassAccentLightBrush}"
+                                                        CornerRadius="10"
+                                                        Padding="8,2"
+                                                        HorizontalAlignment="Left">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Image Source="{Binding [SourceIconPath]}"
+                                                               Width="16" Height="16"
                                                                VerticalAlignment="Center"
-                                                               Foreground="{DynamicResource GlassAccentBrush}" />
-                                                </StackPanel>
-                                            </Border>
+                                                               Margin="0,0,6,0"
+                                                               RenderOptions.BitmapScalingMode="HighQuality" />
+                                                        <TextBlock Text="{Binding [SourceName]}"
+                                                                   Style="{StaticResource GlassCaption}"
+                                                                   FontWeight="SemiBold"
+                                                                   VerticalAlignment="Center"
+                                                                   Foreground="{DynamicResource GlassAccentBrush}" />
+                                                    </StackPanel>
+                                                </Border>
+                                                <TextBlock Text="{Binding [SourceLanguage]}"
+                                                           HorizontalAlignment="Right"
+                                                           VerticalAlignment="Center"
+                                                           Style="{StaticResource GlassCaption}"
+                                                           Foreground="{DynamicResource GlassMutedForegroundBrush}" />
+                                            </Grid>
 
                                             <!-- Row 1: Title -->
                                             <TextBlock Grid.Row="1"

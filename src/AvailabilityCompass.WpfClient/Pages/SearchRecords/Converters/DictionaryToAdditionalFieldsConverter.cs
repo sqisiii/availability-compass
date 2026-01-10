@@ -12,6 +12,7 @@ public class DictionaryToAdditionalFieldsConverter : IValueConverter
     private static readonly HashSet<string> CoreFields =
     [
         "SourceName",
+        "SourceLanguage",
         "SourceIconPath",
         "Title",
         "Url",
