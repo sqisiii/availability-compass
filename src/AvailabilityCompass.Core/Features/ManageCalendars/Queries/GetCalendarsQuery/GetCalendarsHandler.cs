@@ -1,4 +1,4 @@
-﻿using AvailabilityCompass.Core.Shared.Database;
+using AvailabilityCompass.Core.Shared.Database;
 using Dapper;
 using MediatR;
 using Serilog;
@@ -22,19 +22,20 @@ public class GetCalendarsHandler : IRequestHandler<GetCalendarsQuery, GetCalenda
             connection.Open();
 
             // language=SQLite
-            const string sql = @"
-                        SELECT c.CalendarId, c.Name, c.IsOnly, c.ChangeDate,
-                            sd.Id as SingleDateId, sd.CalendarId, sd.Description as SingleDateDescription, sd.Date, sd.ChangeDate,
-                            rd.Id as RecurringDateId, rd.CalendarId, rd.Description as RecurringDateDescription, rd.StartDate, rd.Duration, rd.Frequency, rd.NumberOfRepetitions, rd.ChangeDate
-                        FROM Calendar c
-                        LEFT JOIN SingleDate sd ON c.CalendarId = sd.CalendarId
-                        LEFT JOIN RecurringDate rd ON c.CalendarId = rd.CalendarId";
+            const string sql = """
+                               SELECT c.CalendarId, c.Name, c.IsOnly, c.ChangeDate,
+                                    de.Id AS DateEntryId, de.CalendarId, de.StartDate, de.Description,
+                                    de.IsRecurring, de.Duration, de.Frequency, de.NumberOfRepetitions, de.ChangeDate
+                                FROM Calendar c
+                                LEFT JOIN DateEntry de ON c.CalendarId = de.CalendarId
+                                ORDER BY c.Name, de.StartDate
+                               """;
 
             var calendarDict = new Dictionary<Guid, CalendarDto>();
 
-            await connection.QueryAsync<CalendarDto, SingleDateDto?, RecurringDateDto?, CalendarDto>(
+            await connection.QueryAsync<CalendarDto, DateEntryDto?, CalendarDto>(
                     sql,
-                    map: (calendar, singleDate, recurringDate) =>
+                    map: (calendar, dateEntry) =>
                     {
                         if (!calendarDict.TryGetValue(calendar.CalendarId, out var calendarEntry))
                         {
@@ -42,19 +43,14 @@ public class GetCalendarsHandler : IRequestHandler<GetCalendarsQuery, GetCalenda
                             calendarDict.Add(calendar.CalendarId, calendarEntry);
                         }
 
-                        if (singleDate is not null && calendarEntry.SingleDates.All(x => x.SingleDateId != singleDate.SingleDateId))
+                        if (dateEntry is not null && calendarEntry.DateEntries.All(x => x.DateEntryId != dateEntry.DateEntryId))
                         {
-                            calendarEntry.SingleDates.Add(singleDate);
-                        }
-
-                        if (recurringDate is not null && calendarEntry.RecurringDates.All(x => x.RecurringDateId != recurringDate.RecurringDateId))
-                        {
-                            calendarEntry.RecurringDates.Add(recurringDate);
+                            calendarEntry.DateEntries.Add(dateEntry);
                         }
 
                         return calendarEntry;
                     },
-                    splitOn: "SingleDateId,RecurringDateId")
+                    splitOn: "DateEntryId")
                 .ConfigureAwait(false);
 
             return new GetCalendarsResponse(calendarDict.Values.ToList(), true);

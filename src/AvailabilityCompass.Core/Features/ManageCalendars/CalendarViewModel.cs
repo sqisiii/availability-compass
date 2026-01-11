@@ -21,6 +21,5 @@ public partial class CalendarViewModel : ObservableValidator
     public Guid CalendarId { get; init; }
 
 
-    public List<SingleDateViewModel> SingleDates { get; init; } = [];
-    public List<RecurringDateViewModel> RecurringDates { get; init; } = [];
+    public List<DateEntryViewModel> DateEntries { get; init; } = [];
 }

@@ -1,4 +1,4 @@
-﻿namespace AvailabilityCompass.Core.Features.ManageCalendars;
+namespace AvailabilityCompass.Core.Features.ManageCalendars;
 
 public class CalendarDto
 {
@@ -23,7 +23,5 @@ public class CalendarDto
 
     public DateTime ChangeDate { get; }
 
-    public List<SingleDateDto> SingleDates { get; } = [];
-
-    public List<RecurringDateDto> RecurringDates { get; } = [];
+    public List<DateEntryDto> DateEntries { get; } = [];
 }

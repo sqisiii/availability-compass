@@ -1,14 +1,15 @@
-﻿namespace AvailabilityCompass.Core.Features.ManageCalendars.DatesCalculator;
+namespace AvailabilityCompass.Core.Features.ManageCalendars.DatesCalculator;
 
 public class ReservedDatesCalculator : IReservedDatesCalculator
 {
-    private const int _yearsToCheck = 2;
+    private const int YearsToCheck = 2;
 
-    private readonly List<IDateProcessor> _dateProcessors =
-    [
-        new SingleDateProcessor(),
-        new RecurringDateProcessor()
-    ];
+    private readonly IDateProcessor _dateProcessor;
+
+    public ReservedDatesCalculator(IDateProcessor dateProcessor)
+    {
+        _dateProcessor = dateProcessor;
+    }
 
     public List<CategorizedDate> GetReservedCategorizedDays(CalendarViewModel? selectedCalendar)
     {
@@ -17,11 +18,7 @@ public class ReservedDatesCalculator : IReservedDatesCalculator
             return [];
         }
 
-        var allDates = new List<CategorizedDate>();
-        foreach (var processor in _dateProcessors)
-        {
-            allDates.AddRange(processor.Process(selectedCalendar));
-        }
+        var allDates = _dateProcessor.Process(selectedCalendar);
 
         var uniqueDates = allDates
             .GroupBy(d => d.Date.Date)
@@ -45,22 +42,24 @@ public class ReservedDatesCalculator : IReservedDatesCalculator
         var normalCalendars = calendars.Where(c => !c.IsOnly).ToList();
         foreach (var calendar in normalCalendars)
         {
-            foreach (var singleDate in calendar.SingleDates)
+            foreach (var dateEntry in calendar.DateEntries)
             {
-                normalCalendarsReservedDates.Add(singleDate.Date);
-            }
-
-            foreach (var recurringDate in calendar.RecurringDates)
-            {
-                var dates = CalculateRecurringDatesRange(
-                    recurringDate.StartDate,
-                    recurringDate.Duration,
-                    recurringDate.Frequency,
-                    recurringDate.NumberOfRepetitions);
-
-                foreach (var date in dates)
+                if (dateEntry.IsRecurring)
                 {
-                    normalCalendarsReservedDates.Add(date);
+                    var dates = CalculateRecurringDatesRange(
+                        dateEntry.StartDate,
+                        dateEntry.Duration,
+                        dateEntry.Frequency,
+                        dateEntry.NumberOfRepetitions);
+
+                    foreach (var date in dates)
+                    {
+                        normalCalendarsReservedDates.Add(date);
+                    }
+                }
+                else
+                {
+                    normalCalendarsReservedDates.Add(dateEntry.StartDate);
                 }
             }
         }
@@ -70,22 +69,24 @@ public class ReservedDatesCalculator : IReservedDatesCalculator
         var onlyCalendars = calendars.Where(c => c.IsOnly).ToList();
         foreach (var calendar in onlyCalendars)
         {
-            foreach (var singleDate in calendar.SingleDates)
+            foreach (var dateEntry in calendar.DateEntries)
             {
-                onlyCalendarsExceptionDates.Add(singleDate.Date);
-            }
-
-            foreach (var recurringDate in calendar.RecurringDates)
-            {
-                var dates = CalculateRecurringDatesRange(
-                    recurringDate.StartDate,
-                    recurringDate.Duration,
-                    recurringDate.Frequency,
-                    recurringDate.NumberOfRepetitions);
-
-                foreach (var date in dates)
+                if (dateEntry.IsRecurring)
                 {
-                    onlyCalendarsExceptionDates.Add(date);
+                    var dates = CalculateRecurringDatesRange(
+                        dateEntry.StartDate,
+                        dateEntry.Duration,
+                        dateEntry.Frequency,
+                        dateEntry.NumberOfRepetitions);
+
+                    foreach (var date in dates)
+                    {
+                        onlyCalendarsExceptionDates.Add(date);
+                    }
+                }
+                else
+                {
+                    onlyCalendarsExceptionDates.Add(dateEntry.StartDate);
                 }
             }
         }
@@ -96,46 +97,25 @@ public class ReservedDatesCalculator : IReservedDatesCalculator
             return normalCalendarsReservedDates.ToList();
         }
 
-        // If there are any "Only" calendars, compute all dates for the next year
+        // If there are any "Only" calendars, compute all dates for the next years
         // and exclude the exception dates
         var startDate = DateOnly.FromDateTime(DateTime.Today);
-        var endDate = startDate.AddYears(_yearsToCheck);
-        var allDatesInNextYear = new HashSet<DateOnly>();
+        var endDate = startDate.AddYears(YearsToCheck);
+        var allDatesInRange = new HashSet<DateOnly>();
 
         for (var date = startDate; date < endDate; date = date.AddDays(1))
         {
             if (!onlyCalendarsExceptionDates.Contains(date))
             {
-                allDatesInNextYear.Add(date);
+                allDatesInRange.Add(date);
             }
         }
 
         // Combine the dates from normal calendars with inverted dates from "Only" calendars
-        return normalCalendarsReservedDates.Union(allDatesInNextYear).ToList();
+        return normalCalendarsReservedDates.Union(allDatesInRange).ToList();
     }
 
-    private List<CategorizedDate> GetInvertedDates(List<CategorizedDate> dates)
-    {
-        var exceptedDates = dates.Select(d => DateOnly.FromDateTime(d.Date.Date)).ToHashSet();
-        var startDate = DateOnly.FromDateTime(DateTime.Today);
-        var endDate = startDate.AddYears(_yearsToCheck);
-        List<CategorizedDate> invertedDates = [];
-
-        for (var date = startDate; date < endDate; date = date.AddDays(1))
-        {
-            if (!exceptedDates.Contains(date))
-            {
-                invertedDates.Add(new CategorizedDate(
-                    date.ToDateTime(TimeOnly.MinValue),
-                    CategorizedDateCategory.Inverted,
-                    "Inverted date"));
-            }
-        }
-
-        return invertedDates;
-    }
-
-    private List<DateOnly> CalculateRecurringDatesRange(
+    private static List<DateOnly> CalculateRecurringDatesRange(
         DateOnly startDate,
         int duration,
         int? frequency,

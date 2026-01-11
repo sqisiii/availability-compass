@@ -1,4 +1,4 @@
-﻿namespace AvailabilityCompass.Core.Features.ManageCalendars;
+namespace AvailabilityCompass.Core.Features.ManageCalendars;
 
 /// <summary>
 /// Factory interface for creating calendar-related view models.
@@ -13,16 +13,9 @@ public interface ICalendarViewModelFactory
     CalendarViewModel CreateCalendar(CalendarDto calendarDto);
 
     /// <summary>
-    /// Creates a SingleDateViewModel from a SingleDateDto.
+    /// Creates a DateEntryViewModel from a DateEntryDto.
     /// </summary>
-    /// <param name="singleDateDto">The data transfer object containing single date data.</param>
-    /// <returns>A SingleDateViewModel instance.</returns>
-    SingleDateViewModel CreateSingleDate(SingleDateDto singleDateDto);
-
-    /// <summary>
-    /// Creates a RecurringDateViewModel from a RecurringDateDto.
-    /// </summary>
-    /// <param name="recurringDateDto">The data transfer object containing recurring date data.</param>
-    /// <returns>A RecurringDateViewModel instance.</returns>
-    RecurringDateViewModel CreateRecurringDate(RecurringDateDto recurringDateDto);
+    /// <param name="dateEntryDto">The data transfer object containing date entry data.</param>
+    /// <returns>A DateEntryViewModel instance.</returns>
+    DateEntryViewModel CreateDateEntry(DateEntryDto dateEntryDto);
 }

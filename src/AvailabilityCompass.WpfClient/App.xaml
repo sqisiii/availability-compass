@@ -39,24 +39,6 @@
             <DataTemplate DataType="{x:Type dialogs:DeleteCalendarViewModel}">
                 <dialogsViews:DeleteCalendarView />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type dialogs:AddRecurringDateViewModel}">
-                <dialogsViews:AddRecurringDateView />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type dialogs:DeleteRecurringDateViewModel}">
-                <dialogsViews:DeleteRecurringDateView />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type dialogs:UpdateRecurringDateViewModel}">
-                <dialogsViews:UpdateRecurringDateView />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type dialogs:AddSingleDateViewModel}">
-                <dialogsViews:AddSingleDateView />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type dialogs:DeleteSingleDateViewModel}">
-                <dialogsViews:DeleteSingleDateView />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type dialogs:UpdateSingleDateViewModel}">
-                <dialogsViews:UpdateSingleDateView />
-            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

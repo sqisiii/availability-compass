@@ -1,4 +1,4 @@
-﻿namespace AvailabilityCompass.Core.Features.ManageCalendars;
+namespace AvailabilityCompass.Core.Features.ManageCalendars;
 
 public class CalendarViewModelFactory : ICalendarViewModelFactory
 {
@@ -10,39 +10,26 @@ public class CalendarViewModelFactory : ICalendarViewModelFactory
             IsOnly = calendarDto.IsOnly,
             CalendarId = calendarDto.CalendarId,
             IsSelected = false,
-            SingleDates = calendarDto.SingleDates
-                .Select(CreateSingleDate)
-                .ToList(),
-            RecurringDates = calendarDto.RecurringDates
-                .Select(CreateRecurringDate)
+            DateEntries = calendarDto.DateEntries
+                .Select(CreateDateEntry)
                 .ToList()
         };
 
         return viewModel;
     }
 
-    public SingleDateViewModel CreateSingleDate(SingleDateDto singleDateDto)
+    public DateEntryViewModel CreateDateEntry(DateEntryDto dateEntryDto)
     {
-        return new SingleDateViewModel
+        return new DateEntryViewModel
         {
-            SingleDateId = singleDateDto.SingleDateId,
-            Description = singleDateDto.SingleDateDescription,
-            Date = singleDateDto.Date,
-            CalendarId = singleDateDto.CalendarId
-        };
-    }
-
-    public RecurringDateViewModel CreateRecurringDate(RecurringDateDto recurringDateDto)
-    {
-        return new RecurringDateViewModel
-        {
-            RecurringDateId = recurringDateDto.RecurringDateId,
-            CalendarId = recurringDateDto.CalendarId,
-            Description = recurringDateDto.RecurringDateDescription,
-            StartDate = recurringDateDto.StartDate,
-            Duration = recurringDateDto.Duration,
-            Frequency = recurringDateDto.Frequency,
-            NumberOfRepetitions = recurringDateDto.NumberOfRepetitions
+            DateEntryId = dateEntryDto.DateEntryId,
+            CalendarId = dateEntryDto.CalendarId,
+            Description = dateEntryDto.Description,
+            StartDate = dateEntryDto.StartDate,
+            IsRecurring = dateEntryDto.IsRecurring,
+            Duration = dateEntryDto.Duration,
+            Frequency = dateEntryDto.Frequency,
+            NumberOfRepetitions = dateEntryDto.NumberOfRepetitions
         };
     }
 }
