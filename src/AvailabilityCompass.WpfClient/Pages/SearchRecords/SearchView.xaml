@@ -521,11 +521,17 @@
                                                                         IsChecked="{Binding TextValue, Converter={StaticResource StringToBoolConverter}, Mode=TwoWay}"
                                                                         Style="{StaticResource GlassCheckBox}"
                                                                         ToolTip="{Binding Label}" />
-                                                                    <controls:MultiSelectComboBoxView
-                                                                        ItemSource="{Binding Options}"
-                                                                        Label="{Binding Label}"
-                                                                        SelectedItems="{Binding SelectedOptions}"
-                                                                        Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=MultiSelect}" />
+                                                                    <StackPanel Orientation="Horizontal"
+                                                                                Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=MultiSelect}">
+                                                                        <TextBlock Text="{Binding Label, StringFormat='{}{0}:'}"
+                                                                                   Style="{StaticResource GlassCaption}"
+                                                                                   VerticalAlignment="Center"
+                                                                                   Margin="0,0,8,0" />
+                                                                        <controls:MultiSelectComboBoxView
+                                                                            ItemSource="{Binding Options}"
+                                                                            Label="{Binding Label}"
+                                                                            SelectedItems="{Binding SelectedOptions}" />
+                                                                    </StackPanel>
                                                                 </StackPanel>
                                                             </DataTemplate>
                                                         </ItemsControl.ItemTemplate>
@@ -549,15 +555,21 @@
                                     Style="{StaticResource GlassFloatingHintTextBox}"
                                     Text="{Binding SearchPhrase, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                     ToolTip="Phrase to look for." />
+                                <TextBlock Text="Start Date:"
+                                           Style="{StaticResource GlassCaption}"
+                                           VerticalAlignment="Center"
+                                           Margin="15,0,8,0" />
                                 <DatePicker
                                     Width="120"
-                                    Margin="15,0,0,0"
                                     Style="{StaticResource GlassDatePicker}"
                                     Text="{Binding StartDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}"
                                     ToolTip="Start Date" />
+                                <TextBlock Text="End Date:"
+                                           Style="{StaticResource GlassCaption}"
+                                           VerticalAlignment="Center"
+                                           Margin="15,0,8,0" />
                                 <DatePicker
                                     Width="120"
-                                    Margin="15,0,0,0"
                                     Style="{StaticResource GlassDatePicker}"
                                     Text="{Binding EndDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, StringFormat=yyyy-MM-dd}"
                                     ToolTip="End Date" />
