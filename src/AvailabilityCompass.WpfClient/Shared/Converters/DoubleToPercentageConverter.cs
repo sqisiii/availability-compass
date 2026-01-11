@@ -1,7 +1,7 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Windows.Data;
 
-namespace AvailabilityCompass.WpfClient.Pages.ManageSources.Converters;
+namespace AvailabilityCompass.WpfClient.Shared.Converters;
 
 /// <summary>
 /// Converts a double value to a percentage string representation and vice versa.

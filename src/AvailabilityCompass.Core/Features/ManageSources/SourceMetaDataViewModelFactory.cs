@@ -23,6 +23,7 @@ public class SourceMetaDataViewModelFactory : ISourceMetaDataViewModelFactory
             var sourceMetaDataVm = new SourceMetaDataViewModel()
             {
                 Name = sourceData.Name,
+                Language = sourceData.Language,
                 ChangedAt = sourceMetaData?.ChangedAt,
                 SourceId = sourceData.Id,
                 TripsCount = sourceMetaData?.TripsCount ?? 0,

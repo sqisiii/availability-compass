@@ -4,22 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:manageSources="clr-namespace:AvailabilityCompass.Core.Features.ManageSources;assembly=AvailabilityCompass.Core"
-             xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageSources.Converters"
+             xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Shared.Converters"
              xmlns:controls="clr-namespace:AvailabilityCompass.WpfClient.Shared.Controls"
              d:DataContext="{d:DesignInstance manageSources:ManageSourcesViewModel, IsDesignTimeCreatable=True}"
              mc:Ignorable="d"
              d:DesignHeight="500" d:DesignWidth="900">
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" Invert="True" />
         <converters:DoubleToPercentageConverter x:Key="DoubleToPercentageConverter" />
-        <Style x:Key="CenteredVerticallyColumn" TargetType="DataGridCell"
-               BasedOn="{StaticResource {x:Type DataGridCell}}">
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-        <Style x:Key="RefreshHeader" TargetType="DataGridColumnHeader"
-               BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
-            <Setter Property="HorizontalAlignment" Value="Center" />
-        </Style>
     </UserControl.Resources>
 
     <Border Style="{StaticResource GlassCard}"
@@ -42,6 +35,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Column="0"
@@ -50,6 +44,14 @@
                                VerticalAlignment="Center" />
 
                     <Button Grid.Column="1"
+                            Content="Refresh All"
+                            Width="120"
+                            Margin="0,0,12,0"
+                            Style="{StaticResource GlassSecondaryButton}"
+                            ToolTip="Refresh available trips data"
+                            Command="{Binding RefreshAllSourcesCommand}" />
+
+                    <Button Grid.Column="2"
                             Style="{StaticResource GlassIconButton}"
                             Command="{Binding CloseCommand}"
                             ToolTip="Close"
@@ -63,96 +65,125 @@
                 </Grid>
             </Border>
 
-            <!-- Content -->
+            <!-- Card Grid -->
             <ScrollViewer Grid.Row="1"
                           VerticalScrollBarVisibility="Auto"
-                          HorizontalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled"
                           Padding="8">
-                <Border Style="{StaticResource GlassCard}"
-                        Margin="5"
-                        Padding="5,5,5,15">
-                    <StackPanel>
-                        <TextBlock
-                            Style="{StaticResource GlassHeading3}"
-                            Margin="0,10,0,10"
-                            Text="Available Sources"
-                            HorizontalAlignment="Center" />
-                        <Button Content="Refresh All"
-                                Width="120"
-                                Margin="0,10,10,10"
-                                HorizontalAlignment="Right"
-                                Style="{StaticResource GlassSecondaryButton}"
-                                ToolTip="Refresh available trips data"
-                                Command="{Binding DataContext.RefreshAllSourcesCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                        <DataGrid
-                            AutoGenerateColumns="False"
-                            CanUserAddRows="False"
-                            CanUserDeleteRows="False"
-                            CanUserReorderColumns="True"
-                            CanUserResizeColumns="True"
-                            CanUserResizeRows="True"
-                            CanUserSortColumns="True"
-                            IsReadOnly="True"
-                            ItemsSource="{Binding Sources}"
-                            SelectionMode="Single"
-                            SelectionUnit="FullRow"
-                            Style="{StaticResource GlassDataGrid}"
-                            VerticalScrollBarVisibility="Auto">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn CellStyle="{StaticResource CenteredVerticallyColumn}"
-                                                    Header="Name"
-                                                    Binding="{Binding Name}" />
-                                <DataGridTextColumn CellStyle="{StaticResource CenteredVerticallyColumn}" Header="Updated"
-                                                    Binding="{Binding ChangedAt, StringFormat=yyyy-MM-dd HH:mm:ss, TargetNullValue=N/A}" />
-                                <DataGridTextColumn CellStyle="{StaticResource CenteredVerticallyColumn}" Header="Records Count"
-                                                    Binding="{Binding TripsCount}" />
-                                <DataGridTemplateColumn Header="Refresh?" HeaderStyle="{StaticResource RefreshHeader}">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Content="Refresh"
-                                                    Style="{StaticResource GlassSecondaryButton}"
-                                                    ToolTip="Refresh available trips data"
-                                                    Command="{Binding DataContext.RefreshSourceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                    CommandParameter="{Binding SourceId}" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Status">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="*" />
-                                                </Grid.RowDefinitions>
-                                                <ProgressBar
-                                                    Grid.Row="0"
-                                                    Width="240"
-                                                    Height="{Binding ElementName=ProgressBarTextBlock, Path=ActualHeight}"
-                                                    MinHeight="25"
-                                                    Background="{DynamicResource GlassSurfaceBrush}"
-                                                    Foreground="{DynamicResource GlassPrimaryBrush}"
-                                                    Visibility="{Binding ShowProgress, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                                    Value="{Binding ProgressPercent, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
-                                                <TextBlock
-                                                    x:Name="ProgressBarTextBlock"
-                                                    Grid.Row="0"
-                                                    Width="240"
-                                                    MinHeight="20"
-                                                    Padding="5"
-                                                    TextAlignment="Center"
-                                                    VerticalAlignment="Center"
-                                                    Foreground="{DynamicResource GlassForegroundBrush}"
-                                                    Text="{Binding ProgressPercent, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DoubleToPercentageConverter}}"
-                                                    TextWrapping="WrapWithOverflow"
-                                                    Visibility="{Binding ShowProgress, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                            </Grid>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </StackPanel>
-                </Border>
+                <ItemsControl ItemsSource="{Binding Sources}"
+                              Margin="8">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <!-- Source Card -->
+                            <Border Width="260"
+                                    MinHeight="160"
+                                    Margin="8"
+                                    CornerRadius="12"
+                                    Padding="16"
+                                    Background="{DynamicResource GlassCardBrush}"
+                                    BorderBrush="{DynamicResource GlassBorderSolidBrush}"
+                                    BorderThickness="1">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="BorderBrush"
+                                                        Value="{DynamicResource GlassPrimaryBrush}" />
+                                                <Setter Property="Background"
+                                                        Value="{DynamicResource GlassPrimaryLightBrush}" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Row 0: Header with Name and Language -->
+                                    <Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{Binding Name}"
+                                                   Style="{StaticResource GlassBody}"
+                                                   FontWeight="SemiBold"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding Language}"
+                                                   Style="{StaticResource GlassCaption}"
+                                                   Foreground="{DynamicResource GlassMutedForegroundBrush}"
+                                                   VerticalAlignment="Center" />
+                                    </Grid>
+
+                                    <!-- Row 1: Stats -->
+                                    <StackPanel Grid.Row="1" Margin="0,12,0,0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <controls:FluentIcon
+                                                Glyph="{x:Static controls:FluentIcons.Database}"
+                                                IconSize="14"
+                                                Margin="0,0,6,0"
+                                                Foreground="{DynamicResource GlassMutedForegroundBrush}" />
+                                            <TextBlock Style="{StaticResource GlassCaption}">
+                                                <Run Text="{Binding TripsCount, StringFormat='{}{0:N0}'}" />
+                                                <Run Text=" records" />
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                            <controls:FluentIcon
+                                                Glyph="{x:Static controls:FluentIcons.Clock}"
+                                                IconSize="14"
+                                                Margin="0,0,6,0"
+                                                Foreground="{DynamicResource GlassMutedForegroundBrush}" />
+                                            <TextBlock Style="{StaticResource GlassCaption}"
+                                                       Text="{Binding ChangedAt, StringFormat='yyyy-MM-dd HH:mm',
+                                                              TargetNullValue='Never updated'}" />
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <!-- Row 2: Actions -->
+                                    <Grid Grid.Row="2" Margin="0,16,0,0">
+                                        <!-- Progress bar (visible when refreshing) -->
+                                        <Grid Visibility="{Binding ShowProgress,
+                                              Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <ProgressBar Value="{Binding ProgressPercent}"
+                                                         Height="28"
+                                                         Background="{DynamicResource GlassSurfaceBrush}"
+                                                         Foreground="{DynamicResource GlassPrimaryBrush}" />
+                                            <TextBlock Text="{Binding ProgressPercent,
+                                                       Converter={StaticResource DoubleToPercentageConverter}}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       Style="{StaticResource GlassCaption}"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource GlassForegroundBrush}" />
+                                        </Grid>
+
+                                        <!-- Refresh button (visible when idle) -->
+                                        <Button Content="Refresh"
+                                                HorizontalAlignment="Stretch"
+                                                Visibility="{Binding ShowProgress,
+                                                Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                                                Command="{Binding DataContext.RefreshSourceCommand,
+                                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding SourceId}"
+                                                Style="{StaticResource GlassSecondaryButton}" />
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </ScrollViewer>
         </Grid>
     </Border>

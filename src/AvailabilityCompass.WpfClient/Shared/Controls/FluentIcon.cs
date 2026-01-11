@@ -133,6 +133,7 @@ public static class FluentIcons
     // Data
     public const string Calendar = "\uE787";
     public const string CalendarDay = "\uE8BF";
+    public const string Clock = "\uE823";
     public const string Database = "\uE8F1";
     public const string Folder = "\uE8B7";
     public const string Document = "\uE8A5";

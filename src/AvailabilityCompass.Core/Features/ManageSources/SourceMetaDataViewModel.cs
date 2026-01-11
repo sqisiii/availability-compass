@@ -11,6 +11,9 @@ public partial class SourceMetaDataViewModel : ObservableObject
     private bool _isEnabled;
 
     [ObservableProperty]
+    private string _language = string.Empty;
+
+    [ObservableProperty]
     private string _name = string.Empty;
 
     [ObservableProperty]
