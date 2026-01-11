@@ -26,26 +26,29 @@ public class SqlDbInitializer : IDbInitializer
     private async Task PrepareSourceTablesAsync()
     {
         const string createSourceTable =
-            @"CREATE TABLE IF NOT EXISTS Source (
-                SourceId TEXT NOT NULL,
-                SeqNo INTEGER,
-                Title TEXT NOT NULL,
-                Url TEXT NOT NULL,
-                StartDate TEXT NOT NULL,
-                EndDate TEXT,
-                ChangeDate TEXT NOT NULL,
-                PRIMARY KEY (SourceId, SeqNo)
-            );";
-        // language=SQLite
+            """
+            CREATE TABLE IF NOT EXISTS Source (
+                            SourceId TEXT NOT NULL,
+                            SeqNo INTEGER,
+                            Title TEXT NOT NULL,
+                            Url TEXT NOT NULL,
+                            StartDate TEXT NOT NULL,
+                            EndDate TEXT,
+                            ChangeDate TEXT NOT NULL,
+                            PRIMARY KEY (SourceId, SeqNo)
+                        );
+            """;
         const string createSourceAdditionalDataTables =
-            @"CREATE TABLE IF NOT EXISTS SourceAdditionalData (
-                SourceId TEXT NOT NULL,
-                SourceSeqNo INTEGER NOT NULL,
-                Key TEXT NOT NULL,
-                Value TEXT,
-                PRIMARY KEY (SourceId, SourceSeqNo, Key),
-                FOREIGN KEY (SourceId, SourceSeqNo) REFERENCES Source(SourceId, SeqNo) ON DELETE CASCADE
-            );";
+            """
+            CREATE TABLE IF NOT EXISTS SourceAdditionalData (
+                            SourceId TEXT NOT NULL,
+                            SourceSeqNo INTEGER NOT NULL,
+                            Key TEXT NOT NULL,
+                            Value TEXT,
+                            PRIMARY KEY (SourceId, SourceSeqNo, Key),
+                            FOREIGN KEY (SourceId, SourceSeqNo) REFERENCES Source(SourceId, SeqNo) ON DELETE CASCADE
+                        );
+            """;
         using var database = _sqliteDbConnectionFactory.Connect();
         await database.ExecuteAsync(createSourceTable);
         await database.ExecuteAsync(createSourceAdditionalDataTables);
@@ -55,53 +58,49 @@ public class SqlDbInitializer : IDbInitializer
     {
         // language=SQLite
         const string createCalendarTable =
-            @"CREATE TABLE IF NOT EXISTS Calendar (
-                CalendarId BLOB(16) NOT NULL,
-                Name TEXT NOT NULL,
-                IsOnly Integer NOT NULL,
-                ChangeDate TEXT NOT NULL,
-                PRIMARY KEY (CalendarId)
-            );";
+            """
+            CREATE TABLE IF NOT EXISTS Calendar (
+                            CalendarId BLOB(16) NOT NULL,
+                            Name TEXT NOT NULL,
+                            IsOnly Integer NOT NULL,
+                            ChangeDate TEXT NOT NULL,
+                            PRIMARY KEY (CalendarId)
+                        );
+            """;
         // language=SQLite
-        const string createSingleDateTable =
-            @"CREATE TABLE IF NOT EXISTS SingleDate (
-                CalendarId BLOB(16) NOT NULL,
-                Id BLOB(16) NOT NULL,
-                Date TEXT NOT NULL,
-                Description TEXT,
-                ChangeDate TEXT NOT NULL,
-                PRIMARY KEY (CalendarId, Id),
-                FOREIGN KEY (CalendarId) REFERENCES Calendar(CalendarId) ON DELETE CASCADE
-            );";
-        // language=SQLite
-        const string createRecurringDateTable =
-            @"CREATE TABLE IF NOT EXISTS RecurringDate (
-                CalendarId BLOB(16) NOT NULL,
-                Id BLOB(16) NOT NULL,
-                StartDate TEXT NOT NULL,
-                Duration INTEGER NOT NULL,
-                Frequency INTEGER,
-                NumberOfRepetitions INTEGER NOT NULL,    
-                Description TEXT,
-                ChangeDate TEXT NOT NULL,
-                PRIMARY KEY (CalendarId, Id),
-                FOREIGN KEY (CalendarId) REFERENCES Calendar(CalendarId) ON DELETE CASCADE
-            );";
+        const string createDateEntryTable =
+            """
+            CREATE TABLE IF NOT EXISTS DateEntry (
+                            CalendarId BLOB(16) NOT NULL,
+                            Id BLOB(16) NOT NULL,
+                            StartDate TEXT NOT NULL,
+                            Description TEXT,
+                            IsRecurring INTEGER NOT NULL DEFAULT 0,
+                            Duration INTEGER NOT NULL DEFAULT 1,
+                            Frequency INTEGER,
+                            NumberOfRepetitions INTEGER NOT NULL DEFAULT 0,
+                            ChangeDate TEXT NOT NULL,
+                            PRIMARY KEY (CalendarId, Id),
+                            FOREIGN KEY (CalendarId) REFERENCES Calendar(CalendarId) ON DELETE CASCADE
+                        );
+            """;
+
         using var database = _sqliteDbConnectionFactory.Connect();
         await database.ExecuteAsync(createCalendarTable);
-        await database.ExecuteAsync(createSingleDateTable);
-        await database.ExecuteAsync(createRecurringDateTable);
+        await database.ExecuteAsync(createDateEntryTable);
     }
 
     private async Task PrepareSettingsTableAsync()
     {
         // language=SQLite
         const string createSettingsTable =
-            @"CREATE TABLE IF NOT EXISTS Setting (
-                Key TEXT NOT NULL PRIMARY KEY,
-                Value TEXT NOT NULL,
-                ChangeDate TEXT NOT NULL
-            );";
+            """
+            CREATE TABLE IF NOT EXISTS Setting (
+                            Key TEXT NOT NULL PRIMARY KEY,
+                            Value TEXT NOT NULL,
+                            ChangeDate TEXT NOT NULL
+                        );
+            """;
         using var database = _sqliteDbConnectionFactory.Connect();
         await database.ExecuteAsync(createSettingsTable);
     }
