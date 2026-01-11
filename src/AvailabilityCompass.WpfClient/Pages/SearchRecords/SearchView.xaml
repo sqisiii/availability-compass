@@ -6,6 +6,7 @@
     xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Pages.SearchRecords.Converters"
     xmlns:controls="clr-namespace:AvailabilityCompass.WpfClient.Pages.SearchRecords.Controls"
     xmlns:sharedControls="clr-namespace:AvailabilityCompass.WpfClient.Shared.Controls"
+    xmlns:sharedConverters="clr-namespace:AvailabilityCompass.WpfClient.Shared.Converters"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:AvailabilityCompass.Core.Features.SearchRecords;assembly=AvailabilityCompass.Core"
     xmlns:helpers="clr-namespace:AvailabilityCompass.WpfClient.Shared.Helpers"
@@ -21,7 +22,7 @@
         <converters:CalendarTypeToIconConverter x:Key="CalendarTypeToIconConverter" />
         <converters:CalendarTypeToStyleConverter x:Key="CalendarTypeToStyleConverter" />
         <converters:CalendarTypeToColorConverter x:Key="CalendarTypeToColorConverter" />
-        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+        <sharedConverters:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" Invert="True" />
         <converters:ContainerWidthToCardWidthConverter x:Key="CardWidthConverter" CardsPerRow="4" CardMargin="8"
                                                        MinCardWidth="180" />
         <converters:DictionaryToAdditionalFieldsConverter x:Key="AdditionalFieldsConverter" />
