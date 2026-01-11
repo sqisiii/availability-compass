@@ -1,3 +1,0 @@
-﻿namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateSingleDateRequest;
-
-public record SingleDateUpdatedEvent(Guid CalendarId);

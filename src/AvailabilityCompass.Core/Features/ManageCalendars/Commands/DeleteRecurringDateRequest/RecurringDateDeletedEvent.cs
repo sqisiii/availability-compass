@@ -1,3 +1,0 @@
-﻿namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteRecurringDateRequest;
-
-public record RecurringDateDeletedEvent(Guid CalendarId);
