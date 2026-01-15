@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using Microsoft.Xaml.Behaviors;
 
 namespace AvailabilityCompass.WpfClient.Pages.ManageCalendars.Behaviors;
@@ -68,6 +70,12 @@ public class CalendarSelectionBehavior : Behavior<Calendar>
         else
         {
             SelectedDates = null;
+        }
+
+        // Release mouse capture to prevent double-click issue on external buttons
+        if (Mouse.Captured is Calendar || Mouse.Captured is CalendarItem)
+        {
+            Mouse.Capture(null);
         }
     }
 }

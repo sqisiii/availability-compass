@@ -132,6 +132,12 @@ public class CalendarInteractionBehavior : Behavior<Calendar>
             return;
         }
 
+        // Release mouse capture to prevent double-click issue on external buttons
+        if (Mouse.Captured is Calendar || Mouse.Captured is CalendarItem)
+        {
+            Mouse.Capture(null);
+        }
+
         // Only fire command if clicking an existing entry (colored date)
         // For non-colored dates, let Calendar handle selection normally
         var match = ColorCodedDates.FirstOrDefault(x => x.Date.Date == date.Date);
