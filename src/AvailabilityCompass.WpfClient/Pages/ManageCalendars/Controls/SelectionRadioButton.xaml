@@ -27,12 +27,11 @@
                          IsEnabled="{Binding IsActive, ElementName=Root}"
                          Style="{StaticResource GlassChipRadioButton}">
                 <RadioButton.Content>
-                    <WrapPanel>
-                        <TextBlock Padding="0,10,0,5"
-                                   HorizontalAlignment="Center"
-                                   Text="{Binding RadioButtonText, ElementName=Root}"
-                                   TextWrapping="Wrap" />
-                    </WrapPanel>
+                    <TextBlock Padding="0,6,0,4"
+                               HorizontalAlignment="Center"
+                               Text="{Binding RadioButtonText, ElementName=Root}"
+                               TextTrimming="CharacterEllipsis"
+                               ToolTip="{Binding RadioButtonText, ElementName=Root}" />
                 </RadioButton.Content>
             </RadioButton>
         </StackPanel>

@@ -39,9 +39,9 @@
     <Color x:Key="GlassAccentForegroundColor">#141414</Color>
 
     <!-- Semantic Colors -->
-    <Color x:Key="GlassDestructiveColor">#F87171</Color>
-    <Color x:Key="GlassDestructiveHoverColor">#FCA5A5</Color>
-    <Color x:Key="GlassDestructiveForegroundColor">#141414</Color>
+    <Color x:Key="GlassDestructiveColor">#DC2626</Color>
+    <Color x:Key="GlassDestructiveHoverColor">#EF4444</Color>
+    <Color x:Key="GlassDestructiveForegroundColor">#FFFFFF</Color>
     <Color x:Key="GlassSuccessColor">#4ADE80</Color>
     <Color x:Key="GlassWarningColor">#8FB4A0</Color>
 

@@ -348,7 +348,7 @@
         <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource GlassInputBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="Padding" Value="8,6" />
         <Setter Property="CaretBrush" Value="{DynamicResource GlassPrimaryBrush}" />
         <Setter Property="SelectionBrush" Value="{DynamicResource GlassPrimaryLightBrush}" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -390,8 +390,8 @@
 
     <!-- TextBox with Placeholder Hint (simplified, not floating) -->
     <Style x:Key="GlassFloatingHintTextBox" TargetType="TextBox" BasedOn="{StaticResource GlassTextBox}">
-        <Setter Property="Padding" Value="10,8" />
-        <Setter Property="MinHeight" Value="36" />
+        <Setter Property="Padding" Value="8,6" />
+        <Setter Property="MinHeight" Value="32" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
@@ -941,11 +941,11 @@
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
                     <Border x:Name="PART_Border"
-                            Background="{DynamicResource GlassCardSolidBrush}"
+                            Background="{DynamicResource GlassSurfaceBrush}"
                             BorderBrush="{DynamicResource GlassBorderSolidBrush}"
                             BorderThickness="1"
                             CornerRadius="4"
-                            Padding="12,8"
+                            Padding="12,6"
                             SnapsToDevicePixels="True">
                         <ContentPresenter HorizontalAlignment="Center"
                                           VerticalAlignment="Center"
@@ -954,10 +954,9 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="PART_Border" Property="Background"
-                                    Value="{DynamicResource GlassPrimaryBrush}" />
+                                    Value="{DynamicResource GlassAccentLightBrush}" />
                             <Setter TargetName="PART_Border" Property="BorderBrush"
                                     Value="{DynamicResource GlassPrimaryBrush}" />
-                            <Setter Property="Foreground" Value="White" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="PART_Border" Property="BorderBrush"

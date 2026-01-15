@@ -21,11 +21,11 @@ using MediatR;
 namespace AvailabilityCompass.Core.Features.ManageCalendars;
 
 /// <summary>
-/// Represents a detected date selection which may be a single date or a consecutive period.
+/// Represents a detected date selection, which may be a single date or a consecutive period.
 /// </summary>
 public record DetectedSelection(DateOnly StartDate, int Duration)
 {
-    public DateOnly EndDate => StartDate.AddDays(Duration - 1);
+    private DateOnly EndDate => StartDate.AddDays(Duration - 1);
     public bool IsPeriod => Duration > 1;
 
     public string DisplayText => IsPeriod
@@ -49,6 +49,17 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     private IDisposable? _dateEntryAddedSubscription;
     private IDisposable? _dateEntryDeletedSubscription;
     private IDisposable? _dateEntryUpdatedSubscription;
+
+    [ObservableProperty]
+    private string _deleteCalendarName = string.Empty;
+
+    [ObservableProperty]
+    private bool _editCalendarIsOnly;
+
+    [ObservableProperty]
+    private string _editCalendarName = string.Empty;
+
+    private Guid? _editingCalendarId;
 
     private Guid? _editingEntryId;
 
@@ -79,12 +90,23 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     [ObservableProperty]
     private bool _hasMultipleSelections;
 
+    [ObservableProperty]
+    private bool _hasSelectedDates;
+
     // Inline add calendar state
     [ObservableProperty]
     private bool _isAddCalendarExpanded;
 
+    // Delete confirmation state
+    [ObservableProperty]
+    private bool _isDeleteConfirmationOpen;
+
     [ObservableProperty]
     private bool _isDialogOpen;
+
+    // Inline edit calendar state
+    [ObservableProperty]
+    private bool _isEditCalendarExpanded;
 
     [ObservableProperty]
     private bool _isEditMode;
@@ -99,14 +121,21 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     [ObservableProperty]
     private string _newCalendarName = string.Empty;
 
+    private Guid? _pendingDeleteCalendarId;
+
     // For bulk creation - stores parsed selections with period detection
     private List<DetectedSelection>? _pendingSelections;
 
     [NotifyPropertyChangedFor(nameof(IsCalendarSelected))]
     [NotifyPropertyChangedFor(nameof(CalendarName))]
     [NotifyPropertyChangedFor(nameof(CalendarIsOnly))]
+    [NotifyPropertyChangedFor(nameof(SelectedCalendarId))]
     [ObservableProperty]
     private CalendarViewModel? _selectedCalendar;
+
+    // Stored selected dates from the calendar (captured by behavior to survive focus changes)
+    [ObservableProperty]
+    private IList? _selectedDates;
 
     public ManageCalendarsViewModel(
         IMediator mediator,
@@ -150,6 +179,22 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     public async Task LoadDataAsync(CancellationToken ct)
     {
         await LoadCalendars(ct);
+    }
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnSelectedCalendarChanged(CalendarViewModel? value)
+    {
+        // Close edit mode when switching calendars
+        if (IsEditCalendarExpanded)
+        {
+            CancelCalendarEdit();
+        }
+
+        // Close add a calendar form when switching calendars
+        if (IsAddCalendarExpanded)
+        {
+            OnCancelAddCalendar();
+        }
     }
 
     private void SubscribeToEvents(IEventBus eventBus)
@@ -295,7 +340,98 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
     [RelayCommand]
     private void OnExpandAddCalendar()
     {
+        // Deselect current calendar
+        if (SelectedCalendar is not null)
+        {
+            SelectedCalendar.IsSelected = false;
+            SelectedCalendar = null;
+        }
+
         IsAddCalendarExpanded = true;
+    }
+
+    [RelayCommand]
+    private void OnUpdateCalendar(Guid calendarId)
+    {
+        var calendar = Calendars.FirstOrDefault(c => c.CalendarId == calendarId);
+        if (calendar is null)
+        {
+            return;
+        }
+
+        _editingCalendarId = calendarId;
+        EditCalendarName = calendar.Name;
+        EditCalendarIsOnly = calendar.IsOnly;
+        IsEditCalendarExpanded = true;
+    }
+
+    [RelayCommand]
+    private async Task OnSaveCalendarEdit()
+    {
+        if (_editingCalendarId is null || string.IsNullOrWhiteSpace(EditCalendarName))
+        {
+            return;
+        }
+
+        await _mediator.Send(new UpdateCalendarInDbRequest(
+            _editingCalendarId.Value,
+            EditCalendarName,
+            EditCalendarIsOnly));
+
+        CancelCalendarEdit();
+    }
+
+    [RelayCommand]
+    private void OnCancelCalendarEdit()
+    {
+        CancelCalendarEdit();
+    }
+
+    private void CancelCalendarEdit()
+    {
+        IsEditCalendarExpanded = false;
+        _editingCalendarId = null;
+        EditCalendarName = string.Empty;
+        EditCalendarIsOnly = false;
+    }
+
+    [RelayCommand]
+    private void OnDeleteCalendar(Guid calendarId)
+    {
+        var calendar = Calendars.FirstOrDefault(c => c.CalendarId == calendarId);
+        if (calendar is null)
+        {
+            return;
+        }
+
+        _pendingDeleteCalendarId = calendarId;
+        DeleteCalendarName = calendar.Name;
+        IsDeleteConfirmationOpen = true;
+    }
+
+    [RelayCommand]
+    private async Task OnConfirmDeleteCalendar()
+    {
+        if (_pendingDeleteCalendarId is null)
+        {
+            return;
+        }
+
+        await _mediator.Send(new DeleteCalendarFromDbRequest(_pendingDeleteCalendarId.Value));
+        CancelDeleteCalendar();
+    }
+
+    [RelayCommand]
+    private void OnCancelDeleteCalendar()
+    {
+        CancelDeleteCalendar();
+    }
+
+    private void CancelDeleteCalendar()
+    {
+        IsDeleteConfirmationOpen = false;
+        _pendingDeleteCalendarId = null;
+        DeleteCalendarName = string.Empty;
     }
 
     [RelayCommand]
@@ -343,7 +479,7 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
 
     private static List<DetectedSelection> ParseSelectedDates(IEnumerable<DateTime> selectedDates)
     {
-        var sortedDates = selectedDates.Select(d => DateOnly.FromDateTime(d)).OrderBy(d => d).ToList();
+        var sortedDates = selectedDates.Select(DateOnly.FromDateTime).OrderBy(d => d).ToList();
         var selections = new List<DetectedSelection>();
 
         if (sortedDates.Count == 0) return selections;
