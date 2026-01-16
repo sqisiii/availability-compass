@@ -628,8 +628,29 @@ public partial class ManageCalendarsViewModel : ObservableValidator, IPageViewMo
 
     private DateEntryViewModel? FindEntryByDate(DateOnly date)
     {
-        // Check if any entry starts on this date
-        return DateEntries.FirstOrDefault(e => e.StartDate == date);
+        return DateEntries.FirstOrDefault(e => IsDateWithinEntry(date, e));
+    }
+
+    private static bool IsDateWithinEntry(DateOnly date, DateEntryViewModel entry)
+    {
+        if (entry.IsRecurring && entry.Frequency.HasValue)
+        {
+            // Check all recurring occurrences
+            var currentStart = entry.StartDate;
+            for (var i = 0; i <= entry.NumberOfRepetitions; i++)
+            {
+                var periodEnd = currentStart.AddDays(entry.Duration - 1);
+                if (date >= currentStart && date <= periodEnd)
+                    return true;
+                currentStart = currentStart.AddDays(entry.Frequency.Value);
+            }
+
+            return false;
+        }
+
+        // Non-recurring: check if date falls within [StartDate, StartDate + Duration - 1]
+        var endDate = entry.StartDate.AddDays(entry.Duration - 1);
+        return date >= entry.StartDate && date <= endDate;
     }
 
     private void LoadEntryForEdit(DateEntryViewModel entry)
