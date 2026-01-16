@@ -8,8 +8,6 @@ namespace AvailabilityCompass.WpfClient.Shared.Helpers;
 /// </summary>
 public static class GlassHint
 {
-    #region Hint Property
-
     /// <summary>
     /// Gets the hint text displayed as a floating label.
     /// </summary>
@@ -25,10 +23,6 @@ public static class GlassHint
 
     public static void SetHint(DependencyObject obj, string value) =>
         obj.SetValue(HintProperty, value);
-
-    #endregion
-
-    #region HelperText Property
 
     /// <summary>
     /// Gets the helper text displayed below the input.
@@ -46,10 +40,6 @@ public static class GlassHint
     public static void SetHelperText(DependencyObject obj, string value) =>
         obj.SetValue(HelperTextProperty, value);
 
-    #endregion
-
-    #region IsFloating Property
-
     /// <summary>
     /// Gets whether the hint should float above the input when focused or has content.
     /// </summary>
@@ -66,10 +56,6 @@ public static class GlassHint
     public static void SetIsFloating(DependencyObject obj, bool value) =>
         obj.SetValue(IsFloatingProperty, value);
 
-    #endregion
-
-    #region ShowSelectedItem Property (for ComboBox)
-
     /// <summary>
     /// Gets whether to show the selected item in the ComboBox display.
     /// </summary>
@@ -85,6 +71,4 @@ public static class GlassHint
 
     public static void SetShowSelectedItem(DependencyObject obj, bool value) =>
         obj.SetValue(ShowSelectedItemProperty, value);
-
-    #endregion
 }

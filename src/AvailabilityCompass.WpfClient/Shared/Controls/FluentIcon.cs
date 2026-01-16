@@ -25,8 +25,6 @@ public class FluentIcon : TextBlock
         HorizontalAlignment = HorizontalAlignment.Center;
     }
 
-    #region Glyph Property
-
     /// <summary>
     /// The Unicode glyph code to display (e.g., "\uE787" for Calendar).
     /// </summary>
@@ -50,10 +48,6 @@ public class FluentIcon : TextBlock
             icon.Text = e.NewValue as string ?? string.Empty;
         }
     }
-
-    #endregion
-
-    #region IconSize Property
 
     /// <summary>
     /// The size of the icon in pixels.
@@ -80,8 +74,6 @@ public class FluentIcon : TextBlock
             icon.Height = size;
         }
     }
-
-    #endregion
 }
 
 /// <summary>
