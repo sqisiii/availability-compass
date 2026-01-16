@@ -10,6 +10,7 @@
              xmlns:helpers="clr-namespace:AvailabilityCompass.WpfClient.Shared.Helpers"
              xmlns:controls="clr-namespace:AvailabilityCompass.WpfClient.Shared.Controls"
              xmlns:sharedConverters="clr-namespace:AvailabilityCompass.WpfClient.Shared.Converters"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:ManageCalendarsViewModel}"
              d:DesignHeight="700"
@@ -17,6 +18,8 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <sharedConverters:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" Invert="True" />
+        <sys:String x:Key="MaxCalendarNameLengthText">20</sys:String>
+        <sys:Int32 x:Key="MaxCalendarNameLength">20</sys:Int32>
     </UserControl.Resources>
 
     <Border x:Name="RootBorder"
@@ -194,13 +197,20 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox Grid.Column="0"
-                                         Text="{Binding NewCalendarName, UpdateSourceTrigger=PropertyChanged}"
-                                         helpers:GlassHint.HelperText="Calendar Name"
-                                         Style="{StaticResource GlassTextBox}"
-                                         MaxLength="20"
-                                         MaxWidth="300"
-                                         Margin="0,0,12,0" />
+                                <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                    <TextBox Text="{Binding NewCalendarName, UpdateSourceTrigger=PropertyChanged}"
+                                             helpers:GlassHint.HelperText="Calendar Name"
+                                             Style="{StaticResource GlassTextBox}"
+                                             MaxLength="{StaticResource MaxCalendarNameLength}"
+                                             Width="200" />
+                                    <TextBlock Style="{StaticResource GlassCaption}"
+                                               HorizontalAlignment="Right"
+                                               Margin="0,2,0,0">
+                                        <Run Text="{Binding NewCalendarName.Length, Mode=OneWay, FallbackValue=0}" />
+                                        <Run Text=" / " />
+                                        <Run Text="{StaticResource MaxCalendarNameLengthText}" />
+                                    </TextBlock>
+                                </StackPanel>
 
                                 <CheckBox Grid.Column="1"
                                           IsChecked="{Binding NewCalendarIsOnly}"
@@ -244,7 +254,9 @@
                         <Border Background="{DynamicResource GlassMutedBrush}"
                                 CornerRadius="8"
                                 Padding="12"
-                                Margin="0,0,0,12"
+                                Margin="0,0,0,8"
+                                Width="620"
+                                MinHeight="90"
                                 Visibility="{Binding IsEditCalendarExpanded, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -277,6 +289,7 @@
                                             Command="{Binding UpdateCalendarCommand}"
                                             CommandParameter="{Binding SelectedCalendarId}"
                                             ToolTip="Edit calendar"
+                                            TextOptions.TextRenderingMode="ClearType"
                                             Padding="8,4"
                                             Margin="0,0,4,0">
                                         <StackPanel Orientation="Horizontal">
@@ -292,6 +305,7 @@
                                             Command="{Binding DeleteCalendarCommand}"
                                             CommandParameter="{Binding SelectedCalendarId}"
                                             ToolTip="Delete calendar"
+                                            TextOptions.TextRenderingMode="ClearType"
                                             Padding="8,4">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
@@ -312,48 +326,56 @@
                                 BorderThickness="2"
                                 CornerRadius="8"
                                 Padding="12"
-                                Margin="0,0,0,12"
+                                Margin="0,0,0,8"
+                                Width="620"
+                                MinHeight="90"
                                 Visibility="{Binding IsEditCalendarExpanded, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <StackPanel>
-                                <TextBlock Text="Edit Calendar"
-                                           Style="{StaticResource GlassHeading3}"
-                                           Margin="0,0,0,12" />
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
 
-                                    <TextBox Grid.Column="0"
-                                             Text="{Binding EditCalendarName, UpdateSourceTrigger=PropertyChanged}"
+                                <!-- TextBox for name with character counter -->
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                    <TextBox Text="{Binding EditCalendarName, UpdateSourceTrigger=PropertyChanged}"
                                              helpers:GlassHint.HelperText="Calendar Name"
                                              Style="{StaticResource GlassTextBox}"
-                                             Padding="12,6"
-                                             Margin="0,0,12,0" />
+                                             MaxLength="{StaticResource MaxCalendarNameLength}"
+                                             Padding="4,2"
+                                             Height="28"
+                                             Width="200" />
+                                    <TextBlock Style="{StaticResource GlassCaption}"
+                                               HorizontalAlignment="Right"
+                                               Margin="0,2,0,0">
+                                        <Run Text="{Binding EditCalendarName.Length, Mode=OneWay, FallbackValue=0}" />
+                                        <Run Text=" / " />
+                                        <Run Text="{StaticResource MaxCalendarNameLengthText}" />
+                                    </TextBlock>
+                                </StackPanel>
 
-                                    <CheckBox Grid.Column="1"
-                                              IsChecked="{Binding EditCalendarIsOnly}"
-                                              Content="Only allow defined dates"
-                                              Style="{StaticResource GlassCheckBox}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,0,12,0" />
+                                <!-- CheckBox -->
+                                <CheckBox Grid.Column="1"
+                                          IsChecked="{Binding EditCalendarIsOnly}"
+                                          Content="Only allow defined dates"
+                                          Style="{StaticResource GlassCheckBox}"
+                                          VerticalAlignment="Center"
+                                          Margin="0,0,12,0" />
 
-                                    <Button Grid.Column="2"
-                                            Style="{StaticResource GlassPrimaryButton}"
+                                <!-- Save and Cancel buttons -->
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Style="{StaticResource GlassPrimaryButton}"
                                             Command="{Binding SaveCalendarEditCommand}"
                                             Content="Save"
                                             Width="80"
-                                            Margin="0,0,8,0" />
-
-                                    <Button Grid.Column="3"
-                                            Style="{StaticResource GlassGhostButton}"
+                                            Margin="0,0,4,0" />
+                                    <Button Style="{StaticResource GlassGhostButton}"
                                             Command="{Binding CancelCalendarEditCommand}"
                                             Content="Cancel"
                                             Width="80" />
-                                </Grid>
-                            </StackPanel>
+                                </StackPanel>
+                            </Grid>
                         </Border>
 
                         <!-- Calendar + Legend Row -->
@@ -363,7 +385,7 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- Interactive Calendar - Made Larger -->
+                            <!-- Interactive Calendar -->
                             <Border Grid.Column="0"
                                     Background="{DynamicResource GlassMutedBrush}"
                                     CornerRadius="8"
@@ -371,7 +393,7 @@
                                 <Calendar x:Name="DateCalendar"
                                           SelectionMode="MultipleRange">
                                     <Calendar.LayoutTransform>
-                                        <ScaleTransform ScaleX="1.2" ScaleY="1.2" />
+                                        <ScaleTransform ScaleX="2.3" ScaleY="2.3" />
                                     </Calendar.LayoutTransform>
                                     <b:Interaction.Behaviors>
                                         <behaviors:CalendarInteractionBehavior
@@ -389,7 +411,7 @@
                                     Background="{DynamicResource GlassMutedBrush}"
                                     CornerRadius="8"
                                     Padding="12"
-                                    Margin="12,0,0,0"
+                                    Margin="12,40,0,0"
                                     VerticalAlignment="Top">
                                 <StackPanel>
                                     <!-- Add Selected Dates Button -->
@@ -398,6 +420,7 @@
                                             Command="{Binding AddSelectedDatesCommand}"
                                             CommandParameter="{Binding SelectedDates}"
                                             IsEnabled="{Binding HasSelectedDates}"
+                                            TextOptions.TextRenderingMode="ClearType"
                                             HorizontalAlignment="Stretch"
                                             Margin="0,0,0,12" />
 
@@ -472,64 +495,53 @@
                             <!-- Entries List -->
                             <ScrollViewer Grid.Row="1"
                                           VerticalScrollBarVisibility="Auto"
-                                          HorizontalScrollBarVisibility="Disabled">
+                                          HorizontalScrollBarVisibility="Disabled"
+                                          Padding="0,0,8,0">
                                 <ItemsControl ItemsSource="{Binding DateEntries}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate DataType="{x:Type viewModels:DateEntryViewModel}">
-                                            <Border Background="{DynamicResource GlassCardSolidBrush}"
+                                            <Border Background="{DynamicResource GlassInputBrush}"
                                                     BorderBrush="{DynamicResource GlassBorderSolidBrush}"
                                                     BorderThickness="1"
                                                     CornerRadius="6"
                                                     Padding="12"
-                                                    Margin="0,0,0,8">
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
+                                                    Margin="0,0,0,8"
+                                                    Cursor="Hand">
+                                                <Border.InputBindings>
+                                                    <MouseBinding MouseAction="LeftClick"
+                                                                  Command="{Binding DataContext.EditEntryCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                  CommandParameter="{Binding}" />
+                                                </Border.InputBindings>
+                                                <StackPanel>
+                                                    <!-- Description -->
+                                                    <TextBlock Text="{Binding Description}"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource GlassForegroundBrush}"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               Margin="0,0,0,4" />
 
-                                                    <StackPanel Grid.Column="0">
-                                                        <!-- Description -->
-                                                        <TextBlock Text="{Binding Description}"
-                                                                   FontWeight="SemiBold"
-                                                                   TextTrimming="CharacterEllipsis"
-                                                                   Margin="0,0,0,4" />
+                                                    <!-- Date Range (Start - End for periods, or just date for single) -->
+                                                    <TextBlock Text="{Binding DateRangeDisplay}"
+                                                               FontSize="12"
+                                                               Foreground="{DynamicResource GlassMutedForegroundBrush}" />
 
-                                                        <!-- Date Range (Start - End for periods, or just date for single) -->
-                                                        <TextBlock Text="{Binding DateRangeDisplay}"
+                                                    <!-- Recurring Info + Next Occurrence -->
+                                                    <StackPanel Orientation="Horizontal"
+                                                                Visibility="{Binding IsRecurring, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                        <TextBlock FontSize="12"
+                                                                   Foreground="{DynamicResource GlassPrimaryBrush}">
+                                                            <Run Text="Every " />
+                                                            <Run Text="{Binding Frequency, Mode=OneWay}" />
+                                                            <Run Text=" days, " />
+                                                            <Run Text="{Binding NumberOfRepetitions, Mode=OneWay}" />
+                                                            <Run Text=" times" />
+                                                        </TextBlock>
+                                                        <TextBlock Text="{Binding NextOccurrenceDisplay}"
                                                                    FontSize="12"
-                                                                   Foreground="{DynamicResource GlassMutedForegroundBrush}" />
-
-                                                        <!-- Recurring Info + Next Occurrence -->
-                                                        <StackPanel Orientation="Horizontal"
-                                                                    Visibility="{Binding IsRecurring, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                                            <TextBlock FontSize="12"
-                                                                       Foreground="{DynamicResource GlassPrimaryBrush}">
-                                                                <Run Text="Every " />
-                                                                <Run Text="{Binding Frequency, Mode=OneWay}" />
-                                                                <Run Text=" days, " />
-                                                                <Run Text="{Binding NumberOfRepetitions, Mode=OneWay}" />
-                                                                <Run Text=" times" />
-                                                            </TextBlock>
-                                                            <TextBlock Text="{Binding NextOccurrenceDisplay}"
-                                                                       FontSize="12"
-                                                                       Foreground="{DynamicResource GlassSuccessBrush}"
-                                                                       Margin="12,0,0,0" />
-                                                        </StackPanel>
+                                                                   Foreground="{DynamicResource GlassSuccessBrush}"
+                                                                   Margin="12,0,0,0" />
                                                     </StackPanel>
-
-                                                    <Button Grid.Column="1"
-                                                            Style="{StaticResource GlassGhostButton}"
-                                                            Command="{Binding DataContext.EditEntryCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                            CommandParameter="{Binding}"
-                                                            ToolTip="Edit entry"
-                                                            Width="32"
-                                                            Height="32">
-                                                        <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
-                                                                   FontSize="14"
-                                                                   Text="{x:Static controls:FluentIcons.Edit}" />
-                                                    </Button>
-                                                </Grid>
+                                                </StackPanel>
                                             </Border>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
