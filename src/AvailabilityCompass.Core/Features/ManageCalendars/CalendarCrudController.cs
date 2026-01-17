@@ -12,39 +12,40 @@ namespace AvailabilityCompass.Core.Features.ManageCalendars;
 public partial class CalendarCrudController : ObservableObject, ICalendarCrudController
 {
     private readonly IMediator _mediator;
-
-    [ObservableProperty]
-    private string _deleteCalendarName = string.Empty;
-
-    [ObservableProperty]
-    private bool _editCalendarIsOnly;
-
-    [ObservableProperty]
-    private string _editCalendarName = string.Empty;
-
     private Guid? _editingCalendarId;
-
-    [ObservableProperty]
-    private bool _isAddCalendarExpanded;
-
-    [ObservableProperty]
-    private bool _isDeleteConfirmationOpen;
-
-    [ObservableProperty]
-    private bool _isEditCalendarExpanded;
-
-    [ObservableProperty]
-    private bool _newCalendarIsOnly;
-
-    [ObservableProperty]
-    private string _newCalendarName = string.Empty;
-
     private Guid? _pendingDeleteCalendarId;
 
     public CalendarCrudController(IMediator mediator)
     {
         _mediator = mediator;
     }
+
+    // Add Calendar State
+    [ObservableProperty]
+    private bool _isAddCalendarExpanded;
+
+    [ObservableProperty]
+    private string _newCalendarName = string.Empty;
+
+    [ObservableProperty]
+    private bool _newCalendarIsOnly;
+
+    // Edit Calendar State
+    [ObservableProperty]
+    private bool _isEditCalendarExpanded;
+
+    [ObservableProperty]
+    private string _editCalendarName = string.Empty;
+
+    [ObservableProperty]
+    private bool _editCalendarIsOnly;
+
+    // Delete Confirmation State
+    [ObservableProperty]
+    private bool _isDeleteConfirmationOpen;
+
+    [ObservableProperty]
+    private string _deleteCalendarName = string.Empty;
 
     public async Task AddCalendarAsync()
     {
@@ -101,6 +102,14 @@ public partial class CalendarCrudController : ObservableObject, ICalendarCrudCon
         ResetEditState();
     }
 
+    private void ResetEditState()
+    {
+        IsEditCalendarExpanded = false;
+        _editingCalendarId = null;
+        EditCalendarName = string.Empty;
+        EditCalendarIsOnly = false;
+    }
+
     public void StartDeleteCalendar(CalendarViewModel calendar)
     {
         _pendingDeleteCalendarId = calendar.CalendarId;
@@ -122,14 +131,6 @@ public partial class CalendarCrudController : ObservableObject, ICalendarCrudCon
     public void CancelDeleteCalendar()
     {
         ResetDeleteState();
-    }
-
-    private void ResetEditState()
-    {
-        IsEditCalendarExpanded = false;
-        _editingCalendarId = null;
-        EditCalendarName = string.Empty;
-        EditCalendarIsOnly = false;
     }
 
     private void ResetDeleteState()
