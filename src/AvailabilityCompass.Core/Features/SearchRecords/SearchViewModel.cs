@@ -16,7 +16,7 @@ using MediatR;
 
 namespace AvailabilityCompass.Core.Features.SearchRecords;
 
-public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDisposable
+public sealed partial class SearchViewModel : ObservableValidator, IPageViewModel, IDisposable
 {
     private const string NoneSelectedDefault = "None selected";
     private readonly IDisposable _calendarAddedSubscription;
@@ -177,36 +177,24 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     }
 
     partial void OnIsCalendarsSectionExpandedChanged(bool value)
-    {
-        if (!value)
-        {
-            return;
-        }
-
-        IsSourcesSectionExpanded = false;
-        IsFiltersSectionExpanded = false;
-    }
+        => CollapseOtherSections(value, nameof(IsCalendarsSectionExpanded));
 
     partial void OnIsSourcesSectionExpandedChanged(bool value)
-    {
-        if (!value)
-        {
-            return;
-        }
-
-        IsCalendarsSectionExpanded = false;
-        IsFiltersSectionExpanded = false;
-    }
+        => CollapseOtherSections(value, nameof(IsSourcesSectionExpanded));
 
     partial void OnIsFiltersSectionExpandedChanged(bool value)
-    {
-        if (!value)
-        {
-            return;
-        }
+        => CollapseOtherSections(value, nameof(IsFiltersSectionExpanded));
 
-        IsCalendarsSectionExpanded = false;
-        IsSourcesSectionExpanded = false;
+    private void CollapseOtherSections(bool isExpanding, string expandedSection)
+    {
+        if (!isExpanding) return;
+
+        if (expandedSection != nameof(IsCalendarsSectionExpanded))
+            IsCalendarsSectionExpanded = false;
+        if (expandedSection != nameof(IsSourcesSectionExpanded))
+            IsSourcesSectionExpanded = false;
+        if (expandedSection != nameof(IsFiltersSectionExpanded))
+            IsFiltersSectionExpanded = false;
     }
 
     // ReSharper disable once UnusedParameterInPartialMethod
@@ -265,6 +253,9 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     }
 
     private void CalendarsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        => NotifyCalendarRelatedPropertiesChanged();
+
+    private void NotifyCalendarRelatedPropertiesChanged()
     {
         OnPropertyChanged(nameof(CalendarsSummary));
         OnPropertyChanged(nameof(HasCalendarsSelected));
@@ -358,35 +349,32 @@ public partial class SearchViewModel : ObservableValidator, IPageViewModel, IDis
     }
 
     private string GetCalendarsSummary()
-    {
-        var selectedCalendars = Calendars.Where(c => c.IsSelected).ToList();
-        if (selectedCalendars.Count == 0)
-        {
-            return NoneSelectedDefault;
-        }
-
-        var names = selectedCalendars.Select(c => c.Name).Take(3);
-        var summary = string.Join(", ", names);
-        if (selectedCalendars.Count > 3)
-        {
-            summary += $" +{selectedCalendars.Count - 3} more";
-        }
-
-        return summary;
-    }
+        => GetSelectionSummary(Calendars, c => c.IsSelected, c => c.Name);
 
     private string GetCalendarsSummaryByType(bool isOnly)
-    {
-        var selectedCalendars = Calendars.Where(c => c.IsSelected && c.IsOnly == isOnly).ToList();
-        if (selectedCalendars.Count == 0)
-            return string.Empty;
+        => GetSelectionSummary(
+            Calendars,
+            c => c.IsSelected && c.IsOnly == isOnly,
+            c => c.Name,
+            maxDisplayCount: 2,
+            noneSelectedText: string.Empty);
 
-        var names = selectedCalendars.Select(c => c.Name).Take(2);
+    private static string GetSelectionSummary<T>(
+        IEnumerable<T> items,
+        Func<T, bool> isSelectedPredicate,
+        Func<T, string> nameSelector,
+        int maxDisplayCount = 3,
+        string noneSelectedText = NoneSelectedDefault)
+    {
+        var selectedItems = items.Where(isSelectedPredicate).ToList();
+        if (selectedItems.Count == 0)
+            return noneSelectedText;
+
+        var names = selectedItems.Select(nameSelector).Take(maxDisplayCount);
         var summary = string.Join(", ", names);
-        if (selectedCalendars.Count > 2)
-        {
-            summary += $" +{selectedCalendars.Count - 2}";
-        }
+
+        if (selectedItems.Count > maxDisplayCount)
+            summary += $" +{selectedItems.Count - maxDisplayCount} more";
 
         return summary;
     }
