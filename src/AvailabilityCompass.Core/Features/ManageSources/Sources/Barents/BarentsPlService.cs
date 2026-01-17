@@ -1,6 +1,4 @@
 using System.Globalization;
-using AvailabilityCompass.Core.Features.ManageSources.Commands.ReplaceSourceDataRequest;
-using AvailabilityCompass.Core.Features.ManageSources.Queries.GetFilterOptionsQuery;
 using HtmlAgilityPack;
 using MediatR;
 using Serilog;
@@ -8,74 +6,28 @@ using Serilog;
 namespace AvailabilityCompass.Core.Features.ManageSources.Sources.Barents;
 
 [SourceService("BarentsPL", "Barents", "PL", IconFileName = "barents.png")]
-public class BarentsPlService : ISourceService
+public sealed class BarentsPlService : SourceServiceBase
 {
-    private readonly HttpClient _httpClient;
-    private readonly IMediator _mediator;
-    private readonly string _sourceId;
-
-
     public BarentsPlService(HttpClient httpClient, IMediator mediator)
+        : base(httpClient, mediator)
     {
-        _httpClient = httpClient;
-        _mediator = mediator;
-        _sourceId = this.GetSourceId() ?? string.Empty;
     }
 
-    public event EventHandler<SourceRefreshProgressEventArgs>? RefreshProgressChanged;
+    protected override IReadOnlyList<string> FilterFieldNames =>
+    [
+        SourceAdditionalDataName.Destination,
+        SourceAdditionalDataName.Type,
+        SourceAdditionalDataName.Remarks,
+        SourceAdditionalDataName.Difficulty
+    ];
 
-    public async Task<IEnumerable<SourceDataItem>> RefreshSourceDataAsync(CancellationToken ct)
-    {
-        var trips = await ExtractTripsListAsync(ct);
-        await _mediator.Send(new ReplaceSourceDataInDbRequest(trips), ct);
-        return trips;
-    }
-
-    public async Task<List<SourceFilter>> GetFilters(CancellationToken ct)
-    {
-        List<string> filterFieldNames =
-        [
-            SourceAdditionalDataName.Destination, SourceAdditionalDataName.Type, SourceAdditionalDataName.Remarks,
-            SourceAdditionalDataName.Difficulty
-        ];
-        var options = await _mediator.Send(new GetFilterOptionsQuery(_sourceId, filterFieldNames), ct);
-        List<SourceFilter> filters =
-        [
-            new SourceFilter
-            {
-                Label = SourceAdditionalDataName.Destination,
-                Type = SourceFilterType.MultiSelect,
-                Options = options.FilterOptions.GetValueOrDefault(SourceAdditionalDataName.Destination, [])
-            },
-            new SourceFilter
-            {
-                Label = SourceAdditionalDataName.Type,
-                Type = SourceFilterType.MultiSelect,
-                Options = options.FilterOptions.GetValueOrDefault(SourceAdditionalDataName.Type, [])
-            },
-            new SourceFilter
-            {
-                Label = SourceAdditionalDataName.Remarks,
-                Type = SourceFilterType.MultiSelect,
-                Options = options.FilterOptions.GetValueOrDefault(SourceAdditionalDataName.Remarks, [])
-            },
-            new SourceFilter
-            {
-                Label = SourceAdditionalDataName.Difficulty,
-                Type = SourceFilterType.MultiSelect,
-                Options = options.FilterOptions.GetValueOrDefault(SourceAdditionalDataName.Difficulty, [])
-            }
-        ];
-        return filters;
-    }
-
-    private async Task<IReadOnlyCollection<SourceDataItem>> ExtractTripsListAsync(CancellationToken ct)
+    protected override async Task<IReadOnlyCollection<SourceDataItem>> ExtractSourceDataAsync(CancellationToken ct)
     {
         var sourceDataItems = new List<SourceDataItem>();
         var counter = 0;
         try
         {
-            var html = await _httpClient.GetStringAsync("https://barents.pl/", ct).ConfigureAwait(false);
+            var html = await HttpClient.GetStringAsync("https://barents.pl/", ct).ConfigureAwait(false);
 
             var allTripsDoc = new HtmlDocument();
             allTripsDoc.LoadHtml(html);
@@ -111,12 +63,11 @@ public class BarentsPlService : ISourceService
                     .Select(img =>
                     {
                         var src = img.GetAttributeValue("src", "");
-                        // Extract filename without extension
                         var filename = Path.GetFileNameWithoutExtension(src);
                         return filename;
                     })
                     .Where(name => !string.IsNullOrEmpty(name))
-                    .ToList() ?? new List<string>();
+                    .ToList() ?? [];
 
                 var isNew = iconFilenames.Contains("nowosc_0");
                 var type = iconFilenames.Contains("rower")
@@ -125,9 +76,11 @@ public class BarentsPlService : ISourceService
                         ? "Trekking"
                         : "Other";
 
-                (var parsedSourceDataItems, counter) = await ExtractTripDataAsync($"https://barents.pl{tripUrl}", counter, title, destination, isNew, type, ct);
+                (var parsedSourceDataItems, counter) =
+                    await ExtractTripDataAsync($"https://barents.pl{tripUrl}", counter, title, destination, isNew, type,
+                        ct);
                 sourceDataItems.AddRange(parsedSourceDataItems);
-                OnRefreshProgressChanged((double)(index + 1) / tripsData.Count * 100);
+                ReportProgress((double)(index + 1) / tripsData.Count * 100);
             }
         }
         catch (Exception e)
@@ -151,7 +104,7 @@ public class BarentsPlService : ISourceService
 
         try
         {
-            var html = await _httpClient.GetStringAsync(url, ct).ConfigureAwait(false);
+            var html = await HttpClient.GetStringAsync(url, ct).ConfigureAwait(false);
 
             var tripDoc = new HtmlDocument();
             tripDoc.LoadHtml(html);
@@ -161,12 +114,10 @@ public class BarentsPlService : ISourceService
 
             if (termDivs != null)
             {
-                // Get all table rows (skipping header row)
                 var rows = termDivs.Descendants("tr").Skip(1).ToList();
 
                 foreach (var row in rows)
                 {
-                    // Get all cells in this row
                     var cells = row.Descendants("td").ToList();
 
                     if (cells.Count < 6)
@@ -189,13 +140,15 @@ public class BarentsPlService : ISourceService
                         var startDateText = dateParts[0].Trim();
                         if (startDateText.StartsWith("od ", StringComparison.OrdinalIgnoreCase))
                             startDateText = startDateText[3..];
-                        DateOnly.TryParseExact(startDateText, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out startDate);
-                        DateOnly.TryParseExact(dateParts[1].Trim(), "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out endDate);
+                        DateOnly.TryParseExact(startDateText, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None,
+                            out startDate);
+                        DateOnly.TryParseExact(dateParts[1].Trim(), "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None,
+                            out endDate);
                     }
 
                     var tour = new SourceDataItem
                     {
-                        SourceId = _sourceId,
+                        SourceId = SourceId,
                         SeqNo = ++counter,
                         Title = title ?? "",
                         Url = url,
@@ -224,10 +177,5 @@ public class BarentsPlService : ISourceService
         }
 
         return (tours, counter);
-    }
-
-    private void OnRefreshProgressChanged(double progressPercentage)
-    {
-        RefreshProgressChanged?.Invoke(this, new SourceRefreshProgressEventArgs(_sourceId, progressPercentage));
     }
 }

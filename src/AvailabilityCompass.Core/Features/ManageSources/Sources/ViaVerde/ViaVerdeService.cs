@@ -1,5 +1,3 @@
-﻿using AvailabilityCompass.Core.Features.ManageSources.Commands.ReplaceSourceDataRequest;
-using AvailabilityCompass.Core.Features.ManageSources.Queries.GetFilterOptionsQuery;
 using HtmlAgilityPack;
 using MediatR;
 using Serilog;
@@ -7,63 +5,27 @@ using Serilog;
 namespace AvailabilityCompass.Core.Features.ManageSources.Sources.ViaVerde;
 
 [SourceService("ViaVerde", "Via Verde", "PL", IconFileName = "viaverde.png")]
-public class ViaVerdeService : ISourceService
+public sealed class ViaVerdeService : SourceServiceBase
 {
-    private readonly HttpClient _httpClient;
-    private readonly IMediator _mediator;
-    private readonly string _sourceId;
-
     public ViaVerdeService(HttpClient httpClient, IMediator mediator)
+        : base(httpClient, mediator)
     {
-        _httpClient = httpClient;
-        _mediator = mediator;
-        _sourceId = this.GetSourceId() ?? string.Empty;
     }
 
-    public event EventHandler<SourceRefreshProgressEventArgs>? RefreshProgressChanged;
+    protected override IReadOnlyList<string> FilterFieldNames =>
+    [
+        SourceAdditionalDataName.Destination,
+        SourceAdditionalDataName.Type,
+        SourceAdditionalDataName.Remarks
+    ];
 
-    public async Task<IEnumerable<SourceDataItem>> RefreshSourceDataAsync(CancellationToken ct)
-    {
-        var trips = await ExtractTripsListAsync(ct);
-        await _mediator.Send(new ReplaceSourceDataInDbRequest(trips), ct);
-        return trips;
-    }
-
-    public async Task<List<SourceFilter>> GetFilters(CancellationToken ct)
-    {
-        List<string> filterFieldNames = [SourceAdditionalDataName.Destination, SourceAdditionalDataName.Type, SourceAdditionalDataName.Remarks];
-        var options = await _mediator.Send(new GetFilterOptionsQuery(_sourceId, filterFieldNames), ct);
-        List<SourceFilter> filters =
-        [
-            new SourceFilter
-            {
-                Label = SourceAdditionalDataName.Destination,
-                Type = SourceFilterType.MultiSelect,
-                Options = options.FilterOptions.GetValueOrDefault(SourceAdditionalDataName.Destination, [])
-            },
-            new SourceFilter
-            {
-                Label = SourceAdditionalDataName.Type,
-                Type = SourceFilterType.MultiSelect,
-                Options = options.FilterOptions.GetValueOrDefault(SourceAdditionalDataName.Type, [])
-            },
-            new SourceFilter
-            {
-                Label = SourceAdditionalDataName.Remarks,
-                Type = SourceFilterType.MultiSelect,
-                Options = options.FilterOptions.GetValueOrDefault(SourceAdditionalDataName.Remarks, [])
-            },
-        ];
-        return filters;
-    }
-
-    private async Task<IReadOnlyCollection<SourceDataItem>> ExtractTripsListAsync(CancellationToken ct)
+    protected override async Task<IReadOnlyCollection<SourceDataItem>> ExtractSourceDataAsync(CancellationToken ct)
     {
         var sourceDataItems = new List<SourceDataItem>();
         var counter = 0;
         try
         {
-            var html = await _httpClient.GetStringAsync("https://viaverde.com.pl/lista-wypraw/", ct).ConfigureAwait(false);
+            var html = await HttpClient.GetStringAsync("https://viaverde.com.pl/lista-wypraw/", ct).ConfigureAwait(false);
 
             var allTripsDoc = new HtmlDocument();
             allTripsDoc.LoadHtml(html);
@@ -73,7 +35,7 @@ public class ViaVerdeService : ISourceService
 
             if (tripsTable is not null)
             {
-                var rows = tripsTable.Descendants("tr").Skip(1).ToList(); // Skip header row
+                var rows = tripsTable.Descendants("tr").Skip(1).ToList();
 
                 foreach (var row in rows)
                 {
@@ -121,7 +83,7 @@ public class ViaVerdeService : ISourceService
 
                     var tour = new SourceDataItem
                     {
-                        SourceId = _sourceId,
+                        SourceId = SourceId,
                         SeqNo = ++counter,
                         Title = title,
                         Url = tripUrl,
@@ -140,13 +102,13 @@ public class ViaVerdeService : ISourceService
                     };
 
                     sourceDataItems.Add(tour);
-                    OnRefreshProgressChanged((double)counter / rows.Count * 100);
+                    ReportProgress((double)counter / rows.Count * 100);
                 }
             }
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Error while parsing data from Barents");
+            Log.Error(ex, "Error while parsing data from ViaVerde");
         }
 
         return sourceDataItems;
@@ -154,7 +116,7 @@ public class ViaVerdeService : ISourceService
 
     private async Task<string?> GetTypeAsync(string url, CancellationToken ct)
     {
-        var html = await _httpClient.GetStringAsync(url, ct).ConfigureAwait(false);
+        var html = await HttpClient.GetStringAsync(url, ct).ConfigureAwait(false);
 
         var tripDoc = new HtmlDocument();
         tripDoc.LoadHtml(html);
@@ -162,10 +124,5 @@ public class ViaVerdeService : ISourceService
         return tripDoc.DocumentNode.Descendants("div")
             .FirstOrDefault(node => node.GetAttributeValue("class", "").Contains("winieta"))
             ?.InnerText;
-    }
-
-    private void OnRefreshProgressChanged(double progressPercentage)
-    {
-        RefreshProgressChanged?.Invoke(this, new SourceRefreshProgressEventArgs(_sourceId, progressPercentage));
     }
 }

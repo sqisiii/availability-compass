@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-using AvailabilityCompass.Core.Features.ManageSources.Commands.ReplaceSourceDataRequest;
-using AvailabilityCompass.Core.Features.ManageSources.Queries.GetFilterOptionsQuery;
+using System.Globalization;
 using HtmlAgilityPack;
 using MediatR;
 using Serilog;
@@ -8,70 +6,27 @@ using Serilog;
 namespace AvailabilityCompass.Core.Features.ManageSources.Sources.Horyzonty;
 
 [SourceService("Horyzonty", "Horyzonty", "PL", IconFileName = "horyzonty.png")]
-public sealed class HoryzontyService : ISourceService
+public sealed class HoryzontyService : SourceServiceBase
 {
-    private readonly HttpClient _httpClient;
-    private readonly IMediator _mediator;
-    private readonly string _sourceId;
-
-
     public HoryzontyService(HttpClient httpClient, IMediator mediator)
+        : base(httpClient, mediator)
     {
-        _httpClient = httpClient;
-        _mediator = mediator;
-        _sourceId = this.GetSourceId() ?? string.Empty;
     }
 
-    public event EventHandler<SourceRefreshProgressEventArgs>? RefreshProgressChanged;
+    protected override IReadOnlyList<string> FilterFieldNames =>
+    [
+        SourceAdditionalDataName.Destination,
+        SourceAdditionalDataName.Type,
+        SourceAdditionalDataName.Remarks
+    ];
 
-    public async Task<IEnumerable<SourceDataItem>> RefreshSourceDataAsync(CancellationToken ct)
-    {
-        var trips = await ExtractTripsListAsync(ct);
-        await _mediator.Send(new ReplaceSourceDataInDbRequest(trips), ct);
-        return trips;
-    }
-
-    public async Task<List<SourceFilter>> GetFilters(CancellationToken ct)
-    {
-        List<string> filterFieldNames = [SourceAdditionalDataName.Destination, SourceAdditionalDataName.Type, SourceAdditionalDataName.Remarks];
-        var options = await _mediator.Send(new GetFilterOptionsQuery(_sourceId, filterFieldNames), ct);
-        List<SourceFilter> filters =
-        [
-            new SourceFilter
-            {
-                Label = SourceAdditionalDataName.Destination,
-                Type = SourceFilterType.MultiSelect,
-                Options = options.FilterOptions.GetValueOrDefault(SourceAdditionalDataName.Destination, [])
-            },
-            new SourceFilter
-            {
-                Label = SourceAdditionalDataName.Type,
-                Type = SourceFilterType.MultiSelect,
-                Options = options.FilterOptions.GetValueOrDefault(SourceAdditionalDataName.Type, [])
-            },
-            new SourceFilter
-            {
-                Label = SourceAdditionalDataName.Remarks,
-                Type = SourceFilterType.MultiSelect,
-                Options = options.FilterOptions.GetValueOrDefault(SourceAdditionalDataName.Remarks, [])
-            },
-        ];
-        return filters;
-    }
-
-
-    private void OnRefreshProgressChanged(double progressPercentage)
-    {
-        RefreshProgressChanged?.Invoke(this, new SourceRefreshProgressEventArgs(_sourceId, progressPercentage));
-    }
-
-    private async Task<IReadOnlyCollection<SourceDataItem>> ExtractTripsListAsync(CancellationToken ct)
+    protected override async Task<IReadOnlyCollection<SourceDataItem>> ExtractSourceDataAsync(CancellationToken ct)
     {
         var sourceDataItems = new List<SourceDataItem>();
         var counter = 0;
         try
         {
-            var html = await _httpClient.GetStringAsync("https://www.horyzonty.pl/wyprawy/", ct).ConfigureAwait(false);
+            var html = await HttpClient.GetStringAsync("https://www.horyzonty.pl/wyprawy/", ct).ConfigureAwait(false);
 
             var allTripsDoc = new HtmlDocument();
             allTripsDoc.LoadHtml(html);
@@ -101,7 +56,7 @@ public sealed class HoryzontyService : ISourceService
                     counter,
                     ct);
                 sourceDataItems.AddRange(parsedSourceDataItems);
-                OnRefreshProgressChanged((double)(index + 1) / trips.Count * 100);
+                ReportProgress((double)(index + 1) / trips.Count * 100);
             }
         }
         catch (Exception e)
@@ -112,13 +67,17 @@ public sealed class HoryzontyService : ISourceService
         return sourceDataItems;
     }
 
-    private async Task<(IEnumerable<SourceDataItem> trips, int updatedCounter)> ExtractTripDataAsync(string url, bool isNew, int counter, CancellationToken ct)
+    private async Task<(IEnumerable<SourceDataItem> trips, int updatedCounter)> ExtractTripDataAsync(
+        string url,
+        bool isNew,
+        int counter,
+        CancellationToken ct)
     {
         var tours = new List<SourceDataItem>();
 
         try
         {
-            var html = await _httpClient.GetStringAsync(url, ct).ConfigureAwait(false);
+            var html = await HttpClient.GetStringAsync(url, ct).ConfigureAwait(false);
 
             var tripDoc = new HtmlDocument();
             tripDoc.LoadHtml(html);
@@ -161,7 +120,7 @@ public sealed class HoryzontyService : ISourceService
                 counter++;
                 var tour = new SourceDataItem(
                     counter,
-                    _sourceId,
+                    SourceId,
                     title?.InnerText,
                     url,
                     ExtractDateFromText(startDate),
@@ -196,15 +155,19 @@ public sealed class HoryzontyService : ISourceService
         }
 
         var parts = text.Split([' ', ','], StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length < 5)
+        {
+            return DateOnly.MinValue;
+        }
+
         var dateString = $"{parts[2]} {parts[3]} {parts[4]}";
         var culture = new CultureInfo("pl-PL");
         try
         {
             return DateOnly.ParseExact(dateString, "d MMMM yyyy", culture);
         }
-        catch (Exception e)
+        catch
         {
-            Console.WriteLine(e);
             return DateOnly.MinValue;
         }
     }

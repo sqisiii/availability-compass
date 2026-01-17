@@ -1,6 +1,4 @@
-﻿using System.Net;
-using AvailabilityCompass.Core.Features.ManageSources.Commands.ReplaceSourceDataRequest;
-using AvailabilityCompass.Core.Features.ManageSources.Queries.GetFilterOptionsQuery;
+using System.Net;
 using HtmlAgilityPack;
 using MediatR;
 using Serilog;
@@ -8,57 +6,23 @@ using Serilog;
 namespace AvailabilityCompass.Core.Features.ManageSources.Sources.RowerzystaPodroznik;
 
 [SourceService("RowerzystaPodroznik", "Rowerzysta Podróżnik", "PL", IconFileName = "rowerzystapodroznik.png")]
-public class RowerzystaPodroznikService : ISourceService
+public sealed class RowerzystaPodroznikService : SourceServiceBase
 {
-    private readonly HttpClient _httpClient;
-    private readonly IMediator _mediator;
-    private readonly string _sourceId;
-
     public RowerzystaPodroznikService(HttpClient httpClient, IMediator mediator)
+        : base(httpClient, mediator)
     {
-        _httpClient = httpClient;
-        _mediator = mediator;
-        _sourceId = this.GetSourceId() ?? string.Empty;
     }
 
-    public event EventHandler<SourceRefreshProgressEventArgs>? RefreshProgressChanged;
+    protected override IReadOnlyList<string> FilterFieldNames =>
+        [SourceAdditionalDataName.Destination, SourceAdditionalDataName.Remarks];
 
-    public async Task<IEnumerable<SourceDataItem>> RefreshSourceDataAsync(CancellationToken ct)
-    {
-        var trips = await ExtractTripsListAsync(ct);
-        await _mediator.Send(new ReplaceSourceDataInDbRequest(trips), ct);
-        return trips;
-    }
-
-    public async Task<List<SourceFilter>> GetFilters(CancellationToken ct)
-    {
-        List<string> filterFieldNames = [SourceAdditionalDataName.Destination, SourceAdditionalDataName.Type, SourceAdditionalDataName.Remarks];
-        var options = await _mediator.Send(new GetFilterOptionsQuery(_sourceId, filterFieldNames), ct);
-        List<SourceFilter> filters =
-        [
-            new SourceFilter
-            {
-                Label = SourceAdditionalDataName.Destination,
-                Type = SourceFilterType.MultiSelect,
-                Options = options.FilterOptions.GetValueOrDefault(SourceAdditionalDataName.Destination, [])
-            },
-            new SourceFilter
-            {
-                Label = SourceAdditionalDataName.Remarks,
-                Type = SourceFilterType.MultiSelect,
-                Options = options.FilterOptions.GetValueOrDefault(SourceAdditionalDataName.Remarks, [])
-            },
-        ];
-        return filters;
-    }
-
-    private async Task<IReadOnlyCollection<SourceDataItem>> ExtractTripsListAsync(CancellationToken ct)
+    protected override async Task<IReadOnlyCollection<SourceDataItem>> ExtractSourceDataAsync(CancellationToken ct)
     {
         var sourceDataItems = new List<SourceDataItem>();
         var counter = 0;
         try
         {
-            var html = await _httpClient.GetStringAsync("https://www.rowerzysta-podroznik.pl/podroze-rowerowe-oferta/", ct).ConfigureAwait(false);
+            var html = await HttpClient.GetStringAsync("https://www.rowerzysta-podroznik.pl/podroze-rowerowe-oferta/", ct).ConfigureAwait(false);
 
             var allTripsDoc = new HtmlDocument();
             allTripsDoc.LoadHtml(html);
@@ -108,7 +72,7 @@ public class RowerzystaPodroznikService : ISourceService
 
                 if (string.IsNullOrEmpty(tripUrl) || string.IsNullOrEmpty(title))
                 {
-                    OnRefreshProgressChanged((double)(index + 1) / tripsData.Count * 100);
+                    ReportProgress((double)(index + 1) / tripsData.Count * 100);
                     continue;
                 }
 
@@ -122,12 +86,12 @@ public class RowerzystaPodroznikService : ISourceService
                     additionalInfo,
                     ct);
                 sourceDataItems.AddRange(parsedSourceDataItems);
-                OnRefreshProgressChanged((double)(index + 1) / tripsData.Count * 100);
+                ReportProgress((double)(index + 1) / tripsData.Count * 100);
             }
         }
         catch (Exception e)
         {
-            Log.Error(e, "Error while parsing data from Barents");
+            Log.Error(e, "Error while parsing data from RowerzystaPodroznik");
         }
 
         return sourceDataItems;
@@ -135,142 +99,64 @@ public class RowerzystaPodroznikService : ISourceService
 
     private (DateOnly startDate, DateOnly endDate, string? additionalInfo) ExtractDate(string? fullDate)
     {
-        var startDate = DateOnly.MinValue;
-        var endDate = DateOnly.MinValue;
-        string? additionalInfo = null;
-
         if (string.IsNullOrEmpty(fullDate))
-        {
-            return (startDate, endDate, additionalInfo);
-        }
+            return (DateOnly.MinValue, DateOnly.MinValue, null);
 
         var dateParts = fullDate.Split(" - ");
         if (dateParts.Length < 2)
-        {
-            return (startDate, endDate, additionalInfo);
-        }
+            return (DateOnly.MinValue, DateOnly.MinValue, null);
 
         var firstPart = dateParts[0].Trim();
         var secondPart = dateParts[1].Trim();
 
-        // If first part doesn't contain month (just day number)
-        if (firstPart.All(c => char.IsDigit(c) || char.IsWhiteSpace(c)))
-        {
-            // Extract month and year from second part
-            var secondPartWords = secondPart.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            if (secondPartWords.Length >= 2)
-            {
-                var day = int.TryParse(firstPart, out var d) ? d : 1;
-                var month = secondPartWords.Length >= 2 ? secondPartWords[1] : string.Empty;
-                var year = secondPartWords.Length > 2 && int.TryParse(secondPartWords[2], out _)
-                    ? secondPartWords[2]
-                    : DateTime.Now.Year.ToString();
-
-                var monthNumber = GetMonthNumber(month);
-
-                try
-                {
-                    startDate = new DateOnly(int.Parse(year), monthNumber, day);
-                }
-                catch
-                {
-                    // Invalid date format, keep default
-                }
-
-                if (TryParsePolishDate(secondPart, out var parsedEndDate))
-                {
-                    endDate = parsedEndDate;
-                }
-            }
-        }
-        else
-        {
-            // Try to extract full dates for both start and end
-            if (TryParsePolishDate(firstPart, out var parsedStartDate))
-            {
-                startDate = parsedStartDate;
-            }
-            else
-            {
-                DateOnly.TryParse(firstPart, out startDate);
-            }
-
-            if (TryParsePolishDate(secondPart, out var parsedEndDate))
-            {
-                endDate = parsedEndDate;
-            }
-            else
-            {
-                DateOnly.TryParse(secondPart, out endDate);
-            }
-        }
-
-        // Additional date info if present in more parts
-        if (dateParts.Length > 2)
-        {
-            if (string.IsNullOrEmpty(additionalInfo))
-            {
-                additionalInfo = string.Join(" - ", dateParts.Skip(2));
-            }
-            else
-            {
-                additionalInfo += " - " + string.Join(" - ", dateParts.Skip(2));
-            }
-        }
+        var startDate = ParseStartDate(firstPart, secondPart);
+        var endDate = ParseEndDate(secondPart);
+        var additionalInfo = dateParts.Length > 2
+            ? string.Join(" - ", dateParts.Skip(2))
+            : null;
 
         return (startDate, endDate, additionalInfo);
     }
 
-    private bool TryParsePolishDate(string dateText, out DateOnly result)
+    private static DateOnly ParseStartDate(string firstPart, string secondPart)
     {
-        result = DateOnly.MinValue;
-        if (string.IsNullOrEmpty(dateText))
-            return false;
-
-        // Format: "day month year" or "day month"
-        var parts = dateText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length < 2 || !int.TryParse(parts[0], out var day))
+        // If first part is just a day number, extract month/year from second part
+        if (firstPart.All(c => char.IsDigit(c) || char.IsWhiteSpace(c)))
         {
-            return false;
+            return ParseDayOnlyWithReference(firstPart, secondPart);
         }
 
-        var month = GetMonthNumber(parts[1]);
-        var year = parts.Length > 2 && int.TryParse(parts[2], out var y) ? y : DateTime.Now.Year;
+        return PolishDateParser.TryParsePolishDate(firstPart, out var date)
+            ? date
+            : (DateOnly.TryParse(firstPart, out var fallback) ? fallback : DateOnly.MinValue);
+    }
 
-        if (day <= 0 || day > 31 || month <= 0 || month > 12)
-        {
-            return false;
-        }
+    private static DateOnly ParseDayOnlyWithReference(string dayPart, string referencePart)
+    {
+        var secondPartWords = referencePart.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (secondPartWords.Length < 2 || !int.TryParse(dayPart.Trim(), out var day))
+            return DateOnly.MinValue;
+
+        var month = PolishDateParser.GetMonthNumber(secondPartWords[1]);
+        var year = secondPartWords.Length > 2 && int.TryParse(secondPartWords[2], out var y)
+            ? y
+            : DateTime.Now.Year;
 
         try
         {
-            result = new DateOnly(year, month, day);
-            return true;
+            return new DateOnly(year, month, day);
         }
         catch
         {
-            return false;
+            return DateOnly.MinValue;
         }
     }
 
-    private static int GetMonthNumber(string monthName)
+    private static DateOnly ParseEndDate(string datePart)
     {
-        return monthName.ToLower() switch
-        {
-            "stycznia" or "styczeń" => 1,
-            "lutego" or "luty" => 2,
-            "marca" or "marzec" => 3,
-            "kwietnia" or "kwiecień" => 4,
-            "maja" or "maj" => 5,
-            "czerwca" or "czerwiec" => 6,
-            "lipca" or "lipiec" => 7,
-            "sierpnia" or "sierpień" => 8,
-            "września" or "wrzesień" => 9,
-            "października" or "październik" => 10,
-            "listopada" or "listopad" => 11,
-            "grudnia" or "grudzień" => 12,
-            _ => DateTime.Now.Month
-        };
+        return PolishDateParser.TryParsePolishDate(datePart, out var date)
+            ? date
+            : (DateOnly.TryParse(datePart, out var fallback) ? fallback : DateOnly.MinValue);
     }
 
     private async Task<(IEnumerable<SourceDataItem> trips, int updatedCounter)> ExtractTripDataAsync(
@@ -288,7 +174,7 @@ public class RowerzystaPodroznikService : ISourceService
 
         try
         {
-            var html = await _httpClient.GetStringAsync(url, ct).ConfigureAwait(false);
+            var html = await HttpClient.GetStringAsync(url, ct).ConfigureAwait(false);
 
             var tripDoc = new HtmlDocument();
             tripDoc.LoadHtml(html);
@@ -325,7 +211,7 @@ public class RowerzystaPodroznikService : ISourceService
 
             var tour = new SourceDataItem
             {
-                SourceId = _sourceId,
+                SourceId = SourceId,
                 SeqNo = ++counter,
                 Title = title ?? "",
                 Url = url,
@@ -345,13 +231,13 @@ public class RowerzystaPodroznikService : ISourceService
         }
         catch (Exception e)
         {
-            Log.Error(e, "Error while extracting trip data from Barents");
+            Log.Error(e, "Error while extracting trip data from RowerzystaPodroznik");
         }
 
         return (tours, counter);
     }
 
-    private (double condition, double technic) ExtractDifficultyRating(HtmlDocument doc)
+    private static (double condition, double technic) ExtractDifficultyRating(HtmlDocument doc)
     {
         var wheelsDiv = doc.DocumentNode.Descendants("div")
             .FirstOrDefault(node => node.GetAttributeValue("class", "").Contains("wheels"));
@@ -378,10 +264,5 @@ public class RowerzystaPodroznikService : ISourceService
         var technicRating = children.Count > 1 ? ExtractRating(children[1]) : 0;
 
         return (conditionRating, technicRating);
-    }
-
-    private void OnRefreshProgressChanged(double progressPercentage)
-    {
-        RefreshProgressChanged?.Invoke(this, new SourceRefreshProgressEventArgs(_sourceId, progressPercentage));
     }
 }
