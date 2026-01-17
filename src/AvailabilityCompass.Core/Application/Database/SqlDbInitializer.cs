@@ -38,6 +38,7 @@ public class SqlDbInitializer : IDbInitializer
                             PRIMARY KEY (SourceId, SeqNo)
                         );
             """;
+        // language=SQLite
         const string createSourceAdditionalDataTables =
             """
             CREATE TABLE IF NOT EXISTS SourceAdditionalData (
