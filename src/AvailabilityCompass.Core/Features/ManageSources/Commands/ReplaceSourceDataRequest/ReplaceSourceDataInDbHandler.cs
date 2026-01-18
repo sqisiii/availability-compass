@@ -6,6 +6,9 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Commands.ReplaceSourceDataRequest;
 
+/// <summary>
+/// Handles the replace source data command by deleting existing data and inserting new data.
+/// </summary>
 public class ReplaceSourceDataInDbHandler : IRequestHandler<ReplaceSourceDataInDbRequest, ReplaceSourceDataInDbResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;

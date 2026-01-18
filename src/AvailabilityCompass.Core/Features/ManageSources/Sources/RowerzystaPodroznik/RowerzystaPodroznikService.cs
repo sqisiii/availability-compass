@@ -5,6 +5,9 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Sources.RowerzystaPodroznik;
 
+/// <summary>
+/// Source service for extracting trip data from the Rowerzysta Podroznik cycling travel website.
+/// </summary>
 [SourceService("RowerzystaPodroznik", "Rowerzysta Podróżnik", "PL", IconFileName = "rowerzystapodroznik.png")]
 public sealed class RowerzystaPodroznikService : SourceServiceBase
 {

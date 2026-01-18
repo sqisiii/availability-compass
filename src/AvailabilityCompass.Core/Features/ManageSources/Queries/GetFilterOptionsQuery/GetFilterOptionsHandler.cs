@@ -5,6 +5,9 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Queries.GetFilterOptionsQuery;
 
+/// <summary>
+/// Handles the get filter options query by retrieving distinct values from the database.
+/// </summary>
 public class GetFilterOptionsHandler : IRequestHandler<GetFilterOptionsQuery, GetFilterOptionsResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;
@@ -26,10 +29,11 @@ public class GetFilterOptionsHandler : IRequestHandler<GetFilterOptionsQuery, Ge
             foreach (var fieldName in query.FieldNames)
             {
                 // language=SQLite
-                const string sql = $@"
-                        SELECT DISTINCT Value 
-                        FROM SourceAdditionalData
-                    WHERE SourceId = @SourceId and Key = @Key";
+                const string sql = $"""
+                                    SELECT DISTINCT Value 
+                                    FROM SourceAdditionalData
+                                    WHERE SourceId = @SourceId and Key = @Key
+                                    """;
                 var parameters = new { SourceId = query.SourceId, Key = fieldName };
                 var values = await connection.QueryAsync<string>(sql, parameters).ConfigureAwait(false);
                 filterOptions[fieldName] = values.OrderBy(x => x).ToList();

@@ -2,6 +2,9 @@
 
 namespace AvailabilityCompass.Core.Features.ManageSources;
 
+/// <summary>
+/// ViewModel representing metadata for a data source, including refresh progress tracking.
+/// </summary>
 public partial class SourceMetaDataViewModel : ObservableObject
 {
     [ObservableProperty]

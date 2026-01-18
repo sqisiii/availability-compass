@@ -1,5 +1,8 @@
 ﻿namespace AvailabilityCompass.Core.Features.ManageSources;
 
+/// <summary>
+/// Represents a single data item from a source, including trip details and additional metadata.
+/// </summary>
 public record SourceDataItem(
     int SeqNo,
     string SourceId,

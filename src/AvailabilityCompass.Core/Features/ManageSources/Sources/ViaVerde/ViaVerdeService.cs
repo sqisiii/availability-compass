@@ -4,6 +4,9 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Sources.ViaVerde;
 
+/// <summary>
+/// Source service for extracting trip data from the Via Verde travel agency website.
+/// </summary>
 [SourceService("ViaVerde", "Via Verde", "PL", IconFileName = "viaverde.png")]
 public sealed class ViaVerdeService : SourceServiceBase
 {

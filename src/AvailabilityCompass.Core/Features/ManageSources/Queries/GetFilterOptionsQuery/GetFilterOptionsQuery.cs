@@ -2,6 +2,9 @@
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Queries.GetFilterOptionsQuery;
 
+/// <summary>
+/// MediatR query to retrieve filter options for a specific source.
+/// </summary>
 public class GetFilterOptionsQuery : IRequest<GetFilterOptionsResponse>
 {
     public GetFilterOptionsQuery(string sourceId, List<string> fieldNames)

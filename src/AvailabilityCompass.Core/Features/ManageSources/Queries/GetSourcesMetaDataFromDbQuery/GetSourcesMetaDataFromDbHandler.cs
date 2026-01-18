@@ -5,6 +5,9 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Queries.GetSourcesMetaDataFromDbQuery;
 
+/// <summary>
+/// Handles the get sources metadata query by retrieving summary information from the database.
+/// </summary>
 public class GetSourcesMetaDataFromDbHandler : IRequestHandler<GetSourcesMetaDataFromDbQuery, IEnumerable<GetSourcesMetaDataFromDbDto>>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;
@@ -14,7 +17,9 @@ public class GetSourcesMetaDataFromDbHandler : IRequestHandler<GetSourcesMetaDat
         _dbConnectionFactory = dbConnectionFactory;
     }
 
-    public async Task<IEnumerable<GetSourcesMetaDataFromDbDto>> Handle(GetSourcesMetaDataFromDbQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<GetSourcesMetaDataFromDbDto>> Handle(
+        GetSourcesMetaDataFromDbQuery request,
+        CancellationToken cancellationToken)
     {
         return await GetSourcesSummariesAsync();
     }
@@ -27,13 +32,13 @@ public class GetSourcesMetaDataFromDbHandler : IRequestHandler<GetSourcesMetaDat
             connection.Open();
 
             // language=SQLite
-            var query = @"
-                        SELECT 
-                            SourceId, 
-                            MAX(ChangeDate) AS ChangedAt, 
-                            COUNT(SeqNo) AS TripsCount
-                        FROM Source
-                        GROUP BY SourceId;";
+            const string query = """
+                                 SELECT SourceId, 
+                                 MAX(ChangeDate) AS ChangedAt, 
+                                 COUNT(SeqNo) AS TripsCount
+                                 FROM Source
+                                 GROUP BY SourceId;
+                                 """;
 
             return await connection.QueryAsync<GetSourcesMetaDataFromDbDto>(query).ConfigureAwait(false);
         }

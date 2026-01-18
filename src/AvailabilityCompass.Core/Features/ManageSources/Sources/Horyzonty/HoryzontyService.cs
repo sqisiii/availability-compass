@@ -5,6 +5,9 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Sources.Horyzonty;
 
+/// <summary>
+/// Source service for extracting trip data from the Horyzonty travel agency website.
+/// </summary>
 [SourceService("Horyzonty", "Horyzonty", "PL", IconFileName = "horyzonty.png")]
 public sealed class HoryzontyService : SourceServiceBase
 {

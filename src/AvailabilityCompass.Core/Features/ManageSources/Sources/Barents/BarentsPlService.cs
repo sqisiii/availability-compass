@@ -5,6 +5,9 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Sources.Barents;
 
+/// <summary>
+/// Source service for extracting trip data from the Barents travel agency website (Polish version).
+/// </summary>
 [SourceService("BarentsPL", "Barents", "PL", IconFileName = "barents.png")]
 public sealed class BarentsPlService : SourceServiceBase
 {

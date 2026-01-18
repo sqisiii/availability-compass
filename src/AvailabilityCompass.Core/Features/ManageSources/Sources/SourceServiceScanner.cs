@@ -2,6 +2,9 @@
 
 namespace AvailabilityCompass.Core.Features.ManageSources.Sources;
 
+/// <summary>
+/// Scans loaded assemblies for source service implementations decorated with SourceServiceAttribute.
+/// </summary>
 public class SourceServiceScanner
 {
     public static IList<SourceMetaData> ScanSourceServices()

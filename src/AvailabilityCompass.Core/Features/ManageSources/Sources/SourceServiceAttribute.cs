@@ -30,8 +30,16 @@ public class SourceServiceAttribute : Attribute
     public string IconFileName { get; set; } = string.Empty;
 }
 
+/// <summary>
+/// Extension methods for accessing SourceServiceAttribute metadata.
+/// </summary>
 public static class SourceServiceAttributeExtensions
 {
+    /// <summary>
+    /// Gets the source ID from the SourceServiceAttribute applied to the source service.
+    /// </summary>
+    /// <param name="sourceService">The source service instance.</param>
+    /// <returns>The source ID key, or null if the attribute is not present.</returns>
     public static string? GetSourceId(this ISourceService sourceService)
     {
         var attr = Attribute.GetCustomAttribute(sourceService.GetType(), typeof(SourceServiceAttribute)) as SourceServiceAttribute;

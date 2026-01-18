@@ -2,6 +2,9 @@
 
 namespace AvailabilityCompass.Core.Features.ManageSources;
 
+/// <summary>
+/// Factory for creating SourceMetaDataViewModel instances from database DTOs.
+/// </summary>
 public class SourceMetaDataViewModelFactory : ISourceMetaDataViewModelFactory
 {
     private readonly ISourceStore _sourceStore;
@@ -11,6 +14,7 @@ public class SourceMetaDataViewModelFactory : ISourceMetaDataViewModelFactory
         _sourceStore = sourceStore;
     }
 
+    /// <inheritdoc />
     public IEnumerable<SourceMetaDataViewModel> Create(IEnumerable<GetSourcesMetaDataFromDbDto> sourcesMetaData)
     {
         var sourcesData = _sourceStore.GetSourceMetaData();
