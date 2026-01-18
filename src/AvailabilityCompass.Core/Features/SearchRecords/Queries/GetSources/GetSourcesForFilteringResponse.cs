@@ -1,7 +1,13 @@
 ﻿namespace AvailabilityCompass.Core.Features.SearchRecords.Queries.GetSources;
 
+/// <summary>
+/// Response containing sources available for filtering in search with their filter configurations.
+/// </summary>
 public class GetSourcesForFilteringResponse
 {
+    /// <summary>
+    /// Defines the types of filters available for sources.
+    /// </summary>
     public enum SourceFilterType
     {
         Text,
@@ -13,6 +19,9 @@ public class GetSourcesForFilteringResponse
 
     public IReadOnlyDictionary<string, IReadOnlyCollection<string>> AvailableFilters { get; } = new Dictionary<string, IReadOnlyCollection<string>>();
 
+    /// <summary>
+    /// Represents a source with its metadata and filter configuration.
+    /// </summary>
     public class Source
     {
         public string SourceId { get; init; } = string.Empty;
@@ -25,6 +34,9 @@ public class GetSourcesForFilteringResponse
         public List<SourceFilter> Filters { get; init; } = [];
     }
 
+    /// <summary>
+    /// Represents a filter configuration for a source.
+    /// </summary>
     public class SourceFilter
     {
         public string Label { get; set; } = string.Empty;

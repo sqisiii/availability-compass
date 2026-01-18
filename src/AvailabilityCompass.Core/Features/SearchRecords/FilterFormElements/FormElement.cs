@@ -4,6 +4,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 
+/// <summary>
+/// Represents a form element used for filtering search results.
+/// </summary>
 public partial class FormElement : ObservableObject
 {
     [ObservableProperty]

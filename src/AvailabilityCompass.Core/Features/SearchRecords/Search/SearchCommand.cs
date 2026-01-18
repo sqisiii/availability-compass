@@ -5,6 +5,9 @@ using MediatR;
 
 namespace AvailabilityCompass.Core.Features.SearchRecords.Search;
 
+/// <summary>
+/// Command that executes search operations against selected sources with calendar-based date filtering.
+/// </summary>
 public class SearchCommand : ISearchCommand
 {
     private readonly IMediator _mediator;
@@ -16,6 +19,7 @@ public class SearchCommand : ISearchCommand
         _viewModel = new Lazy<SearchViewModel>(viewModelFactory);
     }
 
+    /// <inheritdoc />
     public async Task ExecuteAsync()
     {
         if (!_viewModel.Value.Sources.Any(s => s.IsSelected))
@@ -83,12 +87,19 @@ public class SearchCommand : ISearchCommand
 
     private void ApplyFilterStrategy(SearchSourcesQuery.Source sourceFilters, FormElement formElement)
     {
-        IFilterStrategy strategy = formElement.Type switch
+        IFilterStrategy strategy;
+        switch (formElement.Type)
         {
-            FormElementType.MultiSelect => new MultiSelectFilterStrategy(),
-            FormElementType.TextBox => new TextBoxFilterStrategy(),
-            _ => throw new NotSupportedException($"Form element type {formElement.Type} is not supported")
-        };
+            case FormElementType.MultiSelect:
+                strategy = new MultiSelectFilterStrategy();
+                break;
+            case FormElementType.TextBox:
+                strategy = new TextBoxFilterStrategy();
+                break;
+            default:
+                throw new NotSupportedException($"Form element type {formElement.Type} is not supported");
+        }
+
         strategy.ApplyFilter(sourceFilters, formElement);
     }
 

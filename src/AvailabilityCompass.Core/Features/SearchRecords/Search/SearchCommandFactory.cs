@@ -2,6 +2,9 @@
 
 namespace AvailabilityCompass.Core.Features.SearchRecords.Search;
 
+/// <summary>
+/// Factory for creating SearchCommand instances with the necessary dependencies.
+/// </summary>
 public class SearchCommandFactory : ISearchCommandFactory
 {
     private readonly IMediator _mediator;
@@ -13,6 +16,7 @@ public class SearchCommandFactory : ISearchCommandFactory
         _mediator = mediator;
     }
 
+    /// <inheritdoc />
     public ISearchCommand Create()
     {
         return new SearchCommand(_viewModelFactory, _mediator);

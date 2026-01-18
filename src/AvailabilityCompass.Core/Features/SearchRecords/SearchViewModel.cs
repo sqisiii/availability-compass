@@ -16,6 +16,9 @@ using MediatR;
 
 namespace AvailabilityCompass.Core.Features.SearchRecords;
 
+/// <summary>
+/// ViewModel for the search functionality, managing filters, sources, calendars, and search results.
+/// </summary>
 public sealed partial class SearchViewModel : ObservableValidator, IPageViewModel, IDisposable
 {
     private const string NoneSelectedDefault = "None selected";

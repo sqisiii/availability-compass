@@ -1,5 +1,8 @@
 ﻿namespace AvailabilityCompass.Core.Features.SearchRecords.Queries.GetCalendars;
 
+/// <summary>
+/// Response containing calendars available for filtering in search.
+/// </summary>
 public class GetCalendarsForFilteringResponse
 {
     public bool IsSuccess;

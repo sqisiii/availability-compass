@@ -6,10 +6,16 @@ using Timer = System.Timers.Timer;
 
 namespace AvailabilityCompass.Core.Features.SearchRecords;
 
+/// <summary>
+/// ViewModel representing a source filter option in the search interface
+/// </summary>
 public partial class SourceFilterViewModel : ObservableObject, IDisposable
 {
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly Timer _timer;
+
+    [ObservableProperty]
+    private FormGroup? _filterFormGroup;
 
     [ObservableProperty]
     private bool _isActive = true;
@@ -22,9 +28,6 @@ public partial class SourceFilterViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private string _name = string.Empty;
-
-    [ObservableProperty]
-    private FormGroup? _filterFormGroup;
 
     public SourceFilterViewModel(IDateTimeProvider dateTimeProvider)
     {

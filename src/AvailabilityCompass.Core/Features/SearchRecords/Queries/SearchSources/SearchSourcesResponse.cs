@@ -1,5 +1,8 @@
 ﻿namespace AvailabilityCompass.Core.Features.SearchRecords.Queries.SearchSources;
 
+/// <summary>
+/// Response containing search results from queried sources.
+/// </summary>
 public class SearchSourcesResponse
 {
     public SearchSourcesResponse(IReadOnlyCollection<SourceDataItem> sourceDataItems)
@@ -11,6 +14,9 @@ public class SearchSourcesResponse
 
     public bool IsSuccess { get; init; } = true;
 
+    /// <summary>
+    /// Represents a single search result item from a source.
+    /// </summary>
     public record SourceDataItem(
         int SeqNo,
         string SourceId,

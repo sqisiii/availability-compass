@@ -2,6 +2,9 @@
 
 namespace AvailabilityCompass.Core.Features.SearchRecords;
 
+/// <summary>
+/// ViewModel representing a calendar filter option in the search interface.
+/// </summary>
 public partial class CalendarFilterViewModel : ObservableObject
 {
     [ObservableProperty]

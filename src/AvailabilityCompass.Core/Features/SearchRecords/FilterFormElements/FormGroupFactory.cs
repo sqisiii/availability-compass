@@ -2,8 +2,12 @@
 
 namespace AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 
+/// <summary>
+/// Factory for creating form element groups from source filter configurations.
+/// </summary>
 public class FormElementFactory : IFormElementFactory
 {
+    /// <inheritdoc />
     public FormGroup CreateFormElement(GetSourcesForFilteringResponse.Source source)
     {
         var formGroup = new FormGroup

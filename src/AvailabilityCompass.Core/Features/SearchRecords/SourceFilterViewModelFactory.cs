@@ -3,6 +3,9 @@ using AvailabilityCompass.Core.Shared;
 
 namespace AvailabilityCompass.Core.Features.SearchRecords;
 
+/// <summary>
+/// Factory for creating SourceFilterViewModel instances from source response DTOs.
+/// </summary>
 public class SourceFilterViewModelFactory : ISourceFilterViewModelFactory
 {
     private readonly IDateTimeProvider _dateTimeProvider;
@@ -13,6 +16,7 @@ public class SourceFilterViewModelFactory : ISourceFilterViewModelFactory
     }
 
 
+    /// <inheritdoc />
     public SourceFilterViewModel Create(GetSourcesForFilteringResponse.Source getSourcesResponse)
     {
         return new SourceFilterViewModel(_dateTimeProvider)
