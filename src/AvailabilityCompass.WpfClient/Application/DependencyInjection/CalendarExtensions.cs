@@ -6,8 +6,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AvailabilityCompass.WpfClient.Application.DependencyInjection;
 
+/// <summary>
+/// Extension methods for registering calendar-related services in the DI container.
+/// </summary>
 public static class CalendarExtensions
 {
+    /// <summary>
+    /// Adds calendar management services to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddCalendar(this IServiceCollection services)
     {
         services.AddSingleton<ManageCalendarsViewModel>();

@@ -5,8 +5,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AvailabilityCompass.WpfClient.Application.DependencyInjection;
 
+/// <summary>
+/// Extension methods for registering navigation services in the DI container.
+/// </summary>
 public static class NavigationExtensions
 {
+    /// <summary>
+    /// Adds navigation services for pages and dialogs.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddNavigation(this IServiceCollection services)
     {
         services.AddSingleton<INavigationTabFactory, NavigationTabFactory>();

@@ -6,8 +6,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AvailabilityCompass.WpfClient.Application.DependencyInjection;
 
+/// <summary>
+/// Extension methods for registering search-related services in the DI container.
+/// </summary>
 public static class SearchExtensions
 {
+    /// <summary>
+    /// Adds search feature services including view model and command factory.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddSearch(this IServiceCollection services)
     {
         services.AddSingleton<SearchViewModel>();
