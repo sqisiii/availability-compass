@@ -9,6 +9,11 @@ namespace AvailabilityCompass.Core.Application.DependencyInjection;
 /// </summary>
 public static class SourceServicesExtension
 {
+    /// <summary>
+    /// Discovers and registers all source services marked with <see cref="SourceServiceAttribute"/>.
+    /// </summary>
+    /// <param name="services">The service collection to add services to.</param>
+    /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddSourceServices(this IServiceCollection services)
     {
         var sourceServiceTypes = Assembly.GetExecutingAssembly()

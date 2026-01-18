@@ -3,6 +3,9 @@ using Dapper;
 
 namespace AvailabilityCompass.Core.Application.Database;
 
+/// <summary>
+/// SQLite database initializer that creates required tables and registers custom type handlers.
+/// </summary>
 public class SqlDbInitializer : IDbInitializer
 {
     private readonly IDbConnectionFactory _sqliteDbConnectionFactory;
@@ -12,6 +15,7 @@ public class SqlDbInitializer : IDbInitializer
         _sqliteDbConnectionFactory = sqliteDbConnectionFactory;
     }
 
+    /// <inheritdoc />
     public async Task InitializeAsync()
     {
         //Sqlite doesn't have a DateTime type, so we need to register a custom type handler for DateOnly
