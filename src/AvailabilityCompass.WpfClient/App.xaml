@@ -24,9 +24,6 @@
             <DataTemplate DataType="{x:Type searchRecords:SearchViewModel}">
                 <views:SearchView />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vms:ManageSettings.ManageSettingsViewModel}">
-                <views:ManageSettingsView />
-            </DataTemplate>
             <DataTemplate DataType="{x:Type manageSources:ManageSourcesViewModel}">
                 <views:ManageSourcesView />
             </DataTemplate>
