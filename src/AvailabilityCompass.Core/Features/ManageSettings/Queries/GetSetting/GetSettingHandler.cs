@@ -5,6 +5,9 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSettings.Queries.GetSetting;
 
+/// <summary>
+/// Handles the get setting query by retrieving the value from the database.
+/// </summary>
 public class GetSettingHandler : IRequestHandler<GetSettingQuery, GetSettingResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;

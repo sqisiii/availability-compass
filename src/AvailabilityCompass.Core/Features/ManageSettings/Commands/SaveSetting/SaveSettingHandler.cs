@@ -5,6 +5,9 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSettings.Commands.SaveSetting;
 
+/// <summary>
+/// Handles the save setting command by upserting the value in the database.
+/// </summary>
 public class SaveSettingHandler : IRequestHandler<SaveSettingRequest, SaveSettingResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;
@@ -21,8 +24,10 @@ public class SaveSettingHandler : IRequestHandler<SaveSettingRequest, SaveSettin
             using var connection = _dbConnectionFactory.Connect();
             connection.Open();
             // language=SQLite
-            const string upsertSql = @"INSERT OR REPLACE INTO Setting (Key, Value, ChangeDate)
-                                       VALUES (@Key, @Value, @ChangeDate);";
+            const string upsertSql = """
+                                     INSERT OR REPLACE INTO Setting (Key, Value, ChangeDate)
+                                     VALUES (@Key, @Value, @ChangeDate);
+                                     """;
 
             var changeDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
 
