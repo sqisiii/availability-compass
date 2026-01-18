@@ -6,6 +6,9 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteDateEntryRequest;
 
+/// <summary>
+/// Handles the delete date entry command by removing the date entry from the database.
+/// </summary>
 public class DeleteDateEntryFromDbHandler : IRequestHandler<DeleteDateEntryFromDbRequest, DeleteDateEntryFromDbResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;

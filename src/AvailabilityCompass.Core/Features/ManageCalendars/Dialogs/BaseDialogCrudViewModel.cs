@@ -6,6 +6,10 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;
 
+/// <summary>
+/// Base class for dialog view models that handle CRUD operations with validation.
+/// </summary>
+/// <typeparam name="T">The type of the item being edited, must be an ObservableValidator with a parameterless constructor.</typeparam>
 public abstract partial class BaseDialogCrudViewModel<T> : ObservableValidator, IDialogViewModel, IDisposable where T : ObservableValidator, new()
 {
     private readonly INavigationService<IDialogViewModel> _dialogNavigationService;

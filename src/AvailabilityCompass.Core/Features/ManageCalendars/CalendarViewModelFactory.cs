@@ -1,7 +1,11 @@
 namespace AvailabilityCompass.Core.Features.ManageCalendars;
 
+/// <summary>
+/// Factory for creating calendar and date entry view models from DTOs.
+/// </summary>
 public class CalendarViewModelFactory : ICalendarViewModelFactory
 {
+    /// <inheritdoc />
     public CalendarViewModel CreateCalendar(CalendarDto calendarDto)
     {
         var viewModel = new CalendarViewModel
@@ -18,6 +22,7 @@ public class CalendarViewModelFactory : ICalendarViewModelFactory
         return viewModel;
     }
 
+    /// <inheritdoc />
     public DateEntryViewModel CreateDateEntry(DateEntryDto dateEntryDto)
     {
         return new DateEntryViewModel

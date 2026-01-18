@@ -5,6 +5,9 @@ using MediatR;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;
 
+/// <summary>
+/// View model for the add calendar dialog.
+/// </summary>
 // ReSharper disable once ClassNeverInstantiated.Global
 public partial class AddCalendarViewModel : BaseDialogCrudViewModel<CalendarViewModel>
 {

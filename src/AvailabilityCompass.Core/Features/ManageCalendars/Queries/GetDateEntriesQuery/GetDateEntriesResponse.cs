@@ -1,5 +1,8 @@
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetDateEntriesQuery;
 
+/// <summary>
+/// Response containing the list of date entries for a calendar.
+/// </summary>
 public class GetDateEntriesResponse
 {
     public GetDateEntriesResponse(List<DateEntryDto> dateEntries, bool isSuccess)

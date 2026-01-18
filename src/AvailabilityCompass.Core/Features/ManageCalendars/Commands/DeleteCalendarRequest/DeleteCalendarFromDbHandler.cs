@@ -6,6 +6,9 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteCalendarRequest;
 
+/// <summary>
+/// Handles the delete calendar command by removing the calendar from the database.
+/// </summary>
 public class DeleteCalendarFromDbHandler : IRequestHandler<DeleteCalendarFromDbRequest, DeleteCalendarFromDbResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;

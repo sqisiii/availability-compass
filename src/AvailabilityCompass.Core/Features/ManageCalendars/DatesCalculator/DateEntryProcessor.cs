@@ -1,7 +1,11 @@
 namespace AvailabilityCompass.Core.Features.ManageCalendars.DatesCalculator;
 
+/// <summary>
+/// Processes date entries from a calendar to produce categorized dates for display.
+/// </summary>
 public class DateEntryProcessor : IDateProcessor
 {
+    /// <inheritdoc />
     public List<CategorizedDate> Process(CalendarViewModel calendar)
     {
         var result = new List<CategorizedDate>();

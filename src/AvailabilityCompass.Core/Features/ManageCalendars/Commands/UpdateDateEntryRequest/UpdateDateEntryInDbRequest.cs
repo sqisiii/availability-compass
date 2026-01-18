@@ -2,6 +2,9 @@ using MediatR;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateDateEntryRequest;
 
+/// <summary>
+/// MediatR request to update an existing date entry in the database.
+/// </summary>
 public class UpdateDateEntryInDbRequest : IRequest<UpdateDateEntryInDbResponse>
 {
     public UpdateDateEntryInDbRequest(

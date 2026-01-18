@@ -47,6 +47,7 @@ public partial class CalendarCrudController : ObservableObject, ICalendarCrudCon
     [ObservableProperty]
     private string _deleteCalendarName = string.Empty;
 
+    /// <inheritdoc />
     public async Task AddCalendarAsync()
     {
         if (string.IsNullOrWhiteSpace(NewCalendarName))
@@ -61,12 +62,14 @@ public partial class CalendarCrudController : ObservableObject, ICalendarCrudCon
         NewCalendarIsOnly = false;
     }
 
+    /// <inheritdoc />
     public void ExpandAddCalendar(Action? onBeforeExpand = null)
     {
         onBeforeExpand?.Invoke();
         IsAddCalendarExpanded = true;
     }
 
+    /// <inheritdoc />
     public void CancelAddCalendar()
     {
         IsAddCalendarExpanded = false;
@@ -74,6 +77,7 @@ public partial class CalendarCrudController : ObservableObject, ICalendarCrudCon
         NewCalendarIsOnly = false;
     }
 
+    /// <inheritdoc />
     public void StartCalendarEdit(CalendarViewModel calendar)
     {
         _editingCalendarId = calendar.CalendarId;
@@ -82,6 +86,7 @@ public partial class CalendarCrudController : ObservableObject, ICalendarCrudCon
         IsEditCalendarExpanded = true;
     }
 
+    /// <inheritdoc />
     public async Task SaveCalendarEditAsync()
     {
         if (_editingCalendarId is null || string.IsNullOrWhiteSpace(EditCalendarName))
@@ -97,6 +102,7 @@ public partial class CalendarCrudController : ObservableObject, ICalendarCrudCon
         ResetEditState();
     }
 
+    /// <inheritdoc />
     public void CancelCalendarEdit()
     {
         ResetEditState();
@@ -110,6 +116,7 @@ public partial class CalendarCrudController : ObservableObject, ICalendarCrudCon
         EditCalendarIsOnly = false;
     }
 
+    /// <inheritdoc />
     public void StartDeleteCalendar(CalendarViewModel calendar)
     {
         _pendingDeleteCalendarId = calendar.CalendarId;
@@ -117,6 +124,7 @@ public partial class CalendarCrudController : ObservableObject, ICalendarCrudCon
         IsDeleteConfirmationOpen = true;
     }
 
+    /// <inheritdoc />
     public async Task ConfirmDeleteCalendarAsync()
     {
         if (_pendingDeleteCalendarId is null)
@@ -128,6 +136,7 @@ public partial class CalendarCrudController : ObservableObject, ICalendarCrudCon
         ResetDeleteState();
     }
 
+    /// <inheritdoc />
     public void CancelDeleteCalendar()
     {
         ResetDeleteState();

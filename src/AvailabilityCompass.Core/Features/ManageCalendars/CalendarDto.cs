@@ -1,5 +1,8 @@
 namespace AvailabilityCompass.Core.Features.ManageCalendars;
 
+/// <summary>
+/// Data transfer object representing a calendar with its associated date entries.
+/// </summary>
 public class CalendarDto
 {
     //required for Dapper

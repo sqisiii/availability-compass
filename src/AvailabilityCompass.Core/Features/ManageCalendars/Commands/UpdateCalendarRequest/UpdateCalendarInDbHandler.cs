@@ -6,6 +6,9 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateCalendarRequest;
 
+/// <summary>
+/// Handles the update calendar command by updating the calendar in the database.
+/// </summary>
 public class UpdateCalendarInDbHandler : IRequestHandler<UpdateCalendarInDbRequest, UpdateCalendarInDbResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;

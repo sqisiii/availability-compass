@@ -5,6 +5,9 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetDateEntriesQuery;
 
+/// <summary>
+/// Handles the get date entries query by retrieving all date entries for a calendar from the database.
+/// </summary>
 public class GetDateEntriesHandler : IRequestHandler<GetDateEntriesQuery, GetDateEntriesResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;

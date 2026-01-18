@@ -5,6 +5,9 @@ using MediatR;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;
 
+/// <summary>
+/// View model for the delete calendar confirmation dialog.
+/// </summary>
 // ReSharper disable once ClassNeverInstantiated.Global
 public class DeleteCalendarViewModel : BaseDialogCrudViewModel<CalendarViewModel>
 {

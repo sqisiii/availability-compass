@@ -5,6 +5,9 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetCalendarsQuery;
 
+/// <summary>
+/// Handles the get calendars query by retrieving all calendars with their date entries from the database.
+/// </summary>
 public class GetCalendarsHandler : IRequestHandler<GetCalendarsQuery, GetCalendarsResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;

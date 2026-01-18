@@ -22,18 +22,54 @@ public interface ICalendarCrudController : INotifyPropertyChanged
     bool IsDeleteConfirmationOpen { get; }
     string DeleteCalendarName { get; }
 
-    // Add Calendar Operations
+    /// <summary>
+    /// Adds a new calendar using the current add form state.
+    /// </summary>
+    /// <returns>A task representing the asynchronous add operation.</returns>
     Task AddCalendarAsync();
+
+    /// <summary>
+    /// Expands the add calendar form panel.
+    /// </summary>
+    /// <param name="onBeforeExpand">Optional action to execute before expanding.</param>
     void ExpandAddCalendar(Action? onBeforeExpand = null);
+
+    /// <summary>
+    /// Cancels the add calendar operation and collapses the form.
+    /// </summary>
     void CancelAddCalendar();
 
-    // Edit Calendar Operations
+    /// <summary>
+    /// Starts editing an existing calendar.
+    /// </summary>
+    /// <param name="calendar">The calendar to edit.</param>
     void StartCalendarEdit(CalendarViewModel calendar);
+
+    /// <summary>
+    /// Saves the current calendar edit.
+    /// </summary>
+    /// <returns>A task representing the asynchronous save operation.</returns>
     Task SaveCalendarEditAsync();
+
+    /// <summary>
+    /// Cancels the current calendar edit operation.
+    /// </summary>
     void CancelCalendarEdit();
 
-    // Delete Calendar Operations
+    /// <summary>
+    /// Starts the delete confirmation flow for a calendar.
+    /// </summary>
+    /// <param name="calendar">The calendar to delete.</param>
     void StartDeleteCalendar(CalendarViewModel calendar);
+
+    /// <summary>
+    /// Confirms and executes the calendar deletion.
+    /// </summary>
+    /// <returns>A task representing the asynchronous delete operation.</returns>
     Task ConfirmDeleteCalendarAsync();
+
+    /// <summary>
+    /// Cancels the delete confirmation dialog.
+    /// </summary>
     void CancelDeleteCalendar();
 }

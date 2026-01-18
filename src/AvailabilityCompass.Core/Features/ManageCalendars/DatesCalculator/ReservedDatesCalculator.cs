@@ -1,9 +1,11 @@
-namespace AvailabilityCompass.Core.Features.ManageCalendars.DatesCalculator;
+﻿namespace AvailabilityCompass.Core.Features.ManageCalendars.DatesCalculator;
 
+/// <summary>
+/// Calculates reserved dates from calendars, handling both normal and inverted (available days only) calendars.
+/// </summary>
 public class ReservedDatesCalculator : IReservedDatesCalculator
 {
     private const int YearsToCheck = 2;
-
     private readonly IDateProcessor _dateProcessor;
 
     public ReservedDatesCalculator(IDateProcessor dateProcessor)
@@ -11,6 +13,7 @@ public class ReservedDatesCalculator : IReservedDatesCalculator
         _dateProcessor = dateProcessor;
     }
 
+    /// <inheritdoc />
     public List<CategorizedDate> GetReservedCategorizedDays(CalendarViewModel? selectedCalendar)
     {
         if (selectedCalendar is null)
@@ -31,6 +34,7 @@ public class ReservedDatesCalculator : IReservedDatesCalculator
         return uniqueDates;
     }
 
+    /// <inheritdoc />
     public List<DateOnly> GetReservedDates(List<CalendarDto> calendars)
     {
         if (calendars.Count == 0)

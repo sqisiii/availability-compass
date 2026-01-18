@@ -6,6 +6,9 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddDateEntryRequest;
 
+/// <summary>
+/// Handles the add date entry command by inserting a new date entry into the database.
+/// </summary>
 public class AddDateEntryToDbHandler : IRequestHandler<AddDateEntryToDbRequest, AddDateEntryToDbResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;

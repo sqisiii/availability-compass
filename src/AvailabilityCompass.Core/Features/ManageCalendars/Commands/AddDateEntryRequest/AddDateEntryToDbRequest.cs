@@ -2,6 +2,9 @@ using MediatR;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddDateEntryRequest;
 
+/// <summary>
+/// MediatR request to add a new date entry to a calendar.
+/// </summary>
 public class AddDateEntryToDbRequest : IRequest<AddDateEntryToDbResponse>
 {
     public AddDateEntryToDbRequest(

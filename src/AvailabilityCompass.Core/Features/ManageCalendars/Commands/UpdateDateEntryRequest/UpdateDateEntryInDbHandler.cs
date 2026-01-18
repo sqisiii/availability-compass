@@ -6,6 +6,9 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateDateEntryRequest;
 
+/// <summary>
+/// Handles the update date entry command by updating the date entry in the database.
+/// </summary>
 public class UpdateDateEntryInDbHandler : IRequestHandler<UpdateDateEntryInDbRequest, UpdateDateEntryInDbResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;

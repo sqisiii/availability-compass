@@ -6,6 +6,9 @@ using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarRequest;
 
+/// <summary>
+/// Handles the add calendar command by inserting a new calendar into the database.
+/// </summary>
 public class AddCalendarToDbHandler : IRequestHandler<AddCalendarToDbRequest, AddCalendarToDbResponse>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;
@@ -25,8 +28,10 @@ public class AddCalendarToDbHandler : IRequestHandler<AddCalendarToDbRequest, Ad
             connection.Open();
 
             // language=SQLite
-            const string insertCalendarSql = @"INSERT INTO Calendar (CalendarId, Name, IsOnly, ChangeDate) 
-                                                VALUES (@CalendarId, @Name, @IsOnly, @ChangeDate);";
+            const string insertCalendarSql = """
+                                             INSERT INTO Calendar (CalendarId, Name, IsOnly, ChangeDate) 
+                                             VALUES (@CalendarId, @Name, @IsOnly, @ChangeDate);
+                                             """;
 
             var calendarId = Guid.NewGuid();
             var changeDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");

@@ -62,6 +62,7 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
         _dateSelectionParser = dateSelectionParser;
     }
 
+    /// <inheritdoc />
     public void OpenForSelectedDates(IList? selectedDates)
     {
         if (selectedDates is null || selectedDates.Count == 0)
@@ -101,6 +102,7 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
         IsEditorOpen = true;
     }
 
+    /// <inheritdoc />
     public void OpenForDateClick(DateOnly date, IEnumerable<DateEntryViewModel> existingEntries)
     {
         var existingEntry = FindEntryByDate(date, existingEntries);
@@ -116,6 +118,7 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
         }
     }
 
+    /// <inheritdoc />
     public void OpenForEdit(DateEntryViewModel entry)
     {
         IsEditMode = true;
@@ -139,6 +142,7 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
         IsEditorOpen = true;
     }
 
+    /// <inheritdoc />
     public async Task SaveAsync(Guid calendarId)
     {
         if (_pendingSelections is { Count: > 0 })
@@ -197,6 +201,7 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
         Close();
     }
 
+    /// <inheritdoc />
     public async Task DeleteAsync(Guid calendarId)
     {
         if (!IsEditMode || !_editingEntryId.HasValue)
@@ -208,6 +213,7 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
         Close();
     }
 
+    /// <inheritdoc />
     public void Close()
     {
         IsEditorOpen = false;

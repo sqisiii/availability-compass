@@ -3,6 +3,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars;
 
+/// <summary>
+/// View model representing a calendar with its selection state and date entries.
+/// </summary>
 public partial class CalendarViewModel : ObservableValidator
 {
     [ObservableProperty]

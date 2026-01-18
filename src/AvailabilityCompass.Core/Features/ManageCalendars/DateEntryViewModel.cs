@@ -4,6 +4,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars;
 
+/// <summary>
+/// View model representing a date entry with validation for recurring and non-recurring dates.
+/// </summary>
 public partial class DateEntryViewModel : ObservableValidator
 {
     [ObservableProperty]

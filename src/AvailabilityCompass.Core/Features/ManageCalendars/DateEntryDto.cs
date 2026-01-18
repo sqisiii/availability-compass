@@ -1,5 +1,8 @@
 namespace AvailabilityCompass.Core.Features.ManageCalendars;
 
+/// <summary>
+/// Data transfer object representing a date entry within a calendar.
+/// </summary>
 public record DateEntryDto(
     Guid CalendarId,
     Guid DateEntryId,
