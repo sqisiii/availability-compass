@@ -1,4 +1,4 @@
-using AvailabilityCompass.Core.Features.ManageCalendars;
+﻿using AvailabilityCompass.Core.Features.ManageCalendars;
 using AvailabilityCompass.Core.Features.ManageSettings;
 using AvailabilityCompass.Core.Features.ManageSources;
 using AvailabilityCompass.Core.Features.SearchRecords;
@@ -10,20 +10,23 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace AvailabilityCompass.WpfClient.Pages;
 
+/// <summary>
+/// Main view model for the application
+/// </summary>
 public partial class MainViewModel : ObservableObject
 {
-    private readonly INavigationStore<IDialogViewModel> _dialogNavigationStore;
     private readonly INavigationService<IDialogViewModel> _dialogNavigationService;
-    private readonly IThemeService _themeService;
-    private readonly SearchViewModel _searchViewModel;
-    private readonly ManageSourcesViewModel _manageSourcesViewModel;
+    private readonly INavigationStore<IDialogViewModel> _dialogNavigationStore;
     private readonly ManageCalendarsViewModel _manageCalendarsViewModel;
-
-    private bool _isMaximized;
+    private readonly ManageSourcesViewModel _manageSourcesViewModel;
+    private readonly SearchViewModel _searchViewModel;
+    private readonly IThemeService _themeService;
 
     [NotifyPropertyChangedFor(nameof(ThemeIcon))]
     [ObservableProperty]
     private bool _isDarkTheme;
+
+    private bool _isMaximized;
 
     public MainViewModel(
         INavigationStore<IDialogViewModel> dialogNavigationStore,

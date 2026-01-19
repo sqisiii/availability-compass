@@ -2,6 +2,9 @@ using AvailabilityCompass.Core.Shared;
 
 namespace AvailabilityCompass.WpfClient.Shared.Navigation;
 
+/// <summary>
+/// Represents a navigation tab with its associated view model, name, and icon.
+/// </summary>
 public class NavigationTabModel
 {
     public NavigationTabModel(IPageViewModel pageViewModel)

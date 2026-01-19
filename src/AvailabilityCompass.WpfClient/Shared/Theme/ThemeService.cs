@@ -7,6 +7,9 @@ using WpfApp = System.Windows.Application;
 
 namespace AvailabilityCompass.WpfClient.Shared.Theme;
 
+/// <summary>
+/// Service that manages application theme switching between light and dark modes.
+/// </summary>
 public class ThemeService : IThemeService
 {
     private const string ThemeSettingKey = "Theme";

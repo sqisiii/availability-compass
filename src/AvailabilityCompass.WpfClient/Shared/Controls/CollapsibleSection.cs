@@ -4,6 +4,9 @@ using System.Windows.Media;
 
 namespace AvailabilityCompass.WpfClient.Shared.Controls;
 
+/// <summary>
+/// A collapsible content control that displays a header with expand/collapse functionality.
+/// </summary>
 public class CollapsibleSection : ContentControl
 {
     static CollapsibleSection()
