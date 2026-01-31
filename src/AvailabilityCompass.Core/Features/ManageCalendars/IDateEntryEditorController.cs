@@ -14,13 +14,16 @@ public interface IDateEntryEditorController : INotifyPropertyChanged
     bool IsEditMode { get; }
     string EditorTitle { get; }
 
+    // Validation
+    bool HasErrors { get; }
+    string? FrequencyError { get; }
+    string? RepetitionsError { get; }
+
     // Form Fields
     string EditorDescription { get; set; }
-    string? EditorStartDateString { get; set; }
-    int EditorDuration { get; set; }
     bool EditorIsRecurring { get; set; }
     int? EditorFrequency { get; set; }
-    int EditorRepetitions { get; set; }
+    int? EditorRepetitions { get; set; }
 
     // Multi-select State
     ObservableCollection<DetectedSelection> EditorDetectedSelections { get; }

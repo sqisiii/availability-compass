@@ -388,9 +388,56 @@
         </Setter>
     </Style>
 
+    <!-- TextBox with Error State (red border) -->
+    <Style x:Key="GlassTextBoxError" TargetType="TextBox">
+        <Setter Property="FontFamily" Value="{DynamicResource GlassFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource GlassFontSize}" />
+        <Setter Property="Background" Value="{DynamicResource GlassInputBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource GlassDestructiveBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="8,6" />
+        <Setter Property="CaretBrush" Value="{DynamicResource GlassDestructiveBrush}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource GlassPrimaryLightBrush}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border x:Name="PART_Border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource GlassRadius}"
+                            SnapsToDevicePixels="True">
+                        <ScrollViewer x:Name="PART_ContentHost"
+                                      Margin="{TemplateBinding Padding}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="PART_Border" Property="BorderBrush"
+                                    Value="{DynamicResource GlassDestructiveBrush}" />
+                            <Setter TargetName="PART_Border" Property="BorderThickness" Value="2" />
+                            <Setter TargetName="PART_Border" Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect BlurRadius="8"
+                                                      ShadowDepth="0"
+                                                      Opacity="0.2"
+                                                      Color="{DynamicResource GlassDestructiveColor}" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PART_Border" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- TextBox with Placeholder Hint (simplified, not floating) -->
     <Style x:Key="GlassFloatingHintTextBox" TargetType="TextBox" BasedOn="{StaticResource GlassTextBox}">
-        <Setter Property="Padding" Value="8,6" />
         <Setter Property="MinHeight" Value="32" />
         <Setter Property="Template">
             <Setter.Value>
@@ -1542,8 +1589,10 @@
                         </Trigger>
                         <!-- When HasSelection is true, use accent color for the chip -->
                         <Trigger Property="HasSelection" Value="True">
-                            <Setter TargetName="PART_SummaryChips" Property="Background" Value="{DynamicResource GlassAccentLightBrush}" />
-                            <Setter TargetName="PART_SummaryText" Property="Foreground" Value="{DynamicResource GlassPrimaryBrush}" />
+                            <Setter TargetName="PART_SummaryChips" Property="Background"
+                                    Value="{DynamicResource GlassAccentLightBrush}" />
+                            <Setter TargetName="PART_SummaryText" Property="Foreground"
+                                    Value="{DynamicResource GlassPrimaryBrush}" />
                             <Setter TargetName="PART_SummaryText" Property="FontWeight" Value="SemiBold" />
                         </Trigger>
                     </ControlTemplate.Triggers>

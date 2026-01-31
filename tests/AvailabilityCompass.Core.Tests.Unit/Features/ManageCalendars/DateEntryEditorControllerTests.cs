@@ -487,6 +487,97 @@ public class DateEntryEditorControllerTests
     }
 
     [Fact]
+    public void EditorIsRecurring_ShouldSetDefaultFrequency_WhenEnabled()
+    {
+        // Arrange
+        _sut.OpenForDateClick(new DateOnly(2025, 1, 15), []);
+        _sut.EditorDuration = 3; // Duration is 3 days
+
+        // Act
+        _sut.EditorIsRecurring = true;
+
+        // Assert - Frequency should default to duration + 1 = 4
+        _sut.EditorFrequency.ShouldBe(4);
+    }
+
+    [Fact]
+    public void EditorDuration_ShouldUpdateFrequency_WhenRecurringAndFrequencyTooLow()
+    {
+        // Arrange
+        _sut.OpenForDateClick(new DateOnly(2025, 1, 15), []);
+        _sut.EditorIsRecurring = true;
+        _sut.EditorFrequency = 5; // Start with frequency 5
+
+        // Act - Change duration to 6 (requires frequency >= 7)
+        _sut.EditorDuration = 6;
+
+        // Assert - Frequency should update to duration + 1 = 7
+        _sut.EditorFrequency.ShouldBe(7);
+    }
+
+    [Fact]
+    public void EditorDuration_ShouldNotChangeFrequency_WhenFrequencyAlreadySufficient()
+    {
+        // Arrange
+        _sut.OpenForDateClick(new DateOnly(2025, 1, 15), []);
+        _sut.EditorIsRecurring = true;
+        _sut.EditorFrequency = 10; // Frequency is 10
+
+        // Act - Change duration to 3 (requires frequency >= 4)
+        _sut.EditorDuration = 3;
+
+        // Assert - Frequency should remain 10
+        _sut.EditorFrequency.ShouldBe(10);
+    }
+
+    [Fact]
+    public void Validation_ShouldHaveError_WhenFrequencyLessThanDurationPlusOne()
+    {
+        // Arrange
+        _sut.OpenForDateClick(new DateOnly(2025, 1, 15), []);
+        _sut.EditorDuration = 5;
+        _sut.EditorIsRecurring = true;
+
+        // Act - Set frequency below minimum (5 + 1 = 6)
+        _sut.EditorFrequency = 3;
+
+        // Assert
+        _sut.HasErrors.ShouldBeTrue();
+        var errors = _sut.GetErrors(nameof(_sut.EditorFrequency)).Cast<object>().ToList();
+        errors.ShouldNotBeEmpty();
+    }
+
+    [Fact]
+    public void Validation_ShouldNotHaveError_WhenFrequencyEqualsDurationPlusOne()
+    {
+        // Arrange
+        _sut.OpenForDateClick(new DateOnly(2025, 1, 15), []);
+        _sut.EditorDuration = 5;
+        _sut.EditorIsRecurring = true;
+
+        // Act - Set frequency exactly at minimum (5 + 1 = 6)
+        _sut.EditorFrequency = 6;
+
+        // Assert
+        _sut.HasErrors.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Validation_ShouldNotHaveError_WhenNotRecurring()
+    {
+        // Arrange
+        _sut.OpenForDateClick(new DateOnly(2025, 1, 15), []);
+        _sut.EditorDuration = 5;
+        _sut.EditorIsRecurring = false;
+
+        // Act - Set frequency below what would be minimum if recurring
+        _sut.EditorFrequency = 2;
+
+        // Assert - No error because recurring is disabled
+        _sut.HasErrors.ShouldBeFalse();
+    }
+
+    [Fact]
     public async Task SaveAsync_ShouldDoNothing_WhenStartDateIsEmpty()
     {
         // Arrange

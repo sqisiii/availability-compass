@@ -13,7 +13,7 @@ namespace AvailabilityCompass.WpfClient.Pages;
 /// <summary>
 /// Main view model for the application
 /// </summary>
-public partial class MainViewModel : ObservableObject
+public partial class MainViewModel : ObservableObject, IDisposable
 {
     private readonly INavigationService<IDialogViewModel> _dialogNavigationService;
     private readonly INavigationStore<IDialogViewModel> _dialogNavigationStore;
@@ -46,6 +46,11 @@ public partial class MainViewModel : ObservableObject
 
         _dialogNavigationStore.CurrentViewModelChanged += OnCurrentDialogViewModelChanged;
         _isDarkTheme = _themeService.IsDarkTheme;
+    }
+
+    public void Dispose()
+    {
+        _dialogNavigationStore.CurrentViewModelChanged -= OnCurrentDialogViewModelChanged;
     }
 
     public string MaximizeIcon => _isMaximized ? FluentIcons.ChromeRestore : FluentIcons.ChromeMaximize;

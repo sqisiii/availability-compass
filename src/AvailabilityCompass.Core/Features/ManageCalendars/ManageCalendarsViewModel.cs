@@ -141,7 +141,7 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
         set => _dateEntryEditor.EditorFrequency = value;
     }
 
-    public int EditorRepetitions
+    public int? EditorRepetitions
     {
         get => _dateEntryEditor.EditorRepetitions;
         set => _dateEntryEditor.EditorRepetitions = value;
@@ -149,6 +149,8 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
 
     public ObservableCollection<DetectedSelection> EditorDetectedSelections => _dateEntryEditor.EditorDetectedSelections;
 
+    public string? FrequencyError => _dateEntryEditor.FrequencyError;
+    public string? RepetitionsError => _dateEntryEditor.RepetitionsError;
 
     public FullyObservableCollection<CalendarViewModel> Calendars { get; } = [];
     public ObservableCollection<DateEntryViewModel> DateEntries { get; } = [];
@@ -164,6 +166,7 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
         _dateEntryUpdatedSubscription?.Dispose();
         _dateEntryDeletedSubscription?.Dispose();
 
+        Calendars.CollectionChanged -= CalendarsOnCollectionChanged;
         _calendarCrud.PropertyChanged -= OnCalendarCrudPropertyChanged;
         _dateEntryEditor.PropertyChanged -= OnDateEntryEditorPropertyChanged;
     }
@@ -268,16 +271,18 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
         _dateEntryEditor.OpenForEdit(entry);
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanSaveEntry))]
     private async Task OnSaveEntry()
     {
-        if (SelectedCalendar is null)
+        if (SelectedCalendar is null || _dateEntryEditor.HasErrors)
         {
             return;
         }
 
         await _dateEntryEditor.SaveAsync(SelectedCalendar.CalendarId);
     }
+
+    private bool CanSaveEntry() => !_dateEntryEditor.HasErrors;
 
     [RelayCommand]
     private void OnCancelEdit() => _dateEntryEditor.Close();
@@ -320,6 +325,12 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
     {
         // Forward property change notifications to maintain XAML bindings
         OnPropertyChanged(e.PropertyName);
+
+        // Re-evaluate save command when validation state changes
+        if (e.PropertyName == nameof(IDateEntryEditorController.HasErrors))
+        {
+            SaveEntryCommand.NotifyCanExecuteChanged();
+        }
     }
 
     private void CalendarsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

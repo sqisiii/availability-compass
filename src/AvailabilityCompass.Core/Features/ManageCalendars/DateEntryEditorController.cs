@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddDateEntryRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteDateEntryRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateDateEntryRequest;
@@ -11,7 +12,7 @@ namespace AvailabilityCompass.Core.Features.ManageCalendars;
 /// <summary>
 /// Manages the date entry editor panel state and CRUD operations.
 /// </summary>
-public partial class DateEntryEditorController : ObservableObject, IDateEntryEditorController
+public partial class DateEntryEditorController : ObservableValidator, IDateEntryEditorController, IDisposable
 {
     private const string TitleAddDateEntry = "Add Date Entry";
     private const string TitleAddPeriod = "Add Period";
@@ -20,6 +21,7 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
     private const string DateFormat = "yyyy-MM-dd";
 
     private readonly IDateSelectionParser _dateSelectionParser;
+    private readonly EventHandler<DataErrorsChangedEventArgs>? _errorsChangedHandler;
     private readonly IMediator _mediator;
 
     private Guid? _editingEntryId;
@@ -34,13 +36,17 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
     private int _editorDuration = 1;
 
     [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [FrequencyValidation]
     private int? _editorFrequency;
 
     [ObservableProperty]
     private bool _editorIsRecurring;
 
     [ObservableProperty]
-    private int _editorRepetitions;
+    [NotifyDataErrorInfo]
+    [RepetitionsValidation]
+    private int? _editorRepetitions;
 
     [ObservableProperty]
     private string? _editorStartDateString;
@@ -56,10 +62,27 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
 
     private List<DetectedSelection>? _pendingSelections;
 
+    public string? FrequencyError => GetErrors(nameof(EditorFrequency)).Cast<object>().FirstOrDefault()?.ToString();
+    public string? RepetitionsError => GetErrors(nameof(EditorRepetitions)).Cast<object>().FirstOrDefault()?.ToString();
+
     public DateEntryEditorController(IMediator mediator, IDateSelectionParser dateSelectionParser)
     {
         _mediator = mediator;
         _dateSelectionParser = dateSelectionParser;
+        _errorsChangedHandler = OnErrorsChanged;
+        ErrorsChanged += _errorsChangedHandler;
+    }
+
+    public void Dispose()
+    {
+        ErrorsChanged -= _errorsChangedHandler;
+    }
+
+    private void OnErrorsChanged(object? sender, DataErrorsChangedEventArgs e)
+    {
+        OnPropertyChanged(nameof(HasErrors));
+        OnPropertyChanged(nameof(FrequencyError));
+        OnPropertyChanged(nameof(RepetitionsError));
     }
 
     /// <inheritdoc />
@@ -146,7 +169,7 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
     public async Task SaveAsync(Guid calendarId)
     {
         // Treat recurring with 0 repetitions as a single date
-        var effectiveIsRecurring = EditorIsRecurring && EditorRepetitions > 0;
+        var effectiveIsRecurring = EditorIsRecurring && (EditorRepetitions ?? 0) > 0;
 
         if (_pendingSelections is { Count: > 0 })
         {
@@ -159,7 +182,7 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
                     effectiveIsRecurring,
                     selection.Duration,
                     effectiveIsRecurring ? EditorFrequency : null,
-                    effectiveIsRecurring ? EditorRepetitions : 0));
+                    effectiveIsRecurring ? EditorRepetitions ?? 0 : 0));
             }
 
             _pendingSelections = null;
@@ -187,7 +210,7 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
                 effectiveIsRecurring,
                 effectiveIsRecurring ? EditorDuration : 1,
                 effectiveIsRecurring ? EditorFrequency : null,
-                effectiveIsRecurring ? EditorRepetitions : 0));
+                effectiveIsRecurring ? EditorRepetitions ?? 0 : 0));
         }
         else
         {
@@ -198,7 +221,7 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
                 effectiveIsRecurring,
                 effectiveIsRecurring ? EditorDuration : 1,
                 effectiveIsRecurring ? EditorFrequency : null,
-                effectiveIsRecurring ? EditorRepetitions : 0));
+                effectiveIsRecurring ? EditorRepetitions ?? 0 : 0));
         }
 
         Close();
@@ -277,5 +300,32 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
 
         var endDate = entry.StartDate.AddDays(entry.Duration - 1);
         return date >= entry.StartDate && date <= endDate;
+    }
+
+    /// <summary>
+    /// Sets the default frequency when recurring mode is enabled.
+    /// </summary>
+    partial void OnEditorIsRecurringChanged(bool value)
+    {
+        if (value && (EditorFrequency is null || EditorFrequency < EditorDuration + 1))
+        {
+            EditorFrequency = EditorDuration + 1;
+        }
+
+        ValidateProperty(EditorFrequency, nameof(EditorFrequency));
+        ValidateProperty(EditorRepetitions, nameof(EditorRepetitions));
+    }
+
+    /// <summary>
+    /// Updates a frequency minimum when duration changes and re-validates.
+    /// </summary>
+    partial void OnEditorDurationChanged(int value)
+    {
+        if (EditorIsRecurring && (EditorFrequency is null || EditorFrequency < value + 1))
+        {
+            EditorFrequency = value + 1;
+        }
+
+        ValidateProperty(EditorFrequency, nameof(EditorFrequency));
     }
 }

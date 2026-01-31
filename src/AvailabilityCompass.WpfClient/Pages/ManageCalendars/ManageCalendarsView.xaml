@@ -10,6 +10,7 @@
              xmlns:helpers="clr-namespace:AvailabilityCompass.WpfClient.Shared.Helpers"
              xmlns:controls="clr-namespace:AvailabilityCompass.WpfClient.Shared.Controls"
              xmlns:sharedConverters="clr-namespace:AvailabilityCompass.WpfClient.Shared.Converters"
+             xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Converters"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:ManageCalendarsViewModel}"
@@ -20,6 +21,7 @@
         <sharedConverters:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" Invert="True" />
         <sys:String x:Key="MaxCalendarNameLengthText">20</sys:String>
         <sys:Int32 x:Key="MaxCalendarNameLength">20</sys:Int32>
+        <converters:StringToTextBoxStyleConverter x:Key="StringToTextBoxStyleConverter" />
     </UserControl.Resources>
 
     <Border x:Name="RootBorder"
@@ -662,15 +664,51 @@
                                 <StackPanel Grid.Column="0">
                                     <TextBlock Text="Repeat after (days)" Style="{StaticResource GlassCaption}"
                                                Margin="0,0,0,4" />
-                                    <TextBox Text="{Binding EditorFrequency, UpdateSourceTrigger=PropertyChanged}"
-                                             Style="{StaticResource GlassTextBox}" />
+                                    <TextBox Text="{Binding EditorFrequency, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}"
+                                             Style="{Binding FrequencyError, Converter={StaticResource StringToTextBoxStyleConverter}}"
+                                             PreviewTextInput="NumericOnly_PreviewTextInput" />
+                                    <TextBlock Text="{Binding FrequencyError}"
+                                               Foreground="{DynamicResource GlassDestructiveBrush}"
+                                               Margin="0,4,0,0">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource GlassCaption}">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding FrequencyError}" Value="{x:Null}">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding FrequencyError}" Value="">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="2">
                                     <TextBlock Text="Repetitions" Style="{StaticResource GlassCaption}"
                                                Margin="0,0,0,4" />
-                                    <TextBox Text="{Binding EditorRepetitions, UpdateSourceTrigger=PropertyChanged}"
-                                             Style="{StaticResource GlassTextBox}" />
+                                    <TextBox Text="{Binding EditorRepetitions, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}"
+                                             Style="{Binding RepetitionsError, Converter={StaticResource StringToTextBoxStyleConverter}}"
+                                             PreviewTextInput="NumericOnly_PreviewTextInput" />
+                                    <TextBlock Text="{Binding RepetitionsError}"
+                                               Foreground="{DynamicResource GlassDestructiveBrush}"
+                                               Margin="0,4,0,0">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource GlassCaption}">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding RepetitionsError}" Value="{x:Null}">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding RepetitionsError}" Value="">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
