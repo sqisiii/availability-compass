@@ -463,6 +463,30 @@ public class DateEntryEditorControllerTests
     }
 
     [Fact]
+    public async Task SaveAsync_ShouldSaveAsSingleDate_WhenIsRecurringTrueButRepetitionsZero()
+    {
+        // Arrange
+        var calendarId = Guid.NewGuid();
+        _sut.OpenForDateClick(new DateOnly(2025, 1, 15), []);
+        _sut.EditorDescription = "Recurring with zero repetitions";
+        _sut.EditorIsRecurring = true;
+        _sut.EditorFrequency = 7;
+        _sut.EditorRepetitions = 0; // Zero repetitions should save as single date
+
+        // Act
+        await _sut.SaveAsync(calendarId);
+
+        // Assert
+        await _mediator.Received(1)
+            .Send(
+                Arg.Is<AddDateEntryToDbRequest>(r =>
+                    r.IsRecurring == false &&
+                    r.Frequency == null &&
+                    r.NumberOfRepetitions == 0),
+                Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task SaveAsync_ShouldDoNothing_WhenStartDateIsEmpty()
     {
         // Arrange

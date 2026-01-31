@@ -145,6 +145,9 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
     /// <inheritdoc />
     public async Task SaveAsync(Guid calendarId)
     {
+        // Treat recurring with 0 repetitions as a single date
+        var effectiveIsRecurring = EditorIsRecurring && EditorRepetitions > 0;
+
         if (_pendingSelections is { Count: > 0 })
         {
             foreach (var selection in _pendingSelections)
@@ -153,10 +156,10 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
                     calendarId,
                     EditorDescription,
                     selection.StartDate,
-                    EditorIsRecurring,
+                    effectiveIsRecurring,
                     selection.Duration,
-                    EditorIsRecurring ? EditorFrequency : null,
-                    EditorIsRecurring ? EditorRepetitions : 0));
+                    effectiveIsRecurring ? EditorFrequency : null,
+                    effectiveIsRecurring ? EditorRepetitions : 0));
             }
 
             _pendingSelections = null;
@@ -181,10 +184,10 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
                 _editingEntryId.Value,
                 EditorDescription,
                 startDate,
-                EditorIsRecurring,
-                EditorIsRecurring ? EditorDuration : 1,
-                EditorIsRecurring ? EditorFrequency : null,
-                EditorIsRecurring ? EditorRepetitions : 0));
+                effectiveIsRecurring,
+                effectiveIsRecurring ? EditorDuration : 1,
+                effectiveIsRecurring ? EditorFrequency : null,
+                effectiveIsRecurring ? EditorRepetitions : 0));
         }
         else
         {
@@ -192,10 +195,10 @@ public partial class DateEntryEditorController : ObservableObject, IDateEntryEdi
                 calendarId,
                 EditorDescription,
                 startDate,
-                EditorIsRecurring,
-                EditorIsRecurring ? EditorDuration : 1,
-                EditorIsRecurring ? EditorFrequency : null,
-                EditorIsRecurring ? EditorRepetitions : 0));
+                effectiveIsRecurring,
+                effectiveIsRecurring ? EditorDuration : 1,
+                effectiveIsRecurring ? EditorFrequency : null,
+                effectiveIsRecurring ? EditorRepetitions : 0));
         }
 
         Close();
