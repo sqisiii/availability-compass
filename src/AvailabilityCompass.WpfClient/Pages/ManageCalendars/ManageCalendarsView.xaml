@@ -191,7 +191,7 @@
                                        Margin="0,0,0,12" />
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
@@ -438,7 +438,7 @@
                                                 Background="DarkRed"
                                                 CornerRadius="2"
                                                 Margin="0,0,8,0" />
-                                        <TextBlock Text="Single Date"
+                                        <TextBlock Text="One Time Occurrence"
                                                    FontSize="12"
                                                    Foreground="{DynamicResource GlassForegroundBrush}"
                                                    VerticalAlignment="Center" />
