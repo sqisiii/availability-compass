@@ -453,16 +453,6 @@
                                                    VerticalAlignment="Center" />
                                     </StackPanel>
 
-                                    <StackPanel Orientation="Horizontal">
-                                        <Border Width="14" Height="14"
-                                                Background="Purple"
-                                                CornerRadius="2"
-                                                Margin="0,0,8,0" />
-                                        <TextBlock Text="Inverted"
-                                                   FontSize="12"
-                                                   Foreground="{DynamicResource GlassForegroundBrush}"
-                                                   VerticalAlignment="Center" />
-                                    </StackPanel>
                                 </StackPanel>
                             </Border>
                         </Grid>

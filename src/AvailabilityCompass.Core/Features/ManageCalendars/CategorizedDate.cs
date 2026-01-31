@@ -5,7 +5,7 @@
 /// </summary>
 /// <remarks>
 /// This class is used to categorize dates for calendar management features,
-/// allowing dates to be classified as single, recurring, or inverted.
+/// allowing dates to be classified as single or recurring.
 /// </remarks>
 public class CategorizedDate
 {
@@ -24,6 +24,5 @@ public class CategorizedDate
 public enum CategorizedDateCategory
 {
     SingleDate,
-    RecurringDate,
-    Inverted
+    RecurringDate
 }

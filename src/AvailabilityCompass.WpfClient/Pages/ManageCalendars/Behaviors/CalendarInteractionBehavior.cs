@@ -29,8 +29,7 @@ public class CalendarInteractionBehavior : Behavior<Calendar>
     private readonly Dictionary<CategorizedDateCategory, Brush> _categoryBrushes = new()
     {
         { CategorizedDateCategory.SingleDate, Brushes.DarkRed },
-        { CategorizedDateCategory.RecurringDate, Brushes.DarkSalmon },
-        { CategorizedDateCategory.Inverted, Brushes.Purple }
+        { CategorizedDateCategory.RecurringDate, Brushes.DarkSalmon }
     };
 
     public ObservableCollection<CategorizedDate> ColorCodedDates
