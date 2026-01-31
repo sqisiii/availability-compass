@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace AvailabilityCompass.WpfClient.Pages.ManageCalendars.Converters;
+namespace AvailabilityCompass.WpfClient.Shared.Converters;
 
 /// <summary>
 /// Converts a string (error message) to a TextBox style.

@@ -1,0 +1,34 @@
+<UserControl x:Class="AvailabilityCompass.WpfClient.Shared.Controls.ValidatedNumericInput"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Shared.Converters"
+             x:Name="Root">
+    <UserControl.Resources>
+        <converters:StringToTextBoxStyleConverter x:Key="StringToTextBoxStyleConverter" />
+    </UserControl.Resources>
+    <StackPanel>
+        <TextBlock Text="{Binding Label, ElementName=Root}"
+                   Style="{StaticResource GlassCaption}"
+                   Margin="0,0,0,4" />
+        <TextBox Text="{Binding Value, ElementName=Root, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}"
+                 Style="{Binding ValidationError, ElementName=Root, Converter={StaticResource StringToTextBoxStyleConverter}}"
+                 PreviewTextInput="NumericOnly_PreviewTextInput" />
+        <TextBlock Text="{Binding ValidationError, ElementName=Root}"
+                   Foreground="{DynamicResource GlassDestructiveBrush}"
+                   Margin="0,4,0,0">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource GlassCaption}">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ValidationError, ElementName=Root}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ValidationError, ElementName=Root}" Value="">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+    </StackPanel>
+</UserControl>
