@@ -24,7 +24,9 @@
     <Border BorderThickness="1"
             BorderBrush="{DynamicResource GlassBorderSolidBrush}"
             CornerRadius="{DynamicResource GlassWindowRadius}"
-            Background="{DynamicResource GlassBackgroundBrush}">
+            Background="{DynamicResource GlassBackgroundBrush}"
+            TextOptions.TextFormattingMode="Display"
+            UseLayoutRounding="True">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="56" />
