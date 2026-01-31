@@ -337,6 +337,54 @@
         <Setter Property="FontSize" Value="13" />
     </Style>
 
+    <!-- Circular Glow Button (e.g., Add button) -->
+    <Style x:Key="GlassCircularGlowButton" TargetType="Button" BasedOn="{StaticResource GlassButtonBase}">
+        <Setter Property="Width" Value="44" />
+        <Setter Property="Height" Value="44" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="PART_Border"
+                            CornerRadius="22"
+                            SnapsToDevicePixels="True">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{DynamicResource GlassPrimaryColor}" Offset="0" />
+                                <GradientStop Color="{DynamicResource GlassSecondaryColor}" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16"
+                                              ShadowDepth="2"
+                                              Direction="270"
+                                              Opacity="0.4"
+                                              Color="{DynamicResource GlassPrimaryColor}" />
+                        </Border.Effect>
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_Border" Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect BlurRadius="20"
+                                                      ShadowDepth="4"
+                                                      Direction="270"
+                                                      Opacity="0.5"
+                                                      Color="{DynamicResource GlassPrimaryColor}" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PART_Border" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ========================================== -->
     <!-- TEXTBOX STYLES                             -->
     <!-- ========================================== -->

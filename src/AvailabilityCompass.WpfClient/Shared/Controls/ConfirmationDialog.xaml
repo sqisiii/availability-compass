@@ -1,0 +1,34 @@
+<UserControl x:Class="AvailabilityCompass.WpfClient.Shared.Controls.ConfirmationDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Name="Root">
+    <StackPanel>
+        <TextBlock Text="{Binding Title, ElementName=Root}"
+                   Style="{StaticResource GlassHeading3}"
+                   Margin="0,0,0,12" />
+        <TextBlock Text="{Binding Message, ElementName=Root}"
+                   TextWrapping="Wrap"
+                   Foreground="{DynamicResource GlassForegroundBrush}"
+                   Margin="0,0,0,16" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="1"
+                    Style="{StaticResource GlassGhostButton}"
+                    Command="{Binding CancelCommand, ElementName=Root}"
+                    Content="{Binding CancelText, ElementName=Root}"
+                    Width="80"
+                    Margin="0,0,8,0" />
+
+            <Button Grid.Column="2"
+                    Command="{Binding ConfirmCommand, ElementName=Root}"
+                    Content="{Binding ConfirmText, ElementName=Root}"
+                    Style="{Binding ConfirmButtonStyle, ElementName=Root}"
+                    Width="80" />
+        </Grid>
+    </StackPanel>
+</UserControl>

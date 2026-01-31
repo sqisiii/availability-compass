@@ -79,57 +79,11 @@
                         <!-- Add Calendar Button - Circular with a glow -->
                         <Button DockPanel.Dock="Right"
                                 Command="{Binding ExpandAddCalendarCommand}"
-                                Width="44"
-                                Height="44"
-                                Padding="0"
                                 Margin="8,4,0,0"
                                 VerticalAlignment="Top"
                                 ToolTip="Add Calendar">
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource GlassPrimaryButton}">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border x:Name="PART_Border"
-                                                        CornerRadius="22"
-                                                        SnapsToDevicePixels="True">
-                                                    <Border.Background>
-                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                            <GradientStop Color="{DynamicResource GlassPrimaryColor}"
-                                                                          Offset="0" />
-                                                            <GradientStop Color="{DynamicResource GlassSecondaryColor}"
-                                                                          Offset="1" />
-                                                        </LinearGradientBrush>
-                                                    </Border.Background>
-                                                    <Border.Effect>
-                                                        <DropShadowEffect BlurRadius="16"
-                                                                          ShadowDepth="2"
-                                                                          Direction="270"
-                                                                          Opacity="0.4"
-                                                                          Color="{DynamicResource GlassPrimaryColor}" />
-                                                    </Border.Effect>
-                                                    <ContentPresenter HorizontalAlignment="Center"
-                                                                      VerticalAlignment="Center" />
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter TargetName="PART_Border" Property="Effect">
-                                                            <Setter.Value>
-                                                                <DropShadowEffect BlurRadius="20"
-                                                                        ShadowDepth="4"
-                                                                        Direction="270"
-                                                                        Opacity="0.5"
-                                                                        Color="{DynamicResource GlassPrimaryColor}" />
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                    </Trigger>
-                                                    <Trigger Property="IsEnabled" Value="False">
-                                                        <Setter TargetName="PART_Border" Property="Opacity" Value="0.5" />
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
+                                <Style TargetType="Button" BasedOn="{StaticResource GlassCircularGlowButton}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsAddCalendarExpanded}" Value="True">
                                             <Setter Property="IsEnabled" Value="False" />
@@ -575,187 +529,63 @@
             </Border>
 
             <!-- Editor Overlay -->
-            <Border Grid.Row="0" Grid.RowSpan="3"
-                    Background="#80000000"
-                    Visibility="{Binding IsEditorOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Border Background="{DynamicResource GlassCardSolidBrush}"
-                        BorderBrush="{DynamicResource GlassBorderSolidBrush}"
-                        BorderThickness="1"
-                        CornerRadius="12"
-                        Padding="20"
-                        MinWidth="350"
-                        MaxWidth="400"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Center"
-                        Effect="{DynamicResource GlassShadowMD}">
-                    <StackPanel>
-                        <!-- Editor Header -->
-                        <Grid Margin="0,0,0,16">
-                            <TextBlock Text="{Binding EditorTitle}"
-                                       Style="{StaticResource GlassHeading3}" />
-                            <Button Style="{StaticResource GlassIconButton}"
-                                    Command="{Binding CancelEditCommand}"
-                                    HorizontalAlignment="Right"
-                                    Width="24"
-                                    Height="24">
-                                <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
-                                           FontSize="12"
-                                           Text="{x:Static controls:FluentIcons.Close}"
-                                           Foreground="{DynamicResource GlassMutedForegroundBrush}" />
-                            </Button>
-                        </Grid>
-
-                        <!-- Selection Preview List (shows detected periods/single dates) - always visible -->
-                        <StackPanel Margin="0,0,0,12">
-                            <TextBlock Margin="0,0,0,4">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock" BasedOn="{StaticResource GlassCaption}">
-                                        <Setter Property="Text" Value="Selected Dates" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsEditMode}" Value="True">
-                                                <Setter Property="Text" Value="Current Date(s)" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                            <ItemsControl ItemsSource="{Binding EditorDetectedSelections}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Background="{DynamicResource GlassMutedBrush}"
-                                                CornerRadius="4"
-                                                Padding="8,4"
-                                                Margin="0,0,0,4">
-                                            <TextBlock Text="{Binding DisplayText}"
-                                                       FontSize="12"
-                                                       Foreground="{DynamicResource GlassForegroundBrush}" />
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
-
-                        <!-- Description Field with Label -->
-                        <StackPanel Margin="0,0,0,12">
-                            <TextBlock Text="Description" Style="{StaticResource GlassCaption}" Margin="0,0,0,4" />
-                            <TextBox Text="{Binding EditorDescription, UpdateSourceTrigger=PropertyChanged}"
-                                     Style="{StaticResource GlassTextBox}" />
-                        </StackPanel>
-
-                        <!-- Recurring Toggle -->
-                        <CheckBox IsChecked="{Binding EditorIsRecurring}"
-                                  Content="Make this recurring"
-                                  Style="{StaticResource GlassCheckBox}"
-                                  Margin="0,0,0,12" />
-
-                        <!-- Simplified Recurring Options (only Frequency and Repetitions) -->
-                        <StackPanel
-                            Visibility="{Binding EditorIsRecurring, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Margin="0,0,0,12">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="8" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <controls:ValidatedNumericInput
-                                    Grid.Column="0"
-                                    Label="Repeat after (days)"
-                                    Value="{Binding EditorFrequency, Mode=TwoWay}"
-                                    ValidationError="{Binding FrequencyError}" />
-
-                                <controls:ValidatedNumericInput
-                                    Grid.Column="2"
-                                    Label="Repetitions"
-                                    Value="{Binding EditorRepetitions, Mode=TwoWay}"
-                                    ValidationError="{Binding RepetitionsError}" />
-                            </Grid>
-                        </StackPanel>
-
-                        <!-- Action Buttons -->
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-
-                            <!-- Delete Button (only in edit mode) -->
-                            <Button Grid.Column="0"
-                                    Style="{StaticResource GlassDestructiveButton}"
-                                    Command="{Binding DeleteEntryCommand}"
-                                    Visibility="{Binding IsEditMode, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                    Content="Delete"
-                                    Width="80"
-                                    HorizontalAlignment="Left" />
-
-                            <Button Grid.Column="1"
-                                    Style="{StaticResource GlassGhostButton}"
-                                    Command="{Binding CancelEditCommand}"
-                                    Content="Cancel"
-                                    Width="80"
-                                    Margin="0,0,8,0" />
-
-                            <Button Grid.Column="2"
-                                    Style="{StaticResource GlassPrimaryButton}"
-                                    Command="{Binding SaveEntryCommand}"
-                                    Content="Save"
-                                    Width="80" />
-                        </Grid>
-                    </StackPanel>
-                </Border>
-            </Border>
+            <controls:ModalOverlay Grid.Row="0" Grid.RowSpan="3"
+                                   IsOpen="{Binding IsEditorOpen}"
+                                   MinDialogWidth="350"
+                                   MaxDialogWidth="400">
+                <controls1:DateEntryEditorPanel
+                    Title="{Binding EditorTitle}"
+                    Description="{Binding EditorDescription, Mode=TwoWay}"
+                    IsRecurring="{Binding EditorIsRecurring, Mode=TwoWay}"
+                    Frequency="{Binding EditorFrequency, Mode=TwoWay}"
+                    Repetitions="{Binding EditorRepetitions, Mode=TwoWay}"
+                    FrequencyError="{Binding FrequencyError}"
+                    RepetitionsError="{Binding RepetitionsError}"
+                    DetectedSelections="{Binding EditorDetectedSelections}"
+                    IsEditMode="{Binding IsEditMode}"
+                    SaveCommand="{Binding SaveEntryCommand}"
+                    CancelCommand="{Binding CancelEditCommand}"
+                    DeleteCommand="{Binding DeleteEntryCommand}" />
+            </controls:ModalOverlay>
 
             <!-- Delete Confirmation Overlay -->
-            <Border Grid.Row="0"
-                    Grid.RowSpan="3"
-                    Background="#80000000"
-                    Visibility="{Binding IsDeleteConfirmationOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Border Background="{DynamicResource GlassBackgroundBrush}"
-                        BorderBrush="{DynamicResource GlassBorderSolidBrush}"
-                        BorderThickness="1"
-                        CornerRadius="12"
-                        Padding="20"
-                        MinWidth="300"
-                        MaxWidth="400"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Center"
-                        Effect="{DynamicResource GlassShadowMD}">
-                    <StackPanel>
-                        <TextBlock Text="Delete Calendar"
-                                   Style="{StaticResource GlassHeading3}"
-                                   Margin="0,0,0,12" />
-                        <TextBlock TextWrapping="Wrap"
-                                   Foreground="{DynamicResource GlassForegroundBrush}"
-                                   Margin="0,0,0,16">
-                            <Run Text="Are you sure you want to delete " />
-                            <Run Text="{Binding DeleteCalendarName, Mode=OneWay}" FontWeight="SemiBold" />
-                            <Run Text="? This will also delete all date entries associated with this calendar." />
-                        </TextBlock>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+            <controls:ModalOverlay Grid.Row="0" Grid.RowSpan="3"
+                                   IsOpen="{Binding IsDeleteConfirmationOpen}"
+                                   MinDialogWidth="300"
+                                   MaxDialogWidth="400">
+                <StackPanel>
+                    <TextBlock Text="Delete Calendar"
+                               Style="{StaticResource GlassHeading3}"
+                               Margin="0,0,0,12" />
+                    <TextBlock TextWrapping="Wrap"
+                               Foreground="{DynamicResource GlassForegroundBrush}"
+                               Margin="0,0,0,16">
+                        <Run Text="Are you sure you want to delete " />
+                        <Run Text="{Binding DeleteCalendarName, Mode=OneWay}" FontWeight="SemiBold" />
+                        <Run Text="? This will also delete all date entries associated with this calendar." />
+                    </TextBlock>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-                            <Button Grid.Column="1"
-                                    Style="{StaticResource GlassGhostButton}"
-                                    Command="{Binding CancelDeleteCalendarCommand}"
-                                    Content="Cancel"
-                                    Width="80"
-                                    Margin="0,0,8,0" />
+                        <Button Grid.Column="1"
+                                Style="{StaticResource GlassGhostButton}"
+                                Command="{Binding CancelDeleteCalendarCommand}"
+                                Content="Cancel"
+                                Width="80"
+                                Margin="0,0,8,0" />
 
-                            <Button Grid.Column="2"
-                                    Style="{StaticResource GlassDestructiveButton}"
-                                    Command="{Binding ConfirmDeleteCalendarCommand}"
-                                    Content="Delete"
-                                    Width="80" />
-                        </Grid>
-                    </StackPanel>
-                </Border>
-            </Border>
+                        <Button Grid.Column="2"
+                                Style="{StaticResource GlassDestructiveButton}"
+                                Command="{Binding ConfirmDeleteCalendarCommand}"
+                                Content="Delete"
+                                Width="80" />
+                    </Grid>
+                </StackPanel>
+            </controls:ModalOverlay>
         </Grid>
     </Border>
 </UserControl>
