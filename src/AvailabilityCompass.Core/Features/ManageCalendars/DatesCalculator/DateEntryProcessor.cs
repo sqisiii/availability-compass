@@ -27,10 +27,15 @@ public class DateEntryProcessor : IDateProcessor
 
     private static void ProcessSingle(DateEntryViewModel dateEntry, List<CategorizedDate> result)
     {
-        result.Add(new CategorizedDate(
-            dateEntry.StartDate.ToDateTime(TimeOnly.MinValue),
-            CategorizedDateCategory.SingleDate,
-            dateEntry.Description));
+        var currentDate = dateEntry.StartDate;
+        for (var i = 0; i < dateEntry.Duration; i++)
+        {
+            result.Add(new CategorizedDate(
+                currentDate.ToDateTime(TimeOnly.MinValue),
+                CategorizedDateCategory.SingleDate,
+                dateEntry.Description));
+            currentDate = currentDate.AddDays(1);
+        }
     }
 
     private static void ProcessRecurring(DateEntryViewModel dateEntry, List<CategorizedDate> result)
