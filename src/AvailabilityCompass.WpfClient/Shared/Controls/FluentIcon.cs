@@ -154,4 +154,8 @@ public static class FluentIcons
     // Calendar types
     public const string Accept = "\uE8FB"; // Checkmark in circle (for Include calendars)
     public const string Blocked = "\uE8D8"; // Prohibited sign (for Exclude calendars)
+
+    // Visibility
+    public const string View = "\uE7B3";  // Eye icon (visible/enabled)
+    public const string Hide = "\uED1A";  // Eye with slash (hidden/disabled)
 }

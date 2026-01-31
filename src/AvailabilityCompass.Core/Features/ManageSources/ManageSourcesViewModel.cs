@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using AvailabilityCompass.Core.Features.ManageSources.Commands.SetSourceDisabled;
+using AvailabilityCompass.Core.Features.ManageSources.Queries.GetDisabledSources;
 using AvailabilityCompass.Core.Features.ManageSources.Queries.GetSourcesMetaDataFromDbQuery;
 using AvailabilityCompass.Core.Features.ManageSources.Sources;
 using AvailabilityCompass.Core.Shared;
@@ -118,11 +120,31 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
     private async Task LoadSourcesMetaDataAsync(CancellationToken ct)
     {
         var sourcesMetaData = await _mediator.Send(new GetSourcesMetaDataFromDbQuery(), ct);
+        var disabledSourcesResponse = await _mediator.Send(new GetDisabledSourcesQuery(), ct);
         Sources.Clear();
-        var sourceViewModels = _sourceMetaDataViewModelFactory.Create(sourcesMetaData);
+        var sourceViewModels = _sourceMetaDataViewModelFactory.Create(sourcesMetaData, disabledSourcesResponse.DisabledSourceIds);
         foreach (var sourceViewModel in sourceViewModels)
         {
             Sources.Add(sourceViewModel);
+        }
+    }
+
+    [RelayCommand]
+    private async Task OnToggleSourceEnabled(string sourceId, CancellationToken ct)
+    {
+        var source = Sources.FirstOrDefault(s => s.SourceId == sourceId);
+        if (source is null)
+        {
+            return;
+        }
+
+        var newDisabledState = source.IsEnabled;
+        var response = await _mediator.Send(new SetSourceDisabledRequest(sourceId, newDisabledState), ct);
+
+        if (response.IsSuccess)
+        {
+            source.IsEnabled = !newDisabledState;
+            RefreshSourceCommand.NotifyCanExecuteChanged();
         }
     }
 

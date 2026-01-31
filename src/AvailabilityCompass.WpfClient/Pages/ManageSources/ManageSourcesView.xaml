@@ -90,6 +90,7 @@
                                     BorderThickness="1">
                                 <Border.Style>
                                     <Style TargetType="Border">
+                                        <Setter Property="Opacity" Value="1" />
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
                                                 <Setter Property="BorderBrush"
@@ -97,6 +98,9 @@
                                                 <Setter Property="Background"
                                                         Value="{DynamicResource GlassPrimaryLightBrush}" />
                                             </Trigger>
+                                            <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+                                                <Setter Property="Opacity" Value="0.5" />
+                                            </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Border.Style>
@@ -108,10 +112,11 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
-                                    <!-- Row 0: Header with Name and Language -->
+                                    <!-- Row 0: Header with Name, Language and Enable/Disable Icon -->
                                     <Grid Grid.Row="0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Column="0"
@@ -122,8 +127,71 @@
                                         <TextBlock Grid.Column="1"
                                                    Text="{Binding Language}"
                                                    Style="{StaticResource GlassCaption}"
-                                                   Foreground="{DynamicResource GlassMutedForegroundBrush}"
-                                                   VerticalAlignment="Center" />
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,0,4,0" />
+
+                                        <!-- Enable/Disable Icon Button -->
+                                        <Button Grid.Column="2"
+                                                Style="{StaticResource GlassIconButton}"
+                                                Width="28"
+                                                Height="28"
+                                                Command="{Binding DataContext.ToggleSourceEnabledCommand,
+                                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding SourceId}">
+                                            <Button.ToolTip>
+                                                <ToolTip>
+                                                    <StackPanel>
+                                                        <TextBlock FontWeight="SemiBold">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Text" Value="Source Enabled" />
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsEnabled}"
+                                                                                Value="False">
+                                                                            <Setter Property="Text"
+                                                                                    Value="Source Disabled" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                        <TextBlock Opacity="0.7">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Text"
+                                                                            Value="Click to disable this source" />
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsEnabled}"
+                                                                                Value="False">
+                                                                            <Setter Property="Text"
+                                                                                    Value="Click to enable this source" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </StackPanel>
+                                                </ToolTip>
+                                            </Button.ToolTip>
+                                            <controls:FluentIcon IconSize="16">
+                                                <controls:FluentIcon.Style>
+                                                    <Style TargetType="controls:FluentIcon">
+                                                        <Setter Property="Glyph"
+                                                                Value="{x:Static controls:FluentIcons.View}" />
+                                                        <Setter Property="Foreground"
+                                                                Value="{DynamicResource GlassSuccessBrush}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+                                                                <Setter Property="Glyph"
+                                                                        Value="{x:Static controls:FluentIcons.Hide}" />
+                                                                <Setter Property="Foreground"
+                                                                        Value="{DynamicResource GlassMutedForegroundBrush}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </controls:FluentIcon.Style>
+                                            </controls:FluentIcon>
+                                        </Button>
                                     </Grid>
 
                                     <!-- Row 1: Stats -->
@@ -154,19 +222,21 @@
                                     <!-- Row 2: Actions -->
                                     <Grid Grid.Row="2" Margin="0,16,0,0">
                                         <!-- Progress bar (visible when refreshing) -->
-                                        <Grid Visibility="{Binding ShowProgress,
+                                        <Grid
+                                            Visibility="{Binding ShowProgress,
                                               Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <ProgressBar Value="{Binding ProgressPercent}"
                                                          Height="28"
                                                          Background="{DynamicResource GlassSurfaceBrush}"
                                                          Foreground="{DynamicResource GlassPrimaryBrush}" />
-                                            <TextBlock Text="{Binding ProgressPercent,
+                                            <TextBlock
+                                                Text="{Binding ProgressPercent,
                                                        Converter={StaticResource DoubleToPercentageConverter}}"
-                                                       HorizontalAlignment="Center"
-                                                       VerticalAlignment="Center"
-                                                       Style="{StaticResource GlassCaption}"
-                                                       FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource GlassForegroundBrush}" />
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Style="{StaticResource GlassCaption}"
+                                                FontWeight="SemiBold"
+                                                Foreground="{DynamicResource GlassForegroundBrush}" />
                                         </Grid>
 
                                         <!-- Refresh button (visible when idle) -->

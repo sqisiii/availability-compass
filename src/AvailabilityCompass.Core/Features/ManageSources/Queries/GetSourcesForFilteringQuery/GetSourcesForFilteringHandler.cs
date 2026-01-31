@@ -23,21 +23,32 @@ public class GetSourcesForFilteringHandler : IRequestHandler<
     private readonly IServiceProvider _serviceProvider;
     private readonly ISourceStore _sourceStore;
 
-    public GetSourcesForFilteringHandler(IDbConnectionFactory dbConnectionFactory, ISourceStore sourceStore, IServiceProvider serviceProvider)
+    public GetSourcesForFilteringHandler(
+        IDbConnectionFactory dbConnectionFactory,
+        ISourceStore sourceStore,
+        IServiceProvider serviceProvider)
     {
         _dbConnectionFactory = dbConnectionFactory;
         _sourceStore = sourceStore;
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<GetSourcesForFilteringResponse> Handle(SearchRecords.Queries.GetSources.GetSourcesForFilteringQuery request, CancellationToken cancellationToken)
+    public async Task<GetSourcesForFilteringResponse> Handle(
+        SearchRecords.Queries.GetSources.GetSourcesForFilteringQuery request,
+        CancellationToken cancellationToken)
     {
         var response = new GetSourcesForFilteringResponse();
         var sourcesData = _sourceStore.GetSourceMetaData();
         var sourceChangeAtDates = (await GetSourceChangedAtDatesAsync()).ToList();
+        var disabledSourceIds = await GetDisabledSourceIdsAsync();
 
         foreach (var sourceData in sourcesData.OrderBy(i => i.Name))
         {
+            if (disabledSourceIds.Contains(sourceData.Id))
+            {
+                continue;
+            }
+
             var sourceChangeAtDate = sourceChangeAtDates.FirstOrDefault(x => x.SourceId == sourceData.Id).ChangedAt;
 
             var sourceService = _serviceProvider.GetKeyedService<ISourceService>(sourceData.Id);
@@ -93,18 +104,39 @@ public class GetSourcesForFilteringHandler : IRequestHandler<
             connection.Open();
 
             // language=SQLite
-            var query = @"
-                        SELECT 
-                            SourceId, 
-                            MAX(ChangeDate) AS ChangedAt 
-                        FROM Source
-                        GROUP BY SourceId;";
+            const string query = """
+                                 SELECT
+                                 SourceId,
+                                 MAX(ChangeDate) AS ChangedAt
+                                 FROM Source
+                                 """;
 
             return await connection.QueryAsync<(string SourceId, DateTime ChangedAt)>(query).ConfigureAwait(false);
         }
         catch (Exception e)
         {
             Log.Error(e, "Failed to get changed at dates from the database");
+        }
+
+        return [];
+    }
+
+    private async Task<HashSet<string>> GetDisabledSourceIdsAsync()
+    {
+        try
+        {
+            using var connection = _dbConnectionFactory.Connect();
+            connection.Open();
+
+            // language=SQLite
+            const string query = "SELECT SourceId FROM DisabledSources;";
+
+            var sourceIds = await connection.QueryAsync<string>(query).ConfigureAwait(false);
+            return sourceIds.ToHashSet();
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Failed to get disabled sources from the database");
         }
 
         return [];

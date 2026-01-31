@@ -25,6 +25,7 @@ public class SqlDbInitializer : IDbInitializer
         await PrepareSourceTablesAsync();
         await PrepareCalendarTablesAsync();
         await PrepareSettingsTableAsync();
+        await PrepareDisabledSourcesTableAsync();
     }
 
     private async Task PrepareSourceTablesAsync()
@@ -108,5 +109,19 @@ public class SqlDbInitializer : IDbInitializer
             """;
         using var database = _sqliteDbConnectionFactory.Connect();
         await database.ExecuteAsync(createSettingsTable);
+    }
+
+    private async Task PrepareDisabledSourcesTableAsync()
+    {
+        // language=SQLite
+        const string createDisabledSourcesTable =
+            """
+            CREATE TABLE IF NOT EXISTS DisabledSources (
+                            SourceId TEXT NOT NULL PRIMARY KEY,
+                            ChangeDate TEXT NOT NULL
+                        );
+            """;
+        using var database = _sqliteDbConnectionFactory.Connect();
+        await database.ExecuteAsync(createDisabledSourcesTable);
     }
 }

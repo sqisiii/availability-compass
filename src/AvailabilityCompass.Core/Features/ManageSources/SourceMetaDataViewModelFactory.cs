@@ -15,7 +15,9 @@ public class SourceMetaDataViewModelFactory : ISourceMetaDataViewModelFactory
     }
 
     /// <inheritdoc />
-    public IEnumerable<SourceMetaDataViewModel> Create(IEnumerable<GetSourcesMetaDataFromDbDto> sourcesMetaData)
+    public IEnumerable<SourceMetaDataViewModel> Create(
+        IEnumerable<GetSourcesMetaDataFromDbDto> sourcesMetaData,
+        IReadOnlySet<string> disabledSourceIds)
     {
         var sourcesData = _sourceStore.GetSourceMetaData();
 
@@ -31,7 +33,7 @@ public class SourceMetaDataViewModelFactory : ISourceMetaDataViewModelFactory
                 ChangedAt = sourceMetaData?.ChangedAt,
                 SourceId = sourceData.Id,
                 TripsCount = sourceMetaData?.TripsCount ?? 0,
-                IsEnabled = sourceData.IsEnabled,
+                IsEnabled = !disabledSourceIds.Contains(sourceData.Id),
             };
             sourceMetaDataViewModels.Add(sourceMetaDataVm);
         }
