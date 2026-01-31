@@ -71,6 +71,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
         await _searchViewModel.LoadDataAsync(CancellationToken.None);
         await _manageSourcesViewModel.LoadDataAsync(CancellationToken.None);
         await _manageCalendarsViewModel.LoadDataAsync(CancellationToken.None);
+
+        if (!HasAnySourceData())
+        {
+            _dialogNavigationService.NavigateTo(_manageSourcesViewModel);
+        }
+    }
+
+    private bool HasAnySourceData()
+    {
+        return _manageSourcesViewModel.Sources.Any(source => source.TripsCount > 0);
     }
 
     private void OnCurrentDialogViewModelChanged()
