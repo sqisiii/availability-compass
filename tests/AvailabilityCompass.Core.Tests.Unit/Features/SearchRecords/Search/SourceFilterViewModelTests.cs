@@ -10,10 +10,6 @@ public class SourceFilterViewModelTests
 {
     private readonly IDateTimeProvider _dateTimeProvider = Substitute.For<IDateTimeProvider>();
 
-    public SourceFilterViewModelTests()
-    {
-    }
-
     [Fact]
     public void LastUpdated_ShouldReturnNAText_WhenChangeAtIsNull()
     {
