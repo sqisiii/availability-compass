@@ -209,8 +209,8 @@
                                     <Storyboard RepeatBehavior="Forever">
                                         <DoubleAnimation Storyboard.TargetName="PART_Border"
                                                          Storyboard.TargetProperty="(Border.Effect).(DropShadowEffect.Opacity)"
-                                                         From="0.3" To="0.6"
-                                                         Duration="0:0:0.75"
+                                                         From="0.3" To="0.85"
+                                                         Duration="0:0:0.6"
                                                          AutoReverse="True">
                                             <DoubleAnimation.EasingFunction>
                                                 <QuadraticEase EasingMode="EaseInOut" />
@@ -218,8 +218,17 @@
                                         </DoubleAnimation>
                                         <DoubleAnimation Storyboard.TargetName="PART_Border"
                                                          Storyboard.TargetProperty="(Border.Effect).(DropShadowEffect.BlurRadius)"
-                                                         From="16" To="28"
-                                                         Duration="0:0:0.75"
+                                                         From="16" To="40"
+                                                         Duration="0:0:0.6"
+                                                         AutoReverse="True">
+                                            <DoubleAnimation.EasingFunction>
+                                                <QuadraticEase EasingMode="EaseInOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="PART_Border"
+                                                         Storyboard.TargetProperty="(Border.Effect).(DropShadowEffect.ShadowDepth)"
+                                                         From="4" To="0"
+                                                         Duration="0:0:0.6"
                                                          AutoReverse="True">
                                             <DoubleAnimation.EasingFunction>
                                                 <QuadraticEase EasingMode="EaseInOut" />
