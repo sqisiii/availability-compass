@@ -44,12 +44,21 @@
                                VerticalAlignment="Center" />
 
                     <Button Grid.Column="1"
-                            Content="Refresh All"
-                            Width="120"
+                            Width="140"
                             Margin="0,0,12,0"
-                            Style="{StaticResource GlassSecondaryButton}"
+                            Style="{StaticResource GlassPrimaryButton}"
                             ToolTip="Refresh available trips data"
-                            Command="{Binding RefreshAllSourcesCommand}" />
+                            Command="{Binding RefreshAllSourcesCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <controls:FluentIcon Glyph="{x:Static controls:FluentIcons.Refresh}"
+                                                 IconSize="16"
+                                                 Foreground="White"
+                                                 Margin="0,0,8,0" />
+                            <TextBlock Text="Refresh All"
+                                       VerticalAlignment="Center"
+                                       Foreground="White" />
+                        </StackPanel>
+                    </Button>
 
                     <Button Grid.Column="2"
                             Style="{StaticResource GlassIconButton}"
