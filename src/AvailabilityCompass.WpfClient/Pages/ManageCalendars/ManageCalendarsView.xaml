@@ -369,7 +369,8 @@
                                 <StackPanel>
                                     <!-- Add Selected Dates Button -->
                                     <Button Content="Add Dates"
-                                            Style="{StaticResource GlassPrimaryButton}"
+                                            Style="{StaticResource GlassPrimaryButtonPulse}"
+                                            Tag="{Binding HasSelectedDates}"
                                             Command="{Binding AddSelectedDatesCommand}"
                                             CommandParameter="{Binding SelectedDates}"
                                             IsEnabled="{Binding HasSelectedDates}"
