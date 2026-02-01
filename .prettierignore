@@ -1,0 +1,5 @@
+# .NET files - formatted by ReSharper/Rider
+*.cs
+*.xaml
+*.csproj
+*.sln
