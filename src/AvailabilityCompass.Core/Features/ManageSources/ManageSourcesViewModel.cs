@@ -61,7 +61,6 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
             .ToList();
 
         await Task.WhenAll(tasks);
-        await RefreshSourceMetaDataAsync(ct);
     }
 
 
@@ -69,17 +68,6 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
     private async Task OnRefreshSource(string sourceId, CancellationToken ct)
     {
         await RefreshSourceData(sourceId, ct);
-        await RefreshSourceMetaDataAsync(ct);
-    }
-
-    private async Task RefreshSourceMetaDataAsync(CancellationToken ct)
-    {
-        if (_refreshingSourceIds.Count > 0)
-        {
-            return;
-        }
-
-        await LoadSourcesMetaDataAsync(ct);
     }
 
     private async Task RefreshSourceData(string sourceId, CancellationToken ct)
@@ -95,9 +83,26 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
         sourceService.RefreshProgressChanged += SourceServiceOnRefreshProgressChanged;
         await sourceService.RefreshSourceDataAsync(ct);
         sourceService.RefreshProgressChanged -= SourceServiceOnRefreshProgressChanged;
+
+        await UpdateSourceMetaDataAsync(sourceId, ct);
+
         _refreshingSourceIds.Remove(sourceId);
         RefreshSourceCommand.NotifyCanExecuteChanged();
         RefreshAllSourcesCommand.NotifyCanExecuteChanged();
+    }
+
+    private async Task UpdateSourceMetaDataAsync(string sourceId, CancellationToken ct)
+    {
+        var sourcesMetaData = await _mediator.Send(new GetSourcesMetaDataFromDbQuery(), ct);
+        var sourceMetaData = sourcesMetaData.FirstOrDefault(s => s.SourceId == sourceId);
+
+        var source = Sources.FirstOrDefault(s => s.SourceId == sourceId);
+        if (source is not null && sourceMetaData is not null)
+        {
+            source.ChangedAt = sourceMetaData.ChangedAt;
+            source.TripsCount = sourceMetaData.TripsCount;
+            source.ProgressPercent = 0;
+        }
     }
 
     public bool CanRefreshSource(string sourceId)

@@ -109,6 +109,7 @@ public class GetSourcesForFilteringHandler : IRequestHandler<
                                  SourceId,
                                  MAX(ChangeDate) AS ChangedAt
                                  FROM Source
+                                 GROUP BY SourceId
                                  """;
 
             return await connection.QueryAsync<(string SourceId, DateTime ChangedAt)>(query).ConfigureAwait(false);
