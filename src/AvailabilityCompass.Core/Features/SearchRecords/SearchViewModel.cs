@@ -3,11 +3,14 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using AvailabilityCompass.Core.Features.ManageCalendars;
+using AvailabilityCompass.Core.Features.ManageSources;
 using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetCalendars;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetSources;
 using AvailabilityCompass.Core.Features.SearchRecords.Search;
 using AvailabilityCompass.Core.Shared;
+using AvailabilityCompass.Core.Shared.Navigation;
 using AvailabilityCompass.Core.Shared.EventBus;
 using AvailabilityCompass.Core.Shared.ValidationAttributes;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -25,8 +28,11 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
     private readonly IDisposable _calendarAddedSubscription;
     private readonly ICalendarFilterViewModelFactory _calendarFilterViewModelFactory;
     private readonly BehaviorSubject<List<ResultColumnDefinition>> _columnSubject = new([]);
+    private readonly INavigationService<IDialogViewModel> _dialogNavigationService;
     private readonly IFormElementFactory _formElementFactory;
     private readonly List<FormGroup> _formGroups = [];
+    private readonly ManageCalendarsViewModel _manageCalendarsViewModel;
+    private readonly ManageSourcesViewModel _manageSourcesViewModel;
     private readonly IMediator _mediator;
     private readonly ISearchCommandFactory _searchCommandFactory;
     private readonly ISourceFilterViewModelFactory _sourceFilterViewModelFactory;
@@ -83,13 +89,19 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
         ICalendarFilterViewModelFactory calendarFilterViewModelFactory,
         IFormElementFactory formElementFactory,
         IEventBus eventBus,
-        ISearchCommandFactory searchCommandFactory)
+        ISearchCommandFactory searchCommandFactory,
+        INavigationService<IDialogViewModel> dialogNavigationService,
+        ManageCalendarsViewModel manageCalendarsViewModel,
+        ManageSourcesViewModel manageSourcesViewModel)
     {
         _mediator = mediator;
         _sourceFilterViewModelFactory = sourceFilterViewModelFactory;
         _calendarFilterViewModelFactory = calendarFilterViewModelFactory;
         _formElementFactory = formElementFactory;
         _searchCommandFactory = searchCommandFactory;
+        _dialogNavigationService = dialogNavigationService;
+        _manageCalendarsViewModel = manageCalendarsViewModel;
+        _manageSourcesViewModel = manageSourcesViewModel;
         Sources.CollectionChanged += SourcesOnCollectionChanged;
         Calendars.CollectionChanged += CalendarsOnCollectionChanged;
         Results.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasResults));
@@ -240,6 +252,18 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
         IsFiltersSectionExpanded = false;
 
         await _searchCommandFactory.Create().ExecuteAsync();
+    }
+
+    [RelayCommand]
+    private void OnOpenCalendars()
+    {
+        _dialogNavigationService.NavigateTo(_manageCalendarsViewModel);
+    }
+
+    [RelayCommand]
+    private void OnOpenSources()
+    {
+        _dialogNavigationService.NavigateTo(_manageSourcesViewModel);
     }
 
     public void OnUpdateColumns()

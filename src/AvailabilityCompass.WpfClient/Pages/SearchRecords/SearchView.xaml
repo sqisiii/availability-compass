@@ -407,9 +407,18 @@
                                 Background="{DynamicResource GlassBackgroundBrush}"
                                 Visibility="{Binding IsCalendarsSectionExpanded, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <StackPanel>
-                                <TextBlock Text="No calendars available."
-                                           Style="{StaticResource GlassBodyMuted}"
-                                           Visibility="{Binding CalendarsUnAvailable, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center"
+                                            Visibility="{Binding CalendarsUnAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <TextBlock Text="No calendars available."
+                                               Style="{StaticResource GlassBodyMuted}"
+                                               VerticalAlignment="Center" />
+                                    <Button Content="Add calendars"
+                                            Command="{Binding OpenCalendarsCommand}"
+                                            Style="{StaticResource GlassLinkButton}"
+                                            VerticalAlignment="Center"
+                                            Margin="8,0,0,0" />
+                                </StackPanel>
                                 <ItemsControl ItemsSource="{Binding Calendars}"
                                               Visibility="{Binding CalendarsAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <ItemsControl.ItemsPanel>
@@ -450,9 +459,18 @@
                                 Background="{DynamicResource GlassBackgroundBrush}"
                                 Visibility="{Binding IsSourcesSectionExpanded, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <StackPanel>
-                                <TextBlock Text="No sources available."
-                                           Style="{StaticResource GlassBodyMuted}"
-                                           Visibility="{Binding SourcesUnAvailable, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center"
+                                            Visibility="{Binding SourcesUnAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <TextBlock Text="No sources available."
+                                               Style="{StaticResource GlassBodyMuted}"
+                                               VerticalAlignment="Center" />
+                                    <Button Content="Add sources"
+                                            Command="{Binding OpenSourcesCommand}"
+                                            Style="{StaticResource GlassLinkButton}"
+                                            VerticalAlignment="Center"
+                                            Margin="8,0,0,0" />
+                                </StackPanel>
                                 <!-- Source cards -->
                                 <ItemsControl ItemsSource="{Binding Sources}"
                                               Visibility="{Binding SourcesAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">

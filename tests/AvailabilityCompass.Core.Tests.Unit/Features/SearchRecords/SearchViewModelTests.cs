@@ -4,6 +4,7 @@ using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 using AvailabilityCompass.Core.Features.SearchRecords.Search;
 using AvailabilityCompass.Core.Shared;
 using AvailabilityCompass.Core.Shared.EventBus;
+using AvailabilityCompass.Core.Shared.Navigation;
 using MediatR;
 using NSubstitute;
 using Shouldly;
@@ -14,6 +15,7 @@ public class SearchViewModelTests
 {
     private readonly ICalendarFilterViewModelFactory _calendarFactory = Substitute.For<ICalendarFilterViewModelFactory>();
     private readonly IDateTimeProvider _dateTimeProvider = Substitute.For<IDateTimeProvider>();
+    private readonly INavigationService<IDialogViewModel> _dialogNavigationService = Substitute.For<INavigationService<IDialogViewModel>>();
     private readonly IEventBus _eventBus = Substitute.For<IEventBus>();
     private readonly IFormElementFactory _formElementFactory = Substitute.For<IFormElementFactory>();
     private readonly IMediator _mediator = Substitute.For<IMediator>();
@@ -358,5 +360,8 @@ public class SearchViewModelTests
         _calendarFactory,
         _formElementFactory,
         _eventBus,
-        _searchCommandFactory);
+        _searchCommandFactory,
+        _dialogNavigationService,
+        null!,
+        null!);
 }
