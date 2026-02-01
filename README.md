@@ -1,73 +1,97 @@
 # Availability Compass
 
-## The Concept
+**Find group trips that fit everyone's schedule**
 
-Have you ever tried to find an organized trip for a group of, let’s say, 10 people including family and your friends?
+![Search View](docs/images/search-view-light.png)
 
-Have you ever tried to prepare the time frames when all of you are available to go and then go through all the popular
-trip organizing companies' sites to find the available trips?
+## Overview
 
-Have you ever had to change your finding because someone’s plans changed?
+Planning a group trip is hard. Coordinating availability across family and friends, then manually searching trip provider websites for matching dates is time-consuming and frustrating.
 
-## The Solution
+**Availability Compass** solves this by letting you define when each person is available (or unavailable), then automatically searches configured trip sources to find options that work for everyone.
 
-Here comes the **Availability Compass** application, where the user can easily define calendars for each trip member and
-then use the data to automatically check your trip provider for trips available in the provided calendar periods.
+## Features
 
-But
-that’s not all. This application doesn’t have to be limited to trip organizing. It can be easily enhanced to check, for
-example, theater plays, movies in the cinema, and so on.
+- **Calendar Management** - Create calendars for each person with "available" or "blocked" date types, supporting both single dates and recurring patterns
+- **Source Integration** - Connect to trip providers via web scraping, APIs, or AI agents with easy extensibility for new sources
+- **Smart Search** - Filter results across multiple sources and calendars with date ranges, search phrases, and source-specific filters
+- **Modern UI** - Glass-style design with light and dark theme support
 
-## How It Is Done
+## Screenshots
 
-A calendar (or multiple ones) has to be created for each user. In each calendar, single dates or recurring dates can be
-set. Single dates are just one-day entries, while recurring dates can be used to set more than one day of unavailability
-which can repeat after a defined number of days a defined number of times. So if your divorced friend has his children
-every two weeks, you can make your plans around that. Any family occasions you can’t miss, you can mark this. You have
-already planned holidays with your other (better) friends, mark this too.
+### Search View
+The main interface for searching across sources filtered by group availability.
 
-Each calendar can be of “Only” or “Except” type. With the Only option, you can define the days you are available, while
-with the “Except” type you can define when you can’t go but you are free otherwise. You can see the selected days in the
-calendar in the middle of the screen.
+![Search View - Light Theme](docs/images/search-view-light.png)
 
-When you know which trip sources you want to use, then go into the Source section and just refresh the data. It will be
-automatically parsed from the website, retrieved by API, or retrieved by the AI agent. There are some examples which use
-website parsing. Adding new sources is really easy, just implement the ISourceService interface and mark the
-implementing class with an attribute so it can be easily found by the application.
+![Search View - Dark Theme](docs/images/search-view-dark.png)
 
-When you have your calendars and sources ready, then just select one or more of the predefined sources and configured
-calendars and get the matching results. Too many results? Then you can filter the results even further by providing the
-start and end date when you want to go, maybe some text phrase you are looking for, or even one of the filter fields
-provided by the integrated source.
+### Calendar Management
+Create and manage calendars with single or recurring date entries.
 
-In the Results section, you can sort the results any way you want, and there is a link to the trip itself if you want to
-book it.
+![Manage Calendars](docs/images/manage-calendars.png)
 
-And if you don't want to go blind, there is Dark Theme support too! Just go to Settings page.
+### Source Management
+Configure and refresh data from trip providers.
 
-## Implementation Details
+![Manage Sources](docs/images/manage-sources.png)
 
-This is a WPF Vertically Sliced application which follows the MVVM pattern. It uses the CommunityToolkit.MVVM package so
-the ViewModels could be used in the future with the MAUI application. It uses the standard MediatR package for pull
-communication between slices and Reactive Extensions for .NET (aka Rx.NET or System.Reactive) package for push
-communication. 
-I know that using those for a small application like this might be like killing a fly by using a bazooka, but it is a developmer showcase application ...
-Inside the slices .NET events or simple interfaces for pull and push communication were used as well.
+## How It Works
 
-It uses Serilog for structured logging. For the WPF application, the SQLite database was used.
+1. **Set Up Calendars** - Create a calendar for each person. Mark dates as "Only" (available days) or "Except" (blocked days). Use recurring entries for regular commitments.
 
-Although Vertical Architecture is used, the slices are separated into two projects. The AvailabilityCompass.Core
-contains all view models and business logic while the AvailabilityCompass.WpfClient project contains views and elements
-required for the WPF application to work. The idea behind this is that thanks to the CommunityToolkit.MVVM, the
-AvailabilityCompass.Core would be used also to create a MAUI client without extensive changes to the View Models and
-business logic.
+2. **Configure Sources** - Go to Sources and refresh data from your preferred trip providers. The app scrapes websites or calls APIs to get current offerings.
 
-The application uses Dependency Injection. The Microsoft.Extensions.DependencyInjection package is used for the IOC
-container.
+3. **Search & Book** - Select calendars and sources, apply filters, and search. Results show trips matching everyone's availability. Click any result to open the booking page.
 
-The UI styling is done with the Material Design In XAML Toolkit.
+## Getting Started
 
-The application follows SOLID, KISS, DRY, and similar principles handled best to my time constraints.
+### Prerequisites
+- .NET 10.0 SDK
 
-Architecture Design Records
-In the decisions folder, some ADRs created for this solution can be found.
+### Build and Run
+
+```bash
+# Build the solution
+dotnet build availability-compass.sln
+
+# Run the application
+dotnet run --project src/AvailabilityCompass.WpfClient/
+
+# Run tests
+dotnet test tests/AvailabilityCompass.Core.Tests.Unit/
+```
+
+## Technical Details
+
+This is a WPF application built with **Vertical Slice Architecture** and the **MVVM pattern**.
+
+### Architecture Highlights
+- **Two-project split**: `AvailabilityCompass.Core` (ViewModels, business logic) and `AvailabilityCompass.WpfClient` (XAML views)
+- **Framework-agnostic ViewModels**: Using CommunityToolkit.MVVM for potential MAUI reuse
+- **MediatR**: For command/query processing between slices
+- **Reactive Extensions**: Custom EventBus for cross-slice push communication
+
+### Tech Stack
+- .NET 10.0 / WPF
+- CommunityToolkit.MVVM
+- MediatR
+- System.Reactive (Rx.NET)
+- SQLite with Dapper
+- HtmlAgilityPack (web scraping)
+- Material Design In XAML Toolkit
+- Serilog (structured logging)
+
+## Extending the Application
+
+### Adding New Trip Sources
+
+1. Create a class implementing `ISourceService`
+2. Mark it with the `[SourceService]` attribute
+3. The application will automatically discover and register it
+
+See existing implementations in `Features/ManageSources/Sources/` for examples.
+
+## Architecture Design Records
+
+Design decisions are documented in the [decisions](decisions/) folder.
