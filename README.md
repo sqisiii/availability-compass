@@ -20,6 +20,7 @@ Planning a group trip is hard. Coordinating availability across family and frien
 ## Screenshots
 
 ### Search View
+
 The main interface for searching across sources filtered by group availability.
 
 ![Search View - Light Theme](docs/images/search-view-light.png)
@@ -27,11 +28,13 @@ The main interface for searching across sources filtered by group availability.
 ![Search View - Dark Theme](docs/images/search-view-dark.png)
 
 ### Calendar Management
+
 Create and manage calendars with single or recurring date entries.
 
 ![Manage Calendars](docs/images/manage-calendars.png)
 
 ### Source Management
+
 Configure and refresh data from trip providers.
 
 ![Manage Sources](docs/images/manage-sources.png)
@@ -47,6 +50,7 @@ Configure and refresh data from trip providers.
 ## Getting Started
 
 ### Prerequisites
+
 - .NET 10.0 SDK
 
 ### Build and Run
@@ -67,12 +71,14 @@ dotnet test tests/AvailabilityCompass.Core.Tests.Unit/
 This is a WPF application built with **Vertical Slice Architecture** and the **MVVM pattern**.
 
 ### Architecture Highlights
+
 - **Two-project split**: `AvailabilityCompass.Core` (ViewModels, business logic) and `AvailabilityCompass.WpfClient` (XAML views)
 - **Framework-agnostic ViewModels**: Using CommunityToolkit.MVVM for potential MAUI reuse
 - **MediatR**: For command/query processing between slices
 - **Reactive Extensions**: Custom EventBus for cross-slice push communication
 
 ### Tech Stack
+
 - .NET 10.0 / WPF
 - CommunityToolkit.MVVM
 - MediatR
@@ -94,4 +100,4 @@ See existing implementations in `Features/ManageSources/Sources/` for examples.
 
 ## Architecture Design Records
 
-Design decisions are documented in the [decisions](decisions/) folder.
+Design decisions are documented in the [decisions](docs/decisions/) folder.
