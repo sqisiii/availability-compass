@@ -1,0 +1,113 @@
+<UserControl x:Class="AvailabilityCompass.WpfClient.Shared.Controls.TutorialOverlay"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:AvailabilityCompass.WpfClient.Shared.Controls"
+             mc:Ignorable="d"
+             d:DesignHeight="600"
+             d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <!-- The main overlay grid - covers an entire window -->
+    <Grid x:Name="OverlayRoot"
+          Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+
+        <!-- Semi-transparent backdrop -->
+        <Border Background="#40000000"
+                IsHitTestVisible="True"
+                MouseDown="Backdrop_MouseDown" />
+
+        <!-- Tooltip Popup - positioned via code-behind -->
+        <Border x:Name="TooltipBorder"
+                Background="{DynamicResource GlassCardSolidBrush}"
+                BorderBrush="{DynamicResource GlassPrimaryBrush}"
+                BorderThickness="2"
+                CornerRadius="12"
+                Padding="20"
+                MaxWidth="400"
+                MinWidth="300"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Effect="{DynamicResource GlassShadowLG}">
+            <StackPanel>
+                <!-- Header with title and close button -->
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding Title}"
+                               Style="{StaticResource GlassHeading3}"
+                               TextWrapping="Wrap" />
+
+                    <Button Grid.Column="1"
+                            Style="{StaticResource GlassIconButton}"
+                            Command="{Binding SkipCommand}"
+                            ToolTip="Skip tutorial"
+                            Width="28"
+                            Height="28"
+                            Margin="-8,-8,0,0"
+                            VerticalAlignment="Top">
+                        <controls:FluentIcon Glyph="{x:Static controls:FluentIcons.Close}"
+                                             IconSize="14"
+                                             Foreground="{DynamicResource GlassMutedForegroundBrush}" />
+                    </Button>
+                </Grid>
+
+                <!-- Description -->
+                <TextBlock Text="{Binding Description}"
+                           Style="{StaticResource GlassBody}"
+                           Margin="0,0,0,16"
+                           LineHeight="22" />
+
+                <!-- Footer with progress and buttons -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Progress indicator -->
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding StepProgress}"
+                               Style="{StaticResource GlassCaption}"
+                               VerticalAlignment="Center" />
+
+                    <!-- Back button -->
+                    <Button Grid.Column="1"
+                            Content="Back"
+                            Command="{Binding BackCommand}"
+                            Style="{StaticResource GlassGhostButton}"
+                            Visibility="{Binding CanGoBack, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Margin="0,0,8,0"
+                            Padding="12,6" />
+
+                    <!-- Next/Finish button -->
+                    <Button Grid.Column="2"
+                            Content="{Binding NextButtonText}"
+                            Command="{Binding NextCommand}"
+                            Style="{StaticResource GlassPrimaryButton}"
+                            Visibility="{Binding ShowNextButton, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Padding="16,6" />
+                </Grid>
+
+                <!-- Hint for action-required steps -->
+                <TextBlock x:Name="ActionHint"
+                           Text="👆 Perform the action above to continue"
+                           Style="{StaticResource GlassCaption}"
+                           Foreground="{DynamicResource GlassPrimaryBrush}"
+                           FontStyle="Italic"
+                           Margin="0,12,0,0"
+                           HorizontalAlignment="Center"
+                           Visibility="Collapsed" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

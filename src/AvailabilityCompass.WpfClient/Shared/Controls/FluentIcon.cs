@@ -158,4 +158,8 @@ public static class FluentIcons
     // Visibility
     public const string View = "\uE7B3";  // Eye icon (visible/enabled)
     public const string Hide = "\uED1A";  // Eye with slash (hidden/disabled)
+
+    // Help
+    public const string Question = "\uE897";  // Question mark
+    public const string Help = "\uE946";      // Info/help circle
 }

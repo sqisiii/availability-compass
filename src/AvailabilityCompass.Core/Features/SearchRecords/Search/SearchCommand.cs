@@ -1,6 +1,8 @@
-﻿using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
+﻿using AvailabilityCompass.Core.Features.SearchRecords.Events;
+using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetAvailableDates;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.SearchSources;
+using AvailabilityCompass.Core.Shared.EventBus;
 using MediatR;
 
 namespace AvailabilityCompass.Core.Features.SearchRecords.Search;
@@ -10,12 +12,14 @@ namespace AvailabilityCompass.Core.Features.SearchRecords.Search;
 /// </summary>
 public class SearchCommand : ISearchCommand
 {
+    private readonly IEventBus _eventBus;
     private readonly IMediator _mediator;
     private readonly Lazy<SearchViewModel> _viewModel;
 
-    public SearchCommand(Func<SearchViewModel> viewModelFactory, IMediator mediator)
+    public SearchCommand(Func<SearchViewModel> viewModelFactory, IMediator mediator, IEventBus eventBus)
     {
         _mediator = mediator;
+        _eventBus = eventBus;
         _viewModel = new Lazy<SearchViewModel>(viewModelFactory);
     }
 
@@ -134,6 +138,8 @@ public class SearchCommand : ISearchCommand
         AddDefaultColumns();
         AddSearchResults(searchResponse.SourceDataItems);
         _viewModel.Value.OnUpdateColumns();
+
+        _eventBus.Publish(new SearchResultsFoundEvent());
     }
 
     private void AddDefaultColumns()

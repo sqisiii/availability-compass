@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:AvailabilityCompass.WpfClient.Pages"
         xmlns:controls="clr-namespace:AvailabilityCompass.WpfClient.Shared.Controls"
+        xmlns:tutorial="clr-namespace:AvailabilityCompass.WpfClient.Shared.Tutorial"
         Width="1360"
         Height="950"
         ResizeMode="CanResizeWithGrip"
@@ -71,6 +72,19 @@
                                 VerticalAlignment="Center"
                                 Margin="0,0,16,0">
 
+                        <!-- Restart Tutorial Button -->
+                        <Button Style="{StaticResource GlassGhostButton}"
+                                Command="{Binding TutorialViewModel.RestartCommand}"
+                                ToolTip="Restart Tutorial"
+                                Padding="8"
+                                Width="36"
+                                Height="36">
+                            <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
+                                       FontSize="18"
+                                       Text="{x:Static controls:FluentIcons.Question}"
+                                       Foreground="{DynamicResource GlassForegroundBrush}" />
+                        </Button>
+
                         <!-- Theme Toggle -->
                         <Button Style="{StaticResource GlassGhostButton}"
                                 Command="{Binding ToggleThemeCommand}"
@@ -92,7 +106,8 @@
                         <!-- Calendars Button -->
                         <Button Style="{StaticResource GlassToolbarButton}"
                                 Command="{Binding OpenCalendarsCommand}"
-                                ToolTip="Manage calendars">
+                                ToolTip="Manage calendars"
+                                tutorial:TutorialTarget.Element="CalendarsHeaderButton">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
                                            FontSize="16"
@@ -110,7 +125,8 @@
                         <Button Style="{StaticResource GlassToolbarButton}"
                                 Command="{Binding OpenSourcesCommand}"
                                 ToolTip="Manage sources"
-                                Margin="4,0,0,0">
+                                Margin="4,0,0,0"
+                                tutorial:TutorialTarget.Element="SourcesHeaderButton">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
                                            FontSize="16"
@@ -187,6 +203,9 @@
                         <ContentControl Content="{Binding CurrentDialogViewModel}" />
                     </Border>
                 </Border>
+
+                <!-- Tutorial Overlay (on top of everything) -->
+                <controls:TutorialOverlay DataContext="{Binding TutorialViewModel}" />
             </Grid>
         </Grid>
     </Border>

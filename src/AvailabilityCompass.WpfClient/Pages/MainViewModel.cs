@@ -2,6 +2,7 @@
 using AvailabilityCompass.Core.Features.ManageSettings;
 using AvailabilityCompass.Core.Features.ManageSources;
 using AvailabilityCompass.Core.Features.SearchRecords;
+using AvailabilityCompass.Core.Features.Tutorial;
 using AvailabilityCompass.Core.Shared;
 using AvailabilityCompass.Core.Shared.Navigation;
 using AvailabilityCompass.WpfClient.Shared.Controls;
@@ -19,7 +20,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly INavigationStore<IDialogViewModel> _dialogNavigationStore;
     private readonly ManageCalendarsViewModel _manageCalendarsViewModel;
     private readonly ManageSourcesViewModel _manageSourcesViewModel;
-    private readonly SearchViewModel _searchViewModel;
     private readonly IThemeService _themeService;
 
     [NotifyPropertyChangedFor(nameof(ThemeIcon))]
@@ -34,23 +34,20 @@ public partial class MainViewModel : ObservableObject, IDisposable
         IThemeService themeService,
         SearchViewModel searchViewModel,
         ManageSourcesViewModel manageSourcesViewModel,
-        ManageCalendarsViewModel manageCalendarsViewModel
+        ManageCalendarsViewModel manageCalendarsViewModel,
+        TutorialViewModel tutorialViewModel
     )
     {
         _dialogNavigationStore = dialogNavigationStore;
         _dialogNavigationService = dialogNavigationService;
         _themeService = themeService;
-        _searchViewModel = searchViewModel;
+        SearchViewModel = searchViewModel;
         _manageSourcesViewModel = manageSourcesViewModel;
         _manageCalendarsViewModel = manageCalendarsViewModel;
+        TutorialViewModel = tutorialViewModel;
 
         _dialogNavigationStore.CurrentViewModelChanged += OnCurrentDialogViewModelChanged;
         _isDarkTheme = _themeService.IsDarkTheme;
-    }
-
-    public void Dispose()
-    {
-        _dialogNavigationStore.CurrentViewModelChanged -= OnCurrentDialogViewModelChanged;
     }
 
     public string MaximizeIcon => _isMaximized ? FluentIcons.ChromeRestore : FluentIcons.ChromeMaximize;
@@ -59,18 +56,29 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public string ThemeIcon => IsDarkTheme ? FluentIcons.Brightness : FluentIcons.ClearNight;
 
-    public SearchViewModel SearchViewModel => _searchViewModel;
+    public SearchViewModel SearchViewModel { get; }
+
+    public TutorialViewModel TutorialViewModel { get; }
 
     public IDialogViewModel? CurrentDialogViewModel => _dialogNavigationStore.CurrentViewModel;
 
     public bool IsDialogOpen => CurrentDialogViewModel?.IsDialogOpen ?? false;
 
+    public void Dispose()
+    {
+        _dialogNavigationStore.CurrentViewModelChanged -= OnCurrentDialogViewModelChanged;
+    }
+
     public async Task InitializeAsync()
     {
         IsDarkTheme = _themeService.IsDarkTheme;
-        await _searchViewModel.LoadDataAsync(CancellationToken.None);
+        await SearchViewModel.LoadDataAsync(CancellationToken.None);
         await _manageSourcesViewModel.LoadDataAsync(CancellationToken.None);
         await _manageCalendarsViewModel.LoadDataAsync(CancellationToken.None);
+
+        // Initialize tutorial with current app state
+        await TutorialViewModel.InitializeAsync(CancellationToken.None);
+        UpdateTutorialContext();
 
         if (!HasAnySourceData())
         {
@@ -83,6 +91,26 @@ public partial class MainViewModel : ObservableObject, IDisposable
         return _manageSourcesViewModel.Sources.Any(source => source.TripsCount > 0);
     }
 
+    private void UpdateTutorialContext()
+    {
+        var currentDialog = CurrentDialogViewModel switch
+        {
+            ManageSourcesViewModel => DialogType.Sources,
+            ManageCalendarsViewModel => DialogType.Calendars,
+            _ => DialogType.None
+        };
+
+        var context = new TutorialContext
+        {
+            HasSources = _manageSourcesViewModel.Sources.Count > 0,
+            HasSourcesWithData = HasAnySourceData(),
+            HasCalendars = _manageCalendarsViewModel.Calendars.Count > 0,
+            CurrentDialog = currentDialog
+        };
+
+        TutorialViewModel.SetContext(context);
+    }
+
     private void OnCurrentDialogViewModelChanged()
     {
         OnPropertyChanged(nameof(CurrentDialogViewModel));
@@ -90,11 +118,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         if (CurrentDialogViewModel is null)
         {
+            UpdateTutorialContext();
             return;
         }
 
         CurrentDialogViewModel.IsDialogOpen = true;
         OnPropertyChanged(nameof(IsDialogOpen));
+        UpdateTutorialContext();
     }
 
     [RelayCommand]
