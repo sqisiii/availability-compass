@@ -10,6 +10,7 @@ namespace AvailabilityCompass.Core.Features.Tutorial;
 /// <param name="SecondaryTarget">Optional second element to highlight (for steps pointing to multiple elements).</param>
 /// <param name="Position">Where to position the tooltip relative to the target.</param>
 /// <param name="RequiresUserAction">If true, step advances on user interaction; if false, only on Next click.</param>
+/// <param name="ClickThroughMode">How the overlay handles click-through. Null = auto-determine from RequiresUserAction.</param>
 public record TutorialStepDefinition(
     TutorialStepId Id,
     string Title,
@@ -17,5 +18,6 @@ public record TutorialStepDefinition(
     TutorialTargetElement PrimaryTarget,
     TutorialTargetElement? SecondaryTarget,
     TooltipPosition Position,
-    bool RequiresUserAction = false
+    bool RequiresUserAction = false,
+    ClickThroughMode? ClickThroughMode = null
 );

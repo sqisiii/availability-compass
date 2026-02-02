@@ -36,6 +36,12 @@ public sealed partial class TutorialViewModel : ObservableObject, IDisposable
     private bool _showNextButton = true;
 
     [ObservableProperty]
+    private bool _requiresUserAction;
+
+    [ObservableProperty]
+    private ClickThroughMode _clickThroughMode = ClickThroughMode.NoneClickable;
+
+    [ObservableProperty]
     private string _stepProgress = string.Empty;
 
     [ObservableProperty]
@@ -144,7 +150,13 @@ public sealed partial class TutorialViewModel : ObservableObject, IDisposable
         var total = _tutorialService.TotalSteps;
         StepProgress = $"Step {currentNumber} of {total}";
 
-        // Update button text based on the step
+        // Update button text and action state based on the step
+        RequiresUserAction = step.RequiresUserAction;
+
+        // Determine click-through mode: use explicit value or auto-determine from RequiresUserAction
+        ClickThroughMode = step.ClickThroughMode ??
+            (step.RequiresUserAction ? ClickThroughMode.OnlyHighlightedClickable : ClickThroughMode.NoneClickable);
+
         if (_tutorialService.CurrentStepId == TutorialStepId.TutorialComplete)
         {
             NextButtonText = "Finish";

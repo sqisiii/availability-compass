@@ -2,7 +2,6 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Input;
 using AvailabilityCompass.Core.Features.Tutorial;
 using AvailabilityCompass.WpfClient.Shared.Tutorial;
 
@@ -108,11 +107,19 @@ public partial class TutorialOverlay : UserControl
         if (DataContext is not TutorialViewModel vm || !vm.IsVisible)
         {
             RemoveAdorners();
+            Backdrop.SetClickableTargets(null, null);
             return;
         }
 
         _currentPrimaryTarget = vm.PrimaryTarget;
         _currentSecondaryTarget = vm.SecondaryTarget;
+
+        // Get the target elements
+        var primaryElement = TutorialElementRegistry.GetElement(vm.PrimaryTarget);
+        var secondaryElement = TutorialElementRegistry.GetElement(vm.SecondaryTarget ?? TutorialTargetElement.None);
+
+        // Update the backdrop's clickable targets for selective hit-testing
+        Backdrop.SetClickableTargets(primaryElement, secondaryElement);
 
         // Update primary adorner
         UpdateAdorner(ref _primaryAdorner, vm.PrimaryTarget);
@@ -296,11 +303,5 @@ public partial class TutorialOverlay : UserControl
         {
             ActionHint.Visibility = vm.ShowNextButton ? Visibility.Collapsed : Visibility.Visible;
         }
-    }
-
-    private void Backdrop_MouseDown(object sender, MouseButtonEventArgs e)
-    {
-        // Prevent closing on the backdrop click-tutorial must be completed or skipped
-        e.Handled = true;
     }
 }

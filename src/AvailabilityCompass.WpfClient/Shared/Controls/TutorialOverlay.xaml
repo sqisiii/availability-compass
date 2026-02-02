@@ -16,10 +16,10 @@
     <Grid x:Name="OverlayRoot"
           Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 
-        <!-- Semi-transparent backdrop -->
-        <Border Background="#40000000"
-                IsHitTestVisible="True"
-                MouseDown="Backdrop_MouseDown" />
+        <!-- Semi-transparent backdrop with selective click-through -->
+        <controls:SelectiveHitTestBorder x:Name="Backdrop"
+                                         Background="#40000000"
+                                         ClickThroughMode="{Binding ClickThroughMode}" />
 
         <!-- Tooltip Popup - positioned via code-behind -->
         <Border x:Name="TooltipBorder"
