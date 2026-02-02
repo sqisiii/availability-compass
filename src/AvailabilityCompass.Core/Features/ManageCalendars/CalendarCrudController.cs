@@ -1,6 +1,8 @@
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteCalendarRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateCalendarRequest;
+using AvailabilityCompass.Core.Features.ManageCalendars.Events;
+using AvailabilityCompass.Core.Shared.EventBus;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MediatR;
 
@@ -11,41 +13,42 @@ namespace AvailabilityCompass.Core.Features.ManageCalendars;
 /// </summary>
 public partial class CalendarCrudController : ObservableObject, ICalendarCrudController
 {
+    private readonly IEventBus _eventBus;
     private readonly IMediator _mediator;
-    private Guid? _editingCalendarId;
-    private Guid? _pendingDeleteCalendarId;
-
-    public CalendarCrudController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
-    // Add Calendar State
-    [ObservableProperty]
-    private bool _isAddCalendarExpanded;
 
     [ObservableProperty]
-    private string _newCalendarName = string.Empty;
-
-    [ObservableProperty]
-    private bool _newCalendarIsOnly;
-
-    // Edit Calendar State
-    [ObservableProperty]
-    private bool _isEditCalendarExpanded;
-
-    [ObservableProperty]
-    private string _editCalendarName = string.Empty;
+    private string _deleteCalendarName = string.Empty;
 
     [ObservableProperty]
     private bool _editCalendarIsOnly;
 
-    // Delete Confirmation State
+    [ObservableProperty]
+    private string _editCalendarName = string.Empty;
+
+    private Guid? _editingCalendarId;
+
+    [ObservableProperty]
+    private bool _isAddCalendarExpanded;
+
     [ObservableProperty]
     private bool _isDeleteConfirmationOpen;
 
     [ObservableProperty]
-    private string _deleteCalendarName = string.Empty;
+    private bool _isEditCalendarExpanded;
+
+    [ObservableProperty]
+    private bool _newCalendarIsOnly;
+
+    [ObservableProperty]
+    private string _newCalendarName = string.Empty;
+
+    private Guid? _pendingDeleteCalendarId;
+
+    public CalendarCrudController(IMediator mediator, IEventBus eventBus)
+    {
+        _mediator = mediator;
+        _eventBus = eventBus;
+    }
 
     /// <inheritdoc />
     public async Task AddCalendarAsync()
@@ -67,6 +70,7 @@ public partial class CalendarCrudController : ObservableObject, ICalendarCrudCon
     {
         onBeforeExpand?.Invoke();
         IsAddCalendarExpanded = true;
+        _eventBus.Publish(new AddCalendarFormExpandedEvent());
     }
 
     /// <inheritdoc />
@@ -108,14 +112,6 @@ public partial class CalendarCrudController : ObservableObject, ICalendarCrudCon
         ResetEditState();
     }
 
-    private void ResetEditState()
-    {
-        IsEditCalendarExpanded = false;
-        _editingCalendarId = null;
-        EditCalendarName = string.Empty;
-        EditCalendarIsOnly = false;
-    }
-
     /// <inheritdoc />
     public void StartDeleteCalendar(CalendarViewModel calendar)
     {
@@ -140,6 +136,14 @@ public partial class CalendarCrudController : ObservableObject, ICalendarCrudCon
     public void CancelDeleteCalendar()
     {
         ResetDeleteState();
+    }
+
+    private void ResetEditState()
+    {
+        IsEditCalendarExpanded = false;
+        _editingCalendarId = null;
+        EditCalendarName = string.Empty;
+        EditCalendarIsOnly = false;
     }
 
     private void ResetDeleteState()

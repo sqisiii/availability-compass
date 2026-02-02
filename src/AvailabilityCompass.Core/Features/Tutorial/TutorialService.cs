@@ -1,5 +1,6 @@
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddDateEntryRequest;
+using AvailabilityCompass.Core.Features.ManageCalendars.Events;
 using AvailabilityCompass.Core.Features.ManageSettings.Commands.SaveSetting;
 using AvailabilityCompass.Core.Features.ManageSettings.Queries.GetSetting;
 using AvailabilityCompass.Core.Features.ManageSources.Commands.ReplaceSourceDataRequest;
@@ -301,6 +302,11 @@ public sealed partial class TutorialService : ObservableObject, ITutorialService
         );
 
         _subscriptions.Add(
+            _eventBus.Listen<AddCalendarFormExpandedEvent>()
+                .Subscribe(_ => OnAddCalendarFormExpanded())
+        );
+
+        _subscriptions.Add(
             _eventBus.Listen<DateEntryAddedEvent>()
                 .Subscribe(_ => OnDateEntryAdded())
         );
@@ -326,6 +332,14 @@ public sealed partial class TutorialService : ObservableObject, ITutorialService
             return;
 
         UpdateContext(Context with { HasCalendars = true, IsAddCalendarExpanded = false });
+    }
+
+    private void OnAddCalendarFormExpanded()
+    {
+        if (!IsTutorialActive)
+            return;
+
+        UpdateContext(Context with { IsAddCalendarExpanded = true });
     }
 
     private void OnDateEntryAdded()

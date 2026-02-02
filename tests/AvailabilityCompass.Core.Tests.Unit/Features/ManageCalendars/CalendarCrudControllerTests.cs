@@ -2,6 +2,7 @@ using AvailabilityCompass.Core.Features.ManageCalendars;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteCalendarRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateCalendarRequest;
+using AvailabilityCompass.Core.Shared.EventBus;
 using MediatR;
 using NSubstitute;
 using Shouldly;
@@ -10,12 +11,13 @@ namespace AvailabilityCompass.Core.Tests.Features.ManageCalendars;
 
 public class CalendarCrudControllerTests
 {
+    private readonly IEventBus _eventBus = Substitute.For<IEventBus>();
     private readonly IMediator _mediator = Substitute.For<IMediator>();
     private readonly CalendarCrudController _sut;
 
     public CalendarCrudControllerTests()
     {
-        _sut = new CalendarCrudController(_mediator);
+        _sut = new CalendarCrudController(_mediator, _eventBus);
     }
 
     [Fact]
