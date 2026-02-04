@@ -8,6 +8,7 @@ using AvailabilityCompass.Core.Shared.Navigation;
 using AvailabilityCompass.WpfClient.Shared.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Guidely.Core;
 
 namespace AvailabilityCompass.WpfClient.Pages;
 
@@ -35,7 +36,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         SearchViewModel searchViewModel,
         ManageSourcesViewModel manageSourcesViewModel,
         ManageCalendarsViewModel manageCalendarsViewModel,
-        TutorialViewModel tutorialViewModel
+        TutorialViewModel<AvailabilityCompassContext, AppTutorialTrigger, AppTutorialGroup> tutorialViewModel
     )
     {
         _dialogNavigationStore = dialogNavigationStore;
@@ -58,7 +59,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public SearchViewModel SearchViewModel { get; }
 
-    public TutorialViewModel TutorialViewModel { get; }
+    public TutorialViewModel<AvailabilityCompassContext, AppTutorialTrigger, AppTutorialGroup> TutorialViewModel { get; }
 
     public IDialogViewModel? CurrentDialogViewModel => _dialogNavigationStore.CurrentViewModel;
 
@@ -100,15 +101,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
             _ => DialogType.None
         };
 
-        var context = new TutorialContext
+        TutorialViewModel.UpdateContext(ctx => ctx with
         {
             HasSources = _manageSourcesViewModel.Sources.Count > 0,
             HasSourcesWithData = HasAnySourceData(),
             HasCalendars = _manageCalendarsViewModel.Calendars.Count > 0,
             CurrentDialog = currentDialog
-        };
-
-        TutorialViewModel.SetContext(context);
+        });
     }
 
     private void OnCurrentDialogViewModelChanged()
@@ -116,15 +115,30 @@ public partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(CurrentDialogViewModel));
         OnPropertyChanged(nameof(IsDialogOpen));
 
-        if (CurrentDialogViewModel is null)
+        var currentDialog = CurrentDialogViewModel switch
         {
-            UpdateTutorialContext();
-            return;
+            ManageSourcesViewModel => DialogType.Sources,
+            ManageCalendarsViewModel => DialogType.Calendars,
+            _ => DialogType.None
+        };
+
+        if (CurrentDialogViewModel is not null)
+        {
+            CurrentDialogViewModel.IsDialogOpen = true;
+            OnPropertyChanged(nameof(IsDialogOpen));
         }
 
-        CurrentDialogViewModel.IsDialogOpen = true;
-        OnPropertyChanged(nameof(IsDialogOpen));
-        UpdateTutorialContext();
+        // Fire the dialog changed trigger with a context update
+        TutorialViewModel.FireTrigger(
+            AppTutorialTrigger.DialogChanged,
+            ctx => ctx with
+            {
+                HasSources = _manageSourcesViewModel.Sources.Count > 0,
+                HasSourcesWithData = HasAnySourceData(),
+                HasCalendars = _manageCalendarsViewModel.Calendars.Count > 0,
+                CurrentDialog = currentDialog
+            }
+        );
     }
 
     [RelayCommand]

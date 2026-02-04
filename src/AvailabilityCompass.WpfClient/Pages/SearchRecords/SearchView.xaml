@@ -11,7 +11,7 @@
     xmlns:viewModels="clr-namespace:AvailabilityCompass.Core.Features.SearchRecords;assembly=AvailabilityCompass.Core"
     xmlns:helpers="clr-namespace:AvailabilityCompass.WpfClient.Shared.Helpers"
     xmlns:vwp="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
-    xmlns:tutorial="clr-namespace:AvailabilityCompass.WpfClient.Shared.Tutorial"
+    xmlns:guidely="clr-namespace:Guidely.WPF;assembly=Guidely.WPF"
     d:DataContext="{d:DesignInstance viewModels:SearchViewModel,
                                      IsDesignTimeCreatable=True}"
     d:DesignHeight="600"
@@ -79,7 +79,7 @@
 
                         <!-- Calendars Header with dual-chip support -->
                         <Border Grid.Column="0" CornerRadius="8" Padding="4"
-                                tutorial:TutorialTarget.Element="CalendarFilterSection">
+                                guidely:TutorialTarget.Element="CalendarFilterSection">
                             <ToggleButton IsChecked="{Binding IsCalendarsSectionExpanded, Mode=TwoWay}"
                                           Background="Transparent"
                                           BorderThickness="0"
@@ -193,7 +193,7 @@
                             Summary="{Binding SourcesSummary}"
                             HasSelection="{Binding HasSourcesSelected}"
                             IsExpanded="{Binding IsSourcesSectionExpanded, Mode=TwoWay}"
-                            tutorial:TutorialTarget.Element="SourcesFilterSection" />
+                            guidely:TutorialTarget.Element="SourcesFilterSection" />
 
                         <Rectangle Grid.Column="3" Style="{StaticResource GlassVerticalSeparator}" />
 
@@ -204,7 +204,7 @@
                             Summary="{Binding FiltersSummary}"
                             HasSelection="{Binding HasFiltersSet}"
                             IsExpanded="{Binding IsFiltersSectionExpanded, Mode=TwoWay}"
-                            tutorial:TutorialTarget.Element="FiltersSection" />
+                            guidely:TutorialTarget.Element="FiltersSection" />
 
                         <!-- Search Button -->
                         <Button
@@ -215,13 +215,13 @@
                             Margin="15,0,0,0"
                             VerticalAlignment="Center"
                             Style="{StaticResource GlassPrimaryButton}"
-                            tutorial:TutorialTarget.Element="SearchButton" />
+                            guidely:TutorialTarget.Element="SearchButton" />
                     </Grid>
 
                     <!-- Results Section - Fills remaining space -->
                     <DockPanel Grid.Row="1"
                                Visibility="{Binding HasResults, Converter={StaticResource BooleanToVisibilityConverter}}"
-                               tutorial:TutorialTarget.Element="ResultsSection">
+                               guidely:TutorialTarget.Element="ResultsSection">
                         <!-- Header with count and sort dropdown -->
                         <Grid DockPanel.Dock="Top" Margin="0,10,0,10">
                             <TextBlock Text="{Binding Results.Count, StringFormat='Results ({0})'}"
@@ -513,7 +513,7 @@
                                 <!-- Source filters (separate from cards) -->
                                 <ItemsControl ItemsSource="{Binding Sources}"
                                               Visibility="{Binding SourcesAvailable, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                              tutorial:TutorialTarget.Element="SourceFilterOptions">
+                                              guidely:TutorialTarget.Element="SourceFilterOptions">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate DataType="{x:Type viewModels:SourceFilterViewModel}">
                                             <Border Style="{StaticResource GlassNestedFilterPanel}"

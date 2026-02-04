@@ -1,0 +1,464 @@
+# Guidely.Core
+
+A powerful, framework-agnostic tutorial state machine library for .NET applications. Build interactive, step-by-step guided experiences with intelligent flow control.
+
+## Features
+
+- **Attribute-Driven Steps** - Define tutorial steps as simple classes with `[TutorialStep]`, `[TutorialTarget]`, and `[AutoAdvanceOn]` attributes
+- **Conditional Transitions** - Create dynamic tutorial flows that adapt based on application state using a fluent builder API
+- **Auto-Advance Triggers** - Steps automatically advance when users complete actions (button clicks, form submissions, etc.)
+- **Context-Aware** - Track application state with strongly-typed context records for intelligent decision-making
+- **Step Groups** - Organize steps into logical sections (Introduction, Setup, Features, etc.) with ordering support
+- **Back Navigation** - Built-in support for navigating to previous steps
+- **Persistence Ready** - Implement `ITutorialPersistence` to save/restore tutorial progress across sessions
+- **Framework Agnostic** - Core logic works with any .NET UI framework (WPF, MAUI, Avalonia, Blazor)
+- **Dependency Injection** - First-class support for Microsoft.Extensions.DependencyInjection
+
+## Use Cases
+
+- **Onboarding flows** - Guide new users through initial setup and configuration
+- **Feature discovery** - Introduce users to new or advanced features
+- **Interactive help** - Provide contextual guidance within complex workflows
+- **Training modules** - Build step-by-step training for enterprise applications
+
+## Installation
+
+```xml
+<PackageReference Include="Guidely.Core" Version="1.0.0" />
+```
+
+## Quick Start
+
+### 1. Define Your Context
+
+Create a record inheriting from `TutorialContextBase` to track application state:
+
+```csharp
+public record MyAppContext : TutorialContextBase
+{
+    public bool HasCompletedSetup { get; init; }
+    public bool IsFeatureEnabled { get; init; }
+}
+```
+
+### 2. Define Triggers and Groups
+
+```csharp
+public enum MyTrigger
+{
+    SetupCompleted,
+    FeatureEnabled
+}
+
+public enum MyGroup
+{
+    Introduction,
+    Setup,
+    Features,
+    Complete
+}
+```
+
+### 3. Create Tutorial Steps
+
+```csharp
+[TutorialStep(StepIds.Welcome,
+    Group = MyGroup.Introduction,
+    Position = TooltipPosition.Center,
+    Order = 0)]
+public class WelcomeStep : ITutorialStepContent
+{
+    public string Title => "Welcome!";
+    public string Description => "Let's get started with the tutorial.";
+}
+```
+
+### 4. Configure Transitions
+
+```csharp
+public static class TutorialSetup
+{
+    public static void ConfigureTransitions(TransitionBuilder<MyAppContext> builder)
+    {
+        builder.From(StepIds.Welcome)
+            .GoToIf(StepIds.Features, ctx => ctx.HasCompletedSetup)
+            .GoTo(StepIds.Setup);
+
+        builder.From(StepIds.Setup)
+            .GoTo(StepIds.Features);
+
+        builder.From(StepIds.Features)
+            .GoTo(StepIds.Complete);
+    }
+}
+```
+
+### 5. Register Services
+
+```csharp
+services.AddGuidely<MyAppContext, MyTrigger, MyGroup>(builder =>
+{
+    builder.ScanStepsFromAssembly(typeof(WelcomeStep).Assembly);
+    builder.ConfigureTransitions(TutorialSetup.ConfigureTransitions);
+    builder.SetStartStep(StepIds.Welcome);
+});
+```
+
+## Core Concepts
+
+### Tutorial Context
+
+The context is an immutable record that captures application state. The tutorial service uses this state to evaluate conditional transitions and determine which step to show next.
+
+```csharp
+public record MyAppContext : TutorialContextBase
+{
+    public bool IsLoggedIn { get; init; }
+    public int ItemCount { get; init; }
+    public string CurrentPage { get; init; } = string.Empty;
+}
+```
+
+Update context using immutable `with` expressions:
+
+```csharp
+tutorialService.UpdateContext(ctx => ctx with { IsLoggedIn = true });
+```
+
+### Tutorial Steps
+
+Steps are classes decorated with `[TutorialStep]` that implement `ITutorialStepContent`:
+
+```csharp
+[TutorialStep("MyStep",
+    Group = MyGroup.Features,
+    Position = TooltipPosition.Bottom,
+    RequiresUserAction = true,
+    ClickThroughMode = ClickThroughMode.TargetOnly,
+    Order = 1)]
+[TutorialTarget("MyButton")]
+[AutoAdvanceOn(MyTrigger.ButtonClicked)]
+public class MyStep : ITutorialStepContent
+{
+    public string Title => "Click the Button";
+    public string Description => "Click the highlighted button to continue.";
+}
+```
+
+### Type-Safe Step IDs
+
+Use static string constants for compile-time validation:
+
+```csharp
+public static class StepIds
+{
+    public const string Welcome = nameof(Welcome);
+    public const string Setup = nameof(Setup);
+    public const string Features = nameof(Features);
+    public const string Complete = nameof(Complete);
+}
+```
+
+### Transitions
+
+Configure step flow using the fluent `TransitionBuilder`:
+
+```csharp
+// Unconditional transition
+builder.From(StepIds.Welcome)
+    .GoTo(StepIds.Setup);
+
+// Conditional transition (evaluated first)
+builder.From(StepIds.Welcome)
+    .GoToIf(StepIds.Features, ctx => ctx.HasCompletedSetup)
+    .GoTo(StepIds.Setup);  // Fallback if condition is false
+```
+
+### Auto-Advance Triggers
+
+Steps can auto-advance when triggers are fired:
+
+```csharp
+// Simple trigger-based auto-advance
+[AutoAdvanceOn(MyTrigger.ButtonClicked)]
+public class ClickButtonStep : ITutorialStepContent { ... }
+
+// Complex conditional auto-advance
+[AutoAdvanceOn(MyTrigger.DataLoaded)]
+public class WaitForDataStep : ITutorialStepContent, IConditionalAutoAdvance<MyAppContext, MyTrigger>
+{
+    public bool ShouldAutoAdvance(MyTrigger trigger, MyAppContext? previous, MyAppContext current)
+        => trigger == MyTrigger.DataLoaded && current.ItemCount > 0;
+}
+```
+
+Fire triggers from your application:
+
+```csharp
+tutorialService.FireTrigger(MyTrigger.ButtonClicked);
+
+// Or with context update in same atomic operation
+tutorialService.FireTrigger(MyTrigger.DataLoaded, ctx => ctx with { ItemCount = 5 });
+```
+
+### Step Completion Detection
+
+Steps can implement `ITutorialStepComplete<TContext>` to be auto-skipped when their goal is already achieved. This is useful when restarting a tutorial group - steps that are already complete will be skipped automatically.
+
+```csharp
+[TutorialStep(StepIds.CreateFirstItem, ...)]
+public class CreateFirstItemStep : ITutorialStepContent, ITutorialStepComplete<MyAppContext>
+{
+    public string Title => "Create Your First Item";
+    public string Description => "Let's create your first item.";
+
+    public bool IsComplete(MyAppContext context)
+        => context.HasItems;  // Skip if user already has items
+}
+```
+
+When `RestartGroup()` is called or the tutorial advances, steps where `IsComplete()` returns `true` are automatically skipped.
+
+### Groups
+
+Groups organize steps into logical sections and determine step ordering:
+
+```csharp
+public enum MyGroup
+{
+    Introduction,  // Steps with Group = 0
+    Setup,         // Steps with Group = 1
+    Features,      // Steps with Group = 2
+    Complete       // Steps with Group = 3
+}
+```
+
+## API Reference
+
+### ITutorialService&lt;TContext, TTrigger, TGroup&gt;
+
+Main service interface for controlling the tutorial.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `CurrentStepId` | `string` | ID of the current step |
+| `CurrentStep` | `TutorialStepMetadata?` | Metadata for the current step |
+| `CurrentGroup` | `TGroup` | Group of the current step |
+| `IsTutorialActive` | `bool` | Whether tutorial is running |
+| `IsTutorialCompleted` | `bool` | Whether tutorial is finished |
+| `Context` | `TContext` | Current tutorial context |
+| `CurrentStepNumber` | `int` | Current step number (1-based) |
+| `TotalSteps` | `int` | Total number of steps |
+| `CanGoBack` | `bool` | Whether back navigation is available |
+
+| Method | Description |
+|--------|-------------|
+| `InitializeAsync()` | Load persisted state and initialize |
+| `StartTutorial()` | Start or restart the tutorial |
+| `AdvanceStep()` | Move to the next step |
+| `GoBack()` | Go to the previous step |
+| `SkipTutorial()` | Skip the tutorial entirely |
+| `RestartTutorialAsync()` | Restart from the beginning |
+| `FireTrigger(trigger, contextUpdate?)` | Fire a trigger with optional context update |
+| `UpdateContext(update)` | Update context without firing a trigger |
+| `RestartGroup(group)` | Restart from the beginning of a group |
+| `GetStepStatus(stepId)` | Get the status of a specific step |
+
+### Attributes
+
+#### [TutorialStep]
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `Id` | `string` | Required | Unique step identifier |
+| `Group` | `object?` | `null` | Group enum value (e.g., `MyGroup.Introduction`) |
+| `Position` | `TooltipPosition` | `Bottom` | Tooltip position relative to target |
+| `RequiresUserAction` | `bool` | `false` | Hides Next button when true |
+| `ClickThroughMode` | `ClickThroughMode` | `None` | Overlay interaction mode |
+| `Order` | `int` | `0` | Order within group |
+
+#### [TutorialTarget]
+
+Specifies which UI element to highlight. Can be applied multiple times.
+
+```csharp
+[TutorialTarget("SaveButton")]
+[TutorialTarget("CancelButton")]
+```
+
+#### [AutoAdvanceOn]
+
+Specifies triggers that can cause auto-advance. Can be applied multiple times.
+
+```csharp
+[AutoAdvanceOn(MyTrigger.ItemSaved)]
+[AutoAdvanceOn(MyTrigger.ItemDeleted)]
+```
+
+### Enums
+
+#### TooltipPosition
+
+```csharp
+public enum TooltipPosition
+{
+    Top,
+    Bottom,
+    Left,
+    Right,
+    Center
+}
+```
+
+#### ClickThroughMode
+
+```csharp
+public enum ClickThroughMode
+{
+    None,       // Overlay blocks all interaction
+    TargetOnly, // Only target element(s) can be clicked
+    All         // All elements can be clicked through
+}
+```
+
+### ITutorialPersistence
+
+Implement this interface to persist tutorial state:
+
+```csharp
+public class MyPersistence : ITutorialPersistence
+{
+    public async Task<TutorialState?> LoadStateAsync(CancellationToken ct = default)
+    {
+        // Load from database, file, etc.
+    }
+
+    public async Task SaveStateAsync(TutorialState state, CancellationToken ct = default)
+    {
+        // Save to database, file, etc.
+    }
+}
+```
+
+Register before `AddGuidely`:
+
+```csharp
+services.AddGuidelyPersistence<MyPersistence>();
+services.AddGuidely<...>(...);
+```
+
+## Dependency Injection
+
+### AddGuidely&lt;TContext, TTrigger, TGroup&gt;
+
+Registers the tutorial service, configuration, and view model.
+
+```csharp
+services.AddGuidely<MyAppContext, MyTrigger, MyGroup>(builder =>
+{
+    builder.ScanStepsFromAssembly(typeof(WelcomeStep).Assembly);
+    builder.ConfigureTransitions(MySetup.ConfigureTransitions);
+    builder.SetStartStep(StepIds.Welcome);
+    builder.UseStepFactory((sp, type) => sp.GetRequiredService(type)); // Optional
+});
+```
+
+### AddGuidelyPersistence&lt;TPersistence&gt;
+
+Registers a custom persistence implementation:
+
+```csharp
+services.AddGuidelyPersistence<MyPersistence>();
+
+// Or with factory
+services.AddGuidelyPersistence(sp => new MyPersistence(sp.GetRequiredService<IDb>()));
+```
+
+## Complete Example
+
+```csharp
+// Context
+public record OnboardingContext : TutorialContextBase
+{
+    public bool HasProfile { get; init; }
+    public bool HasConnectedAccount { get; init; }
+}
+
+// Triggers
+public enum OnboardingTrigger
+{
+    ProfileCreated,
+    AccountConnected
+}
+
+// Groups
+public enum OnboardingGroup
+{
+    Welcome,
+    Profile,
+    Account,
+    Done
+}
+
+// Step IDs
+public static class StepIds
+{
+    public const string Welcome = nameof(Welcome);
+    public const string CreateProfile = nameof(CreateProfile);
+    public const string ConnectAccount = nameof(ConnectAccount);
+    public const string AllDone = nameof(AllDone);
+}
+
+// Steps
+[TutorialStep(StepIds.Welcome, Group = OnboardingGroup.Welcome, Position = TooltipPosition.Center)]
+public class WelcomeStep : ITutorialStepContent
+{
+    public string Title => "Welcome!";
+    public string Description => "Let's set up your account.";
+}
+
+[TutorialStep(StepIds.CreateProfile,
+    Group = OnboardingGroup.Profile,
+    Position = TooltipPosition.Right,
+    RequiresUserAction = true,
+    ClickThroughMode = ClickThroughMode.TargetOnly)]
+[TutorialTarget("ProfileButton")]
+[AutoAdvanceOn(OnboardingTrigger.ProfileCreated)]
+public class CreateProfileStep : ITutorialStepContent, IConditionalAutoAdvance<OnboardingContext, OnboardingTrigger>
+{
+    public string Title => "Create Your Profile";
+    public string Description => "Click to create your profile.";
+
+    public bool ShouldAutoAdvance(OnboardingTrigger trigger, OnboardingContext? prev, OnboardingContext curr)
+        => trigger == OnboardingTrigger.ProfileCreated && curr.HasProfile;
+}
+
+// Transitions
+public static class OnboardingSetup
+{
+    public static void ConfigureTransitions(TransitionBuilder<OnboardingContext> builder)
+    {
+        builder.From(StepIds.Welcome)
+            .GoToIf(StepIds.ConnectAccount, ctx => ctx.HasProfile)
+            .GoTo(StepIds.CreateProfile);
+
+        builder.From(StepIds.CreateProfile)
+            .GoTo(StepIds.ConnectAccount);
+
+        builder.From(StepIds.ConnectAccount)
+            .GoTo(StepIds.AllDone);
+    }
+}
+
+// Registration
+services.AddGuidely<OnboardingContext, OnboardingTrigger, OnboardingGroup>(builder =>
+{
+    builder.ScanStepsFromAssembly(typeof(WelcomeStep).Assembly);
+    builder.ConfigureTransitions(OnboardingSetup.ConfigureTransitions);
+    builder.SetStartStep(StepIds.Welcome);
+});
+```
+
+## License
+
+MIT

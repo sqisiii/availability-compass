@@ -6,7 +6,7 @@
              xmlns:manageSources="clr-namespace:AvailabilityCompass.Core.Features.ManageSources;assembly=AvailabilityCompass.Core"
              xmlns:converters="clr-namespace:AvailabilityCompass.WpfClient.Shared.Converters"
              xmlns:controls="clr-namespace:AvailabilityCompass.WpfClient.Shared.Controls"
-             xmlns:tutorial="clr-namespace:AvailabilityCompass.WpfClient.Shared.Tutorial"
+             xmlns:guidely="clr-namespace:Guidely.WPF;assembly=Guidely.WPF"
              d:DataContext="{d:DesignInstance manageSources:ManageSourcesViewModel, IsDesignTimeCreatable=True}"
              mc:Ignorable="d"
              d:DesignHeight="500" d:DesignWidth="900">
@@ -50,7 +50,7 @@
                             Style="{StaticResource GlassPrimaryButton}"
                             ToolTip="Refresh available trips data"
                             Command="{Binding RefreshAllSourcesCommand}"
-                            tutorial:TutorialTarget.Element="RefreshAllButton">
+                            guidely:TutorialTarget.Element="RefreshAllButton">
                         <StackPanel Orientation="Horizontal">
                             <controls:FluentIcon Glyph="{x:Static controls:FluentIcons.Refresh}"
                                                  IconSize="16"
@@ -259,7 +259,7 @@
                                                           RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding SourceId}"
                                                 Style="{StaticResource GlassSecondaryButton}"
-                                                tutorial:TutorialTarget.Element="SourceCardRefreshButton" />
+                                                guidely:TutorialTarget.Element="SourceCardRefreshButton" />
                                     </Grid>
                                 </Grid>
                             </Border>

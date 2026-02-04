@@ -42,7 +42,6 @@ public partial class App
                 services.AddSettings();
                 services.AddSource();
                 services.AddSourceServices();
-                services.AddTutorial();
                 services.AddSingleton(
                     Log.Logger = new LoggerConfiguration()
                         .MinimumLevel.Information()

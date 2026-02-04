@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:AvailabilityCompass.WpfClient.Pages"
         xmlns:controls="clr-namespace:AvailabilityCompass.WpfClient.Shared.Controls"
-        xmlns:tutorial="clr-namespace:AvailabilityCompass.WpfClient.Shared.Tutorial"
+        xmlns:guidely="clr-namespace:Guidely.WPF;assembly=Guidely.WPF"
+        xmlns:guidelyControls="clr-namespace:Guidely.WPF.Controls;assembly=Guidely.WPF"
         Width="1360"
         Height="950"
         ResizeMode="CanResizeWithGrip"
@@ -107,7 +108,7 @@
                         <Button Style="{StaticResource GlassToolbarButton}"
                                 Command="{Binding OpenCalendarsCommand}"
                                 ToolTip="Manage calendars"
-                                tutorial:TutorialTarget.Element="CalendarsHeaderButton">
+                                guidely:TutorialTarget.Element="CalendarsHeaderButton">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
                                            FontSize="16"
@@ -126,7 +127,7 @@
                                 Command="{Binding OpenSourcesCommand}"
                                 ToolTip="Manage sources"
                                 Margin="4,0,0,0"
-                                tutorial:TutorialTarget.Element="SourcesHeaderButton">
+                                guidely:TutorialTarget.Element="SourcesHeaderButton">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
                                            FontSize="16"
@@ -205,7 +206,7 @@
                 </Border>
 
                 <!-- Tutorial Overlay (on top of everything) -->
-                <controls:TutorialOverlay DataContext="{Binding TutorialViewModel}" />
+                <guidelyControls:TutorialOverlay DataContext="{Binding TutorialViewModel}" />
             </Grid>
         </Grid>
     </Border>

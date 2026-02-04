@@ -11,7 +11,7 @@
              xmlns:controls="clr-namespace:AvailabilityCompass.WpfClient.Shared.Controls"
              xmlns:sharedConverters="clr-namespace:AvailabilityCompass.WpfClient.Shared.Converters"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:tutorial="clr-namespace:AvailabilityCompass.WpfClient.Shared.Tutorial"
+             xmlns:guidely="clr-namespace:Guidely.WPF;assembly=Guidely.WPF"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:ManageCalendarsViewModel}"
              d:DesignHeight="700"
@@ -83,7 +83,7 @@
                                 Margin="8,4,0,0"
                                 VerticalAlignment="Top"
                                 ToolTip="Add Calendar"
-                                tutorial:TutorialTarget.Element="AddCalendarButton">
+                                guidely:TutorialTarget.Element="AddCalendarButton">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource GlassCircularGlowButton}">
                                     <Style.Triggers>
@@ -110,7 +110,7 @@
                         <ScrollViewer HorizontalScrollBarVisibility="Auto"
                                       VerticalScrollBarVisibility="Disabled"
                                       Style="{StaticResource GlassScrollViewer}"
-                                      tutorial:TutorialTarget.Element="CalendarSelector">
+                                      guidely:TutorialTarget.Element="CalendarSelector">
                             <ItemsControl ItemsSource="{Binding Calendars}"
                                           Margin="0,0,0,8">
                                 <ItemsControl.ItemsPanel>
@@ -142,7 +142,7 @@
                         CornerRadius="8"
                         Padding="16"
                         Margin="0,8,0,0"
-                        tutorial:TutorialTarget.Element="AddCalendarForm">
+                        guidely:TutorialTarget.Element="AddCalendarForm">
                         <StackPanel>
                             <TextBlock Text="New Calendar"
                                        Style="{StaticResource GlassHeading3}"
@@ -249,7 +249,7 @@
                                             ToolTip="Edit calendar"
                                             Padding="8,4"
                                             Margin="0,0,4,0"
-                                            tutorial:TutorialTarget.Element="CalendarEditButton">
+                                            guidely:TutorialTarget.Element="CalendarEditButton">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
                                                        FontSize="14"
@@ -264,7 +264,7 @@
                                             CommandParameter="{Binding SelectedCalendarId}"
                                             ToolTip="Delete calendar"
                                             Padding="8,4"
-                                            tutorial:TutorialTarget.Element="CalendarDeleteButton">
+                                            guidely:TutorialTarget.Element="CalendarDeleteButton">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
                                                        FontSize="14"
@@ -348,7 +348,7 @@
                                     Background="{DynamicResource GlassMutedBrush}"
                                     CornerRadius="8"
                                     Padding="12"
-                                    tutorial:TutorialTarget.Element="CalendarWidget">
+                                    guidely:TutorialTarget.Element="CalendarWidget">
                                 <Calendar x:Name="DateCalendar"
                                           SelectionMode="MultipleRange"
                                           TextOptions.TextFormattingMode="Ideal">
@@ -383,7 +383,7 @@
                                             IsEnabled="{Binding HasSelectedDates}"
                                             HorizontalAlignment="Stretch"
                                             Margin="0,0,0,12"
-                                            tutorial:TutorialTarget.Element="AddDaysButton" />
+                                            guidely:TutorialTarget.Element="AddDaysButton" />
 
                                     <!-- Separator -->
                                     <Rectangle Height="1"
@@ -432,7 +432,7 @@
                             Background="{DynamicResource GlassMutedBrush}"
                             CornerRadius="8"
                             Padding="16"
-                            tutorial:TutorialTarget.Element="DateEntriesPanel">
+                            guidely:TutorialTarget.Element="DateEntriesPanel">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
