@@ -8,9 +8,15 @@ namespace Guidely.WPF.Controls;
 /// <summary>
 /// A Border control that supports selective hit-testing for tutorial overlays.
 /// Allows click-through based on the configured mode and target elements.
+/// Renders the backdrop with transparent cutouts for highlighted elements.
 /// </summary>
 public class SelectiveHitTestBorder : Border
 {
+    /// <summary>
+    /// Padding around cutout areas (larger than a highlight border for visual breathing room).
+    /// </summary>
+    private const double CutoutPadding = 16;
+
     /// <summary>
     /// Identifies the ClickThroughMode dependency property.
     /// </summary>
@@ -133,5 +139,71 @@ public class SelectiveHitTestBorder : Border
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Updates the OpacityMask to create transparent cutouts for target elements.
+    /// Call this after updating clickable targets.
+    /// </summary>
+    public void InvalidateCutouts()
+    {
+        if (ClickableTargets.Count == 0 || ActualWidth <= 0 || ActualHeight <= 0)
+        {
+            OpacityMask = null;
+            return;
+        }
+
+        // Create geometry: full rectangle minus cutouts
+        var fullRect = new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight));
+        Geometry maskGeometry = fullRect;
+
+        foreach (var target in ClickableTargets)
+        {
+            var bounds = GetTargetBoundsRelativeToThis(target);
+            if (bounds.HasValue)
+            {
+                var cutoutRect = new RectangleGeometry(bounds.Value);
+                maskGeometry = new CombinedGeometry(
+                    GeometryCombineMode.Exclude,
+                    maskGeometry,
+                    cutoutRect);
+            }
+        }
+
+        // White = opaque, transparent areas (excluded) = holes
+        var drawing = new GeometryDrawing(Brushes.White, null, maskGeometry);
+        OpacityMask = new DrawingBrush(drawing)
+        {
+            Stretch = Stretch.None,
+            AlignmentX = AlignmentX.Left,
+            AlignmentY = AlignmentY.Top
+        };
+    }
+
+    /// <summary>
+    /// Gets the bounds of a target element relative to this border's coordinate space.
+    /// </summary>
+    private Rect? GetTargetBoundsRelativeToThis(FrameworkElement target)
+    {
+        if (!target.IsLoaded || !target.IsVisible)
+        {
+            return null;
+        }
+
+        try
+        {
+            var targetPosition = target.TransformToVisual(this).Transform(new Point(0, 0));
+            var bounds = new Rect(
+                targetPosition.X - CutoutPadding,
+                targetPosition.Y - CutoutPadding,
+                target.RenderSize.Width + CutoutPadding * 2,
+                target.RenderSize.Height + CutoutPadding * 2);
+            return bounds;
+        }
+        catch (InvalidOperationException)
+        {
+            // Target is not in the same visual tree
+            return null;
+        }
     }
 }

@@ -11,7 +11,7 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
-        <!-- Default styles that can be overridden by consumers -->
+        <!-- Default styles that consumers can override -->
         <SolidColorBrush x:Key="GuidelyBackdropBrush" Color="#40000000" />
         <SolidColorBrush x:Key="GuidelyTooltipBackgroundBrush" Color="#FFFFFF" />
         <SolidColorBrush x:Key="GuidelyTooltipBorderBrush" Color="#3B82F6" />
@@ -24,7 +24,7 @@
     <Grid x:Name="OverlayRoot"
           Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 
-        <!-- Semi-transparent backdrop with selective click-through -->
+        <!-- Semi-transparent backdrop with selective click-through and cutouts for highlights -->
         <controls:SelectiveHitTestBorder x:Name="Backdrop"
                                          Background="{DynamicResource GuidelyBackdropBrush}"
                                          ClickThroughMode="{Binding ClickThroughMode}" />

@@ -185,6 +185,7 @@ public partial class TutorialOverlay : UserControl
         }
 
         Backdrop.SetClickableTargets(clickableTargets.ToArray());
+        Backdrop.InvalidateCutouts();
     }
 
     private (Rectangle Highlight, Storyboard Animation) CreateHighlightRectangle(Point position, Size size)
