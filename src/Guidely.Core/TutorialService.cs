@@ -82,6 +82,12 @@ public partial class TutorialService<TContext, TTrigger, TGroup>
         var state = await _persistence.LoadStateAsync(ct);
         if (state == null)
         {
+            // First run - no persisted state
+            if (_configuration.AutoStartOnFirstRun)
+            {
+                StartTutorial();
+            }
+
             return;
         }
 

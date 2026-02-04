@@ -16,6 +16,7 @@ public class TutorialConfigBuilder<TContext, TTrigger, TGroup>
 {
     private readonly List<Assembly> _assemblies = [];
     private readonly TransitionBuilder<TContext> _transitionBuilder = new();
+    private bool _autoStartOnFirstRun;
     private string _startStepId = string.Empty;
     private Func<IServiceProvider, Type, object>? _stepFactory;
 
@@ -67,6 +68,16 @@ public class TutorialConfigBuilder<TContext, TTrigger, TGroup>
     }
 
     /// <summary>
+    /// Enables automatic tutorial start on the first run when no persisted state exists.
+    /// </summary>
+    /// <returns>The builder for chaining.</returns>
+    public TutorialConfigBuilder<TContext, TTrigger, TGroup> EnableAutoStart()
+    {
+        _autoStartOnFirstRun = true;
+        return this;
+    }
+
+    /// <summary>
     /// Builds the tutorial configuration.
     /// </summary>
     /// <param name="serviceProvider">The service provider for resolving dependencies.</param>
@@ -90,7 +101,8 @@ public class TutorialConfigBuilder<TContext, TTrigger, TGroup>
             StartStepId = _startStepId,
             Steps = steps,
             OrderedSteps = orderedSteps,
-            Transitions = _transitionBuilder.Build()
+            Transitions = _transitionBuilder.Build(),
+            AutoStartOnFirstRun = _autoStartOnFirstRun
         };
     }
 

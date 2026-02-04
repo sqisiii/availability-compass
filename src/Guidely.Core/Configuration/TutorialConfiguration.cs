@@ -16,7 +16,7 @@ public class TutorialConfiguration<TContext, TTrigger, TGroup>
     /// <summary>
     /// The ID of the starting step.
     /// </summary>
-    public string StartStepId { get; internal set; } = string.Empty;
+    public string StartStepId { get; internal init; } = string.Empty;
 
     /// <summary>
     /// All registered step metadata.
@@ -25,7 +25,7 @@ public class TutorialConfiguration<TContext, TTrigger, TGroup>
         = new Dictionary<string, TutorialStepMetadata<TTrigger, TGroup>>();
 
     /// <summary>
-    /// Steps ordered by group and order within group.
+    /// Steps ordered by group and order within a group.
     /// </summary>
     public IReadOnlyList<TutorialStepMetadata<TTrigger, TGroup>> OrderedSteps { get; internal init; }
         = Array.Empty<TutorialStepMetadata<TTrigger, TGroup>>();
@@ -37,10 +37,15 @@ public class TutorialConfiguration<TContext, TTrigger, TGroup>
         = Array.Empty<TransitionRule>();
 
     /// <summary>
+    /// Whether to automatically start the tutorial on the first run (no persisted state).
+    /// </summary>
+    public bool AutoStartOnFirstRun { get; internal init; }
+
+    /// <summary>
     /// Gets the first step of a group.
     /// </summary>
     /// <param name="group">The group.</param>
-    /// <returns>The first step in the group, or null if group has no steps.</returns>
+    /// <returns>The first step in the group, or null if a group has no steps.</returns>
     public TutorialStepMetadata<TTrigger, TGroup>? GetFirstStepInGroup(TGroup group)
     {
         return OrderedSteps.FirstOrDefault(s => EqualityComparer<TGroup>.Default.Equals(s.Group, group));

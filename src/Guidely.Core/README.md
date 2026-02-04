@@ -13,6 +13,7 @@ A powerful, framework-agnostic tutorial state machine library for .NET applicati
 - **Persistence Ready** - Implement `ITutorialPersistence` to save/restore tutorial progress across sessions
 - **Framework Agnostic** - Core logic works with any .NET UI framework (WPF, MAUI, Avalonia, Blazor)
 - **Dependency Injection** - First-class support for Microsoft.Extensions.DependencyInjection
+- **Auto-Start on First Run** - Optionally start the tutorial automatically when no persisted state exists
 
 ## Use Cases
 
@@ -101,6 +102,7 @@ services.AddGuidely<MyAppContext, MyTrigger, MyGroup>(builder =>
     builder.ScanStepsFromAssembly(typeof(WelcomeStep).Assembly);
     builder.ConfigureTransitions(TutorialSetup.ConfigureTransitions);
     builder.SetStartStep(StepIds.Welcome);
+    builder.EnableAutoStart(); // Optional: auto-start tutorial on first run
 });
 ```
 
@@ -359,9 +361,20 @@ services.AddGuidely<MyAppContext, MyTrigger, MyGroup>(builder =>
     builder.ScanStepsFromAssembly(typeof(WelcomeStep).Assembly);
     builder.ConfigureTransitions(MySetup.ConfigureTransitions);
     builder.SetStartStep(StepIds.Welcome);
+    builder.EnableAutoStart(); // Optional: auto-start on first run
     builder.UseStepFactory((sp, type) => sp.GetRequiredService(type)); // Optional
 });
 ```
+
+#### Builder Methods
+
+| Method | Description |
+|--------|-------------|
+| `ScanStepsFromAssembly(assembly)` | Scans an assembly for step classes marked with `[TutorialStep]` |
+| `ConfigureTransitions(action)` | Configures transitions between steps using `TransitionBuilder` |
+| `SetStartStep(stepId)` | Sets the starting step ID |
+| `EnableAutoStart()` | Enables automatic tutorial start on first run (no persisted state) |
+| `UseStepFactory(factory)` | Sets a custom factory for creating step instances |
 
 ### AddGuidelyPersistence&lt;TPersistence&gt;
 
@@ -456,6 +469,7 @@ services.AddGuidely<OnboardingContext, OnboardingTrigger, OnboardingGroup>(build
     builder.ScanStepsFromAssembly(typeof(WelcomeStep).Assembly);
     builder.ConfigureTransitions(OnboardingSetup.ConfigureTransitions);
     builder.SetStartStep(StepIds.Welcome);
+    builder.EnableAutoStart(); // Start tutorial automatically on first run
 });
 ```
 
