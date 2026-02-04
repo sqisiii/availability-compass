@@ -64,7 +64,7 @@ The `TutorialOverlay` is a UserControl that displays:
 
 - **Semi-transparent backdrop** - Dims the application to focus attention
 - **Tooltip popup** - Shows step title, description, and navigation buttons
-- **Highlight adorners** - Draws attention to target elements with a glowing border
+- **Highlights** - Draws attention to target elements with a glowing border
 
 Place it at the root of your window/page, after all other content so it renders on top.
 
@@ -84,7 +84,7 @@ The attached property `TutorialTarget.Element` registers UI elements for highlig
 When a step with `[TutorialTarget("MyButton")]` becomes active, the overlay automatically:
 
 1. Finds the registered element
-2. Adds a highlight adorner
+2. Adds a highlight border
 3. Positions the tooltip relative to the element
 4. Enables click-through if configured
 

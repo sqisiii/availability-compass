@@ -29,6 +29,9 @@
                                          Background="{DynamicResource GuidelyBackdropBrush}"
                                          ClickThroughMode="{Binding ClickThroughMode}" />
 
+        <!-- Highlight canvas - above backdrop, below tooltip -->
+        <Canvas x:Name="HighlightCanvas" IsHitTestVisible="False" />
+
         <!-- Tooltip Popup - positioned via code-behind -->
         <Border x:Name="TooltipBorder"
                 Background="{DynamicResource GuidelyTooltipBackgroundBrush}"

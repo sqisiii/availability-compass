@@ -1,8 +1,10 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Shapes;
 using Guidely.Core.Abstractions;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -15,7 +17,7 @@ namespace Guidely.WPF.Controls;
 // ReSharper disable once RedundantExtendsListEntry
 public partial class TutorialOverlay : UserControl
 {
-    private readonly List<(string Name, TutorialHighlightAdorner Adorner)> _adorners = [];
+    private readonly List<(string Name, Rectangle Highlight, Storyboard Animation)> _highlights = [];
     private Point _dragStartMousePosition;
 
     // Drag state tracking
@@ -70,7 +72,7 @@ public partial class TutorialOverlay : UserControl
 
         DataContextChanged -= OnDataContextChanged;
 
-        RemoveAllAdorners();
+        ClearHighlights();
     }
 
     private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -104,7 +106,7 @@ public partial class TutorialOverlay : UserControl
                 }
                 else
                 {
-                    RemoveAllAdorners();
+                    ClearHighlights();
                 }
 
                 break;
@@ -140,13 +142,20 @@ public partial class TutorialOverlay : UserControl
         var isVisible = GetIsVisible();
         if (!isVisible)
         {
-            RemoveAllAdorners();
+            ClearHighlights();
             Backdrop.SetClickableTargets();
             return;
         }
 
         var targets = GetTargets();
-        RemoveAllAdorners();
+        ClearHighlights();
+
+        var window = Window.GetWindow(this);
+        if (window == null)
+        {
+            Backdrop.SetClickableTargets();
+            return;
+        }
 
         var clickableTargets = new List<FrameworkElement>();
 
@@ -158,32 +167,78 @@ public partial class TutorialOverlay : UserControl
 
             clickableTargets.Add(element);
 
-            var adornerLayer = AdornerLayer.GetAdornerLayer(element);
-            if (adornerLayer == null)
-                continue;
+            try
+            {
+                // Get element position relative to overlay (not window)
+                var position = element.TransformToVisual(this).Transform(new Point(0, 0));
+                var size = element.RenderSize;
 
-            var adorner = new TutorialHighlightAdorner(element);
-            adornerLayer.Add(adorner);
-            _adorners.Add((targetName, adorner));
+                // Create a highlight rectangle
+                var (highlight, animation) = CreateHighlightRectangle(position, size);
+                HighlightCanvas.Children.Add(highlight);
+                _highlights.Add((targetName, highlight, animation));
+            }
+            catch
+            {
+                // Transform failed, skip this element
+            }
         }
 
         Backdrop.SetClickableTargets(clickableTargets.ToArray());
     }
 
-    private void RemoveAllAdorners()
+    private (Rectangle Highlight, Storyboard Animation) CreateHighlightRectangle(Point position, Size size)
     {
-        foreach (var (_, adorner) in _adorners)
-        {
-            if (adorner.AdornedElement is FrameworkElement element)
-            {
-                var layer = AdornerLayer.GetAdornerLayer(element);
-                layer?.Remove(adorner);
-            }
+        const double padding = 4;
+        const double borderThickness = 3;
+        const double cornerRadius = 8;
+        var highlightColor = Color.FromRgb(59, 130, 246); // Blue
 
-            adorner.StopAnimation();
+        var highlight = new Rectangle
+        {
+            Width = size.Width + padding * 2,
+            Height = size.Height + padding * 2,
+            Stroke = new SolidColorBrush(highlightColor),
+            StrokeThickness = borderThickness,
+            RadiusX = cornerRadius,
+            RadiusY = cornerRadius,
+            Fill = Brushes.Transparent,
+            IsHitTestVisible = false
+        };
+
+        // Position on canvas
+        Canvas.SetLeft(highlight, position.X - padding);
+        Canvas.SetTop(highlight, position.Y - padding);
+
+        // Create pulse animation
+        var animation = new DoubleAnimation
+        {
+            From = 1.0,
+            To = 0.4,
+            Duration = TimeSpan.FromMilliseconds(800),
+            AutoReverse = true,
+            RepeatBehavior = RepeatBehavior.Forever,
+            EasingFunction = new SineEase { EasingMode = EasingMode.EaseInOut }
+        };
+
+        var storyboard = new Storyboard();
+        storyboard.Children.Add(animation);
+        Storyboard.SetTarget(animation, highlight);
+        Storyboard.SetTargetProperty(animation, new PropertyPath(OpacityProperty));
+        storyboard.Begin();
+
+        return (highlight, storyboard);
+    }
+
+    private void ClearHighlights()
+    {
+        foreach (var (_, _, animation) in _highlights)
+        {
+            animation.Stop();
         }
 
-        _adorners.Clear();
+        _highlights.Clear();
+        HighlightCanvas.Children.Clear();
     }
 
     private void UpdateTooltipPosition()
