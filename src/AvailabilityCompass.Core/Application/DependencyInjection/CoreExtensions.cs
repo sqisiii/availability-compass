@@ -29,6 +29,7 @@ public static class CoreExtensions
             builder.ScanStepsFromAssembly(typeof(WelcomeStep).Assembly);
             builder.ConfigureTransitions(TutorialSetup.ConfigureTransitions);
             builder.SetStartStep(TutorialStepIds.Welcome);
+            builder.EnableAutoStart();
         });
 
         return services;
