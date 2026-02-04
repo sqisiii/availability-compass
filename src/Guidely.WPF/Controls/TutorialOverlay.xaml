@@ -44,8 +44,9 @@
                 <DropShadowEffect BlurRadius="20" ShadowDepth="4" Opacity="0.2" Color="#000000" />
             </Border.Effect>
             <StackPanel>
-                <!-- Header with title and close button -->
-                <Grid Margin="0,0,0,12">
+                <!-- Header with title and close button (drag handle) -->
+                <Grid Margin="0,0,0,12"
+                      Cursor="SizeAll">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />

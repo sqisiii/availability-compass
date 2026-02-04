@@ -82,6 +82,7 @@ The attached property `TutorialTarget.Element` registers UI elements for highlig
 ```
 
 When a step with `[TutorialTarget("MyButton")]` becomes active, the overlay automatically:
+
 1. Finds the registered element
 2. Adds a highlight adorner
 3. Positions the tooltip relative to the element
@@ -91,11 +92,11 @@ When a step with `[TutorialTarget("MyButton")]` becomes active, the overlay auto
 
 The overlay supports three interaction modes controlled by `ClickThroughMode`:
 
-| Mode | Behavior |
-|------|----------|
-| `None` | Overlay blocks all interaction (default) |
-| `TargetOnly` | Only target element(s) can be clicked |
-| `All` | All elements can be clicked through the overlay |
+| Mode         | Behavior                                        |
+| ------------ | ----------------------------------------------- |
+| `None`       | Overlay blocks all interaction (default)        |
+| `TargetOnly` | Only target element(s) can be clicked           |
+| `All`        | All elements can be clicked through the overlay |
 
 Set the mode in your step definition:
 
@@ -108,7 +109,7 @@ public class ClickButtonStep : ITutorialStepContent { ... }
 
 ### Tooltip Positioning
 
-Tooltips are positioned relative to the target element using `TooltipPosition`:
+Tooltips are initially positioned relative to the target element using `TooltipPosition`:
 
 ```csharp
 [TutorialStep(StepIds.MyStep, Position = TooltipPosition.Right)]
@@ -118,6 +119,10 @@ Available positions: `Top`, `Bottom`, `Left`, `Right`, `Center`
 
 When set to `Center` (or when no target is specified), the tooltip centers in the overlay.
 
+### Draggable Tooltips
+
+Users can drag the tooltip to reposition it by clicking and dragging the header area. The `TooltipPosition` only sets the **initial position** when a step becomes active.
+
 ## API Reference
 
 ### TutorialOverlay Control
@@ -126,11 +131,11 @@ The main control that displays the tutorial UI.
 
 **Properties:**
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `TooltipWidth` | `double` | `380` | Approximate tooltip width for positioning |
-| `TooltipHeight` | `double` | `250` | Approximate tooltip height for positioning |
-| `TooltipMargin` | `double` | `16` | Margin between tooltip and target |
+| Property        | Type     | Default | Description                                |
+| --------------- | -------- | ------- | ------------------------------------------ |
+| `TooltipWidth`  | `double` | `380`   | Approximate tooltip width for positioning  |
+| `TooltipHeight` | `double` | `250`   | Approximate tooltip height for positioning |
+| `TooltipMargin` | `double` | `16`    | Margin between tooltip and target          |
 
 **DataContext Binding:**
 
@@ -140,7 +145,7 @@ Bind to `TutorialViewModel<TContext, TTrigger, TGroup>` from Guidely.Core. The o
 - `Title` - Current step title
 - `Description` - Current step description
 - `Targets` - List of target element names
-- `TooltipPosition` - Tooltip position relative to target
+- `TooltipPosition` - Initial tooltip position relative to target (user can drag to reposition)
 - `ClickThroughMode` - Overlay interaction mode
 - `ShowNextButton` - Whether to show the Next button
 - `CanGoBack` - Whether Back button is available
@@ -164,18 +169,18 @@ Static registry that tracks UI elements marked as tutorial targets.
 
 **Methods:**
 
-| Method | Description |
-|--------|-------------|
-| `Register(name, element)` | Register an element (called automatically) |
-| `Unregister(name)` | Unregister an element (called automatically) |
-| `GetElement(name)` | Get the element for a target name |
-| `GetAllTargetNames()` | Get all registered target names |
-| `Clear()` | Clear all registrations |
+| Method                    | Description                                  |
+| ------------------------- | -------------------------------------------- |
+| `Register(name, element)` | Register an element (called automatically)   |
+| `Unregister(name)`        | Unregister an element (called automatically) |
+| `GetElement(name)`        | Get the element for a target name            |
+| `GetAllTargetNames()`     | Get all registered target names              |
+| `Clear()`                 | Clear all registrations                      |
 
 **Events:**
 
-| Event | Description |
-|-------|-------------|
+| Event            | Description                                         |
+| ---------------- | --------------------------------------------------- |
 | `ElementChanged` | Fired when an element is registered or unregistered |
 
 ## Styling

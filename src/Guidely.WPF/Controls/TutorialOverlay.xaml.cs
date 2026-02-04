@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 using Guidely.Core.Abstractions;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -15,6 +16,11 @@ namespace Guidely.WPF.Controls;
 public partial class TutorialOverlay : UserControl
 {
     private readonly List<(string Name, TutorialHighlightAdorner Adorner)> _adorners = [];
+    private Point _dragStartMousePosition;
+
+    // Drag state tracking
+    private bool _isDragging;
+    private Point _tooltipStartPosition;
 
     public TutorialOverlay()
     {
@@ -22,6 +28,11 @@ public partial class TutorialOverlay : UserControl
         DataContextChanged += OnDataContextChanged;
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
+
+        // Wire up drag handlers
+        TooltipBorder.MouseLeftButtonDown += OnTooltipMouseDown;
+        TooltipBorder.MouseLeftButtonUp += OnTooltipMouseUp;
+        TooltipBorder.MouseMove += OnTooltipMouseMove;
     }
 
     /// <summary>
@@ -47,6 +58,18 @@ public partial class TutorialOverlay : UserControl
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
         TutorialElementRegistry.ElementChanged -= OnElementRegistryChanged;
+
+        if (DataContext is INotifyPropertyChanged vm)
+        {
+            vm.PropertyChanged -= OnViewModelPropertyChanged;
+        }
+
+        TooltipBorder.MouseLeftButtonDown -= OnTooltipMouseDown;
+        TooltipBorder.MouseLeftButtonUp -= OnTooltipMouseUp;
+        TooltipBorder.MouseMove -= OnTooltipMouseMove;
+
+        DataContextChanged -= OnDataContextChanged;
+
         RemoveAllAdorners();
     }
 
@@ -178,10 +201,18 @@ public partial class TutorialOverlay : UserControl
 
         if (targetElement == null || position == TooltipPosition.Center)
         {
-            // Center the tooltip in the overlay
-            TooltipBorder.HorizontalAlignment = HorizontalAlignment.Center;
-            TooltipBorder.VerticalAlignment = VerticalAlignment.Center;
-            TooltipBorder.Margin = new Thickness(0);
+            // Calculate center position explicitly (don't use Center alignment to keep a consistent coordinate system)
+            var overlaySize = new Size(ActualWidth, ActualHeight);
+            var left = (overlaySize.Width - TooltipWidth) / 2;
+            var top = (overlaySize.Height - TooltipHeight) / 2;
+
+            // Clamp to visible area
+            left = Math.Max(TooltipMargin, Math.Min(left, overlaySize.Width - TooltipWidth - TooltipMargin));
+            top = Math.Max(TooltipMargin, Math.Min(top, overlaySize.Height - TooltipHeight - TooltipMargin));
+
+            TooltipBorder.HorizontalAlignment = HorizontalAlignment.Left;
+            TooltipBorder.VerticalAlignment = VerticalAlignment.Top;
+            TooltipBorder.Margin = new Thickness(left, top, 0, 0);
             return;
         }
 
@@ -235,10 +266,17 @@ public partial class TutorialOverlay : UserControl
         }
         catch
         {
-            // If transform fails, center the tooltip
-            TooltipBorder.HorizontalAlignment = HorizontalAlignment.Center;
-            TooltipBorder.VerticalAlignment = VerticalAlignment.Center;
-            TooltipBorder.Margin = new Thickness(0);
+            // If transform fails, center the tooltip using explicit coordinates
+            var overlaySize = new Size(ActualWidth, ActualHeight);
+            var left = (overlaySize.Width - TooltipWidth) / 2;
+            var top = (overlaySize.Height - TooltipHeight) / 2;
+
+            left = Math.Max(TooltipMargin, Math.Min(left, overlaySize.Width - TooltipWidth - TooltipMargin));
+            top = Math.Max(TooltipMargin, Math.Min(top, overlaySize.Height - TooltipHeight - TooltipMargin));
+
+            TooltipBorder.HorizontalAlignment = HorizontalAlignment.Left;
+            TooltipBorder.VerticalAlignment = VerticalAlignment.Top;
+            TooltipBorder.Margin = new Thickness(left, top, 0, 0);
         }
     }
 
@@ -246,6 +284,49 @@ public partial class TutorialOverlay : UserControl
     {
         var showNextButton = GetShowNextButton();
         ActionHint.Visibility = showNextButton ? Visibility.Collapsed : Visibility.Visible;
+    }
+
+    private void OnTooltipMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        _isDragging = true;
+        _dragStartMousePosition = e.GetPosition(this);
+        // Capture the actual tooltip position from its Margin
+        _tooltipStartPosition = new Point(TooltipBorder.Margin.Left, TooltipBorder.Margin.Top);
+        TooltipBorder.CaptureMouse();
+        e.Handled = true;
+    }
+
+    private void OnTooltipMouseUp(object sender, MouseButtonEventArgs e)
+    {
+        if (!_isDragging)
+        {
+            return;
+        }
+
+        _isDragging = false;
+        TooltipBorder.ReleaseMouseCapture();
+        e.Handled = true;
+    }
+
+    private void OnTooltipMouseMove(object sender, MouseEventArgs e)
+    {
+        if (!_isDragging)
+            return;
+
+        var currentPosition = e.GetPosition(this);
+        var delta = currentPosition - _dragStartMousePosition;
+
+        // Calculate new position directly from captured start position + delta
+        var newLeft = _tooltipStartPosition.X + delta.X;
+        var newTop = _tooltipStartPosition.Y + delta.Y;
+
+        // Clamp to visible area
+        var overlaySize = new Size(ActualWidth, ActualHeight);
+        newLeft = Math.Max(TooltipMargin, Math.Min(newLeft, overlaySize.Width - TooltipWidth - TooltipMargin));
+        newTop = Math.Max(TooltipMargin, Math.Min(newTop, overlaySize.Height - TooltipHeight - TooltipMargin));
+
+        // Apply position directly
+        TooltipBorder.Margin = new Thickness(newLeft, newTop, 0, 0);
     }
 
     // Helper methods to get properties from the untyped DataContext
