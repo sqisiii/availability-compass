@@ -43,7 +43,7 @@ public static class TutorialTarget
         {
             element.Loaded -= OnElementLoaded;
             element.Unloaded -= OnElementUnloaded;
-            TutorialElementRegistry.Unregister(oldValue);
+            TutorialElementRegistry.Unregister(oldValue, element);
         }
 
         // Register new value
@@ -82,7 +82,7 @@ public static class TutorialTarget
         var targetName = GetElement(element);
         if (!string.IsNullOrEmpty(targetName))
         {
-            TutorialElementRegistry.Unregister(targetName);
+            TutorialElementRegistry.Unregister(targetName, element);
         }
     }
 }

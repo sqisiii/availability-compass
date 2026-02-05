@@ -161,26 +161,28 @@ public partial class TutorialOverlay : UserControl
 
         foreach (var targetName in targets)
         {
-            var element = TutorialElementRegistry.GetElement(targetName);
-            if (element == null)
-                continue;
+            // Get all elements with this target name (supports multiple elements sharing the same name)
+            var elements = TutorialElementRegistry.GetElements(targetName);
 
-            clickableTargets.Add(element);
-
-            try
+            foreach (var element in elements)
             {
-                // Get element position relative to overlay (not window)
-                var position = element.TransformToVisual(this).Transform(new Point(0, 0));
-                var size = element.RenderSize;
+                clickableTargets.Add(element);
 
-                // Create a highlight rectangle
-                var (highlight, animation) = CreateHighlightRectangle(position, size);
-                HighlightCanvas.Children.Add(highlight);
-                _highlights.Add((targetName, highlight, animation));
-            }
-            catch
-            {
-                // Transform failed, skip this element
+                try
+                {
+                    // Get element position relative to overlay (not window)
+                    var position = element.TransformToVisual(this).Transform(new Point(0, 0));
+                    var size = element.RenderSize;
+
+                    // Create a highlight rectangle
+                    var (highlight, animation) = CreateHighlightRectangle(position, size);
+                    HighlightCanvas.Children.Add(highlight);
+                    _highlights.Add((targetName, highlight, animation));
+                }
+                catch
+                {
+                    // Transform failed, skip this element
+                }
             }
         }
 

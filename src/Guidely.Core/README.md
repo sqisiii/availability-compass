@@ -281,11 +281,25 @@ Main service interface for controlling the tutorial.
 
 #### [TutorialTarget]
 
-Specifies which UI element to highlight. Can be applied multiple times.
+Specifies which UI element(s) to highlight. Can be applied multiple times for different targets.
 
 ```csharp
 [TutorialTarget("SaveButton")]
 [TutorialTarget("CancelButton")]
+```
+
+**Multiple Elements with Same Target Name**: When multiple UI elements share the same target name (e.g., buttons in an ItemsControl/ListView template), all matching elements will be highlighted simultaneously. This is useful for highlighting all instances of a repeated element.
+
+```xml
+<!-- All Refresh buttons in the list will be highlighted -->
+<ItemsControl ItemsSource="{Binding Items}">
+    <ItemsControl.ItemTemplate>
+        <DataTemplate>
+            <Button Content="Refresh"
+                    guidely:TutorialTarget.Element="RefreshButton" />
+        </DataTemplate>
+    </ItemsControl.ItemTemplate>
+</ItemsControl>
 ```
 
 #### [AutoAdvanceOn]

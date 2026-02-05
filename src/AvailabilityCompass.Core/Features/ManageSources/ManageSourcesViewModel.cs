@@ -3,10 +3,12 @@ using AvailabilityCompass.Core.Features.ManageSources.Commands.SetSourceDisabled
 using AvailabilityCompass.Core.Features.ManageSources.Queries.GetDisabledSources;
 using AvailabilityCompass.Core.Features.ManageSources.Queries.GetSourcesMetaDataFromDbQuery;
 using AvailabilityCompass.Core.Features.ManageSources.Sources;
+using AvailabilityCompass.Core.Features.Tutorial;
 using AvailabilityCompass.Core.Shared;
 using AvailabilityCompass.Core.Shared.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Guidely.Core;
 using MediatR;
 
 namespace AvailabilityCompass.Core.Features.ManageSources;
@@ -23,6 +25,7 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
     private readonly HashSet<string> _refreshingSourceIds = [];
     private readonly ISourceMetaDataViewModelFactory _sourceMetaDataViewModelFactory;
     private readonly ISourceServiceFactory _sourceServiceFactory;
+    private readonly TutorialViewModel<AvailabilityCompassContext, AppTutorialTrigger, AppTutorialGroup> _tutorialViewModel;
 
     [ObservableProperty]
     private bool _isDialogOpen;
@@ -31,12 +34,14 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
         ISourceServiceFactory sourceServiceFactory,
         IMediator mediator,
         ISourceMetaDataViewModelFactory sourceMetaDataViewModelFactory,
-        INavigationService<IDialogViewModel> dialogNavigationService)
+        INavigationService<IDialogViewModel> dialogNavigationService,
+        TutorialViewModel<AvailabilityCompassContext, AppTutorialTrigger, AppTutorialGroup> tutorialViewModel)
     {
         _sourceServiceFactory = sourceServiceFactory;
         _mediator = mediator;
         _sourceMetaDataViewModelFactory = sourceMetaDataViewModelFactory;
         _dialogNavigationService = dialogNavigationService;
+        _tutorialViewModel = tutorialViewModel;
     }
 
     public ObservableCollection<SourceMetaDataViewModel> Sources { get; } = [];
@@ -86,6 +91,10 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
 
         await UpdateSourceMetaDataAsync(sourceId, ct);
 
+        _tutorialViewModel.FireTrigger(
+            AppTutorialTrigger.SourceRefreshed,
+            ctx => ctx with { HasRefreshedSource = true });
+
         _refreshingSourceIds.Remove(sourceId);
         RefreshSourceCommand.NotifyCanExecuteChanged();
         RefreshAllSourcesCommand.NotifyCanExecuteChanged();
@@ -114,12 +123,7 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
     private void SourceServiceOnRefreshProgressChanged(object? sender, SourceRefreshProgressEventArgs e)
     {
         var source = Sources.FirstOrDefault(s => s.SourceId == e.SourceId);
-        if (source is null)
-        {
-            return;
-        }
-
-        source.ProgressPercent = e.ProgressPercentage;
+        source?.ProgressPercent = e.ProgressPercentage;
     }
 
     private async Task LoadSourcesMetaDataAsync(CancellationToken ct)
