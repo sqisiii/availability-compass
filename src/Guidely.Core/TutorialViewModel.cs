@@ -97,6 +97,11 @@ public partial class TutorialViewModel<TContext, TTrigger, TGroup> : ObservableO
     /// </summary>
     public void FireTrigger(TTrigger trigger, Func<TContext, TContext>? contextUpdate = null)
     {
+        if (!_tutorialService.IsTutorialActive)
+        {
+            return;
+        }
+
         _tutorialService.FireTrigger(trigger, contextUpdate);
     }
 
