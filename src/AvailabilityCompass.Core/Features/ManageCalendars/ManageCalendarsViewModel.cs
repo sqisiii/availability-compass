@@ -10,13 +10,16 @@ using AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteDateEntry
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateCalendarRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateDateEntryRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.DatesCalculator;
+using AvailabilityCompass.Core.Features.ManageCalendars.Events;
 using AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetCalendarsQuery;
 using AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetDateEntriesQuery;
+using AvailabilityCompass.Core.Features.Tutorial;
 using AvailabilityCompass.Core.Shared;
 using AvailabilityCompass.Core.Shared.EventBus;
 using AvailabilityCompass.Core.Shared.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Guidely.Core;
 using MediatR;
 
 namespace AvailabilityCompass.Core.Features.ManageCalendars;
@@ -32,7 +35,9 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
     private readonly INavigationService<IDialogViewModel> _dialogNavigationService;
     private readonly IMediator _mediator;
     private readonly IReservedDatesCalculator _reservedDatesCalculator;
+    private readonly TutorialViewModel<AvailabilityCompassContext, AppTutorialTrigger, AppTutorialGroup> _tutorialViewModel;
 
+    private IDisposable? _addCalendarFormExpandedSubscription;
     private IDisposable? _calendarAddedSubscription;
     private IDisposable? _calendarDeletedSubscription;
     private IDisposable? _calendarUpdatedSubscription;
@@ -63,7 +68,8 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
         ICalendarViewModelFactory calendarViewModelFactory,
         IReservedDatesCalculator reservedDatesCalculator,
         ICalendarCrudController calendarCrud,
-        IDateEntryEditorController dateEntryEditor)
+        IDateEntryEditorController dateEntryEditor,
+        TutorialViewModel<AvailabilityCompassContext, AppTutorialTrigger, AppTutorialGroup> tutorialViewModel)
     {
         _mediator = mediator;
         _dialogNavigationService = dialogNavigationService;
@@ -71,6 +77,7 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
         _reservedDatesCalculator = reservedDatesCalculator;
         _calendarCrud = calendarCrud;
         _dateEntryEditor = dateEntryEditor;
+        _tutorialViewModel = tutorialViewModel;
 
         Calendars.CollectionChanged += CalendarsOnCollectionChanged;
 
@@ -159,6 +166,7 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
 
     public void Dispose()
     {
+        _addCalendarFormExpandedSubscription?.Dispose();
         _calendarAddedSubscription?.Dispose();
         _calendarDeletedSubscription?.Dispose();
         _calendarUpdatedSubscription?.Dispose();
@@ -299,7 +307,6 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
     }
 
 
-    // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnSelectedCalendarChanged(CalendarViewModel? value)
     {
         // Close edit mode when switching calendars
@@ -313,6 +320,14 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
         {
             _calendarCrud.CancelAddCalendar();
         }
+
+        _tutorialViewModel.FireTrigger(
+            AppTutorialTrigger.CalendarSelected,
+            ctx => ctx with
+            {
+                IsCalendarSelected = value is not null,
+                HasCalendarEntries = value is not null && value.DateEntries.Count > 0
+            });
     }
 
     private void OnCalendarCrudPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -353,6 +368,10 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
 
     private void SubscribeToEvents(IEventBus eventBus)
     {
+        _addCalendarFormExpandedSubscription = eventBus.Listen<AddCalendarFormExpandedEvent>()
+            .Subscribe(_ => _tutorialViewModel.FireTrigger(
+                AppTutorialTrigger.CalendarFormExpanded,
+                ctx => ctx with { IsAddCalendarExpanded = true }));
         _calendarAddedSubscription = eventBus.Listen<CalendarAddedEvent>()
             .SelectMany(evt => Observable.FromAsync(ct => OnCalendarAdded(evt, ct)))
             .Subscribe();
@@ -363,7 +382,7 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
             .SelectMany(_ => Observable.FromAsync(OnCalendarUpdated))
             .Subscribe();
         _dateEntryAddedSubscription = eventBus.Listen<DateEntryAddedEvent>()
-            .SelectMany(evt => Observable.FromAsync(ct => OnDateEntryChanged(evt.CalendarId, ct)))
+            .SelectMany(evt => Observable.FromAsync(ct => OnDateEntryAdded(evt.CalendarId, ct)))
             .Subscribe();
         _dateEntryDeletedSubscription = eventBus.Listen<DateEntryDeletedEvent>()
             .SelectMany(evt => Observable.FromAsync(ct => OnDateEntryChanged(evt.CalendarId, ct)))
@@ -376,6 +395,10 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
     private async Task OnCalendarAdded(CalendarAddedEvent evt, CancellationToken ct)
     {
         await LoadCalendars(evt.CalendarId, ct);
+
+        _tutorialViewModel.FireTrigger(
+            AppTutorialTrigger.CalendarAdded,
+            ctx => ctx with { HasCalendars = true });
     }
 
     private async Task OnCalendarDeleted(CancellationToken ct)
@@ -392,6 +415,16 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
     {
         await RefreshDateEntriesAsync(calendarId, ct);
         CalculateReservedDays();
+    }
+
+    private async Task OnDateEntryAdded(Guid calendarId, CancellationToken ct)
+    {
+        await RefreshDateEntriesAsync(calendarId, ct);
+        CalculateReservedDays();
+
+        _tutorialViewModel.FireTrigger(
+            AppTutorialTrigger.DateEntryAdded,
+            ctx => ctx with { HasCalendarEntries = DateEntries.Count > 0 });
     }
 
 

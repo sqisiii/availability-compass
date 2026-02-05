@@ -9,12 +9,14 @@ using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetCalendars;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetSources;
 using AvailabilityCompass.Core.Features.SearchRecords.Search;
+using AvailabilityCompass.Core.Features.Tutorial;
 using AvailabilityCompass.Core.Shared;
-using AvailabilityCompass.Core.Shared.Navigation;
 using AvailabilityCompass.Core.Shared.EventBus;
+using AvailabilityCompass.Core.Shared.Navigation;
 using AvailabilityCompass.Core.Shared.ValidationAttributes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Guidely.Core;
 using MediatR;
 
 namespace AvailabilityCompass.Core.Features.SearchRecords;
@@ -36,6 +38,7 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
     private readonly IMediator _mediator;
     private readonly ISearchCommandFactory _searchCommandFactory;
     private readonly ISourceFilterViewModelFactory _sourceFilterViewModelFactory;
+    private readonly TutorialViewModel<AvailabilityCompassContext, AppTutorialTrigger, AppTutorialGroup>? _tutorialViewModel;
 
 
     [ObservableProperty]
@@ -92,7 +95,8 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
         ISearchCommandFactory searchCommandFactory,
         INavigationService<IDialogViewModel> dialogNavigationService,
         ManageCalendarsViewModel manageCalendarsViewModel,
-        ManageSourcesViewModel manageSourcesViewModel)
+        ManageSourcesViewModel manageSourcesViewModel,
+        TutorialViewModel<AvailabilityCompassContext, AppTutorialTrigger, AppTutorialGroup> tutorialViewModel)
     {
         _mediator = mediator;
         _sourceFilterViewModelFactory = sourceFilterViewModelFactory;
@@ -102,6 +106,7 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
         _dialogNavigationService = dialogNavigationService;
         _manageCalendarsViewModel = manageCalendarsViewModel;
         _manageSourcesViewModel = manageSourcesViewModel;
+        _tutorialViewModel = tutorialViewModel;
         Sources.CollectionChanged += SourcesOnCollectionChanged;
         Calendars.CollectionChanged += CalendarsOnCollectionChanged;
         Results.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasResults));
@@ -252,6 +257,10 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
         IsFiltersSectionExpanded = false;
 
         await _searchCommandFactory.Create().ExecuteAsync();
+
+        _tutorialViewModel?.FireTrigger(
+            AppTutorialTrigger.SearchPerformed,
+            ctx => ctx with { HasSearchResults = Results.Count > 0 });
     }
 
     [RelayCommand]
@@ -277,10 +286,20 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
         SourceSelected = Sources.Any(s => s.IsSelected);
         OnPropertyChanged(nameof(SourcesSummary));
         OnPropertyChanged(nameof(HasSourcesSelected));
+
+        _tutorialViewModel?.FireTrigger(
+            AppTutorialTrigger.FilterSelected,
+            ctx => ctx with { HasSourceFilterSelected = Sources.Any(s => s.IsSelected) });
     }
 
     private void CalendarsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-        => NotifyCalendarRelatedPropertiesChanged();
+    {
+        NotifyCalendarRelatedPropertiesChanged();
+
+        _tutorialViewModel?.FireTrigger(
+            AppTutorialTrigger.FilterSelected,
+            ctx => ctx with { HasCalendarFilterSelected = Calendars.Any(c => c.IsSelected) });
+    }
 
     private void NotifyCalendarRelatedPropertiesChanged()
     {

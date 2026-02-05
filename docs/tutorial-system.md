@@ -15,29 +15,34 @@ The tutorial system provides step-by-step onboarding that guides new users throu
 
 ## Architecture Components
 
-### Core Layer (`AvailabilityCompass.Core/Features/Tutorial/`)
+### Guidely Package
 
-| Component                  | File                        | Purpose                                                        |
-| -------------------------- | --------------------------- | -------------------------------------------------------------- |
-| **TutorialService**        | `TutorialService.cs`        | State machine - manages flow, persistence, event subscriptions |
-| **TutorialStepRegistry**   | `TutorialStepRegistry.cs`   | All step definitions (titles, descriptions, targets)           |
-| **TutorialViewModel**      | `TutorialViewModel.cs`      | UI binding layer with commands (Next, Back, Skip, Restart)     |
-| **TutorialContext**        | `TutorialContext.cs`        | App state record for conditional branching                     |
-| **ITutorialService**       | `ITutorialService.cs`       | Service interface                                              |
-| **TutorialStepDefinition** | `TutorialStepDefinition.cs` | Step record + enums                                            |
-| **TutorialStepId**         | `TutorialStepId.cs`         | Enum of all step identifiers                                   |
-| **TutorialTargetElement**  | `TutorialTargetElement.cs`  | Enum of highlightable UI elements                              |
-| **TutorialEvents**         | `Events/TutorialEvents.cs`  | Events (Started, StepChanged, Completed, Skipped)              |
+The tutorial system is built on the **Guidely** NuGet package which provides:
 
-### WPF Layer (`AvailabilityCompass.WpfClient/`)
+- `TutorialService<TContext, TTrigger, TGroup>` - State machine managing flow and persistence
+- `TutorialViewModel<TContext, TTrigger, TGroup>` - UI binding layer with commands
+- `ITutorialPersistence` - Interface for state persistence
+- Step definition attributes: `[TutorialStep]`, `[TutorialTarget]`, `[AutoAdvanceOn]`
+- Interfaces: `ITutorialStepContent`, `IConditionalAutoAdvance`, `ITutorialStepComplete`
 
-| Component                    | File                                                    | Purpose                            |
-| ---------------------------- | ------------------------------------------------------- | ---------------------------------- |
-| **TutorialOverlay**          | `Shared/Controls/TutorialOverlay.xaml`                  | Visual tooltip + highlight control |
-| **TutorialHighlightAdorner** | `Shared/Controls/TutorialHighlightAdorner.cs`           | Pulsing border effect on target    |
-| **TutorialTarget**           | `Shared/Tutorial/TutorialTarget.cs`                     | Attached property to mark elements |
-| **TutorialElementRegistry**  | `Shared/Tutorial/TutorialElementRegistry.cs`            | Tracks loaded UI elements          |
-| **TutorialExtensions**       | `Application/DependencyInjection/TutorialExtensions.cs` | DI registration                    |
+### Application Layer (`AvailabilityCompass.Core/Features/Tutorial/`)
+
+| Component | Purpose |
+|-----------|---------|
+| `TutorialStepIds.cs` | String constants for all step identifiers |
+| `AppTutorialTrigger.cs` | Enum of application-specific triggers |
+| `AppTutorialGroup.cs` | Enum of step groups (Introduction, Sources, Calendars, Search, Complete) |
+| `AvailabilityCompassContext.cs` | App state record for conditional branching |
+| `TutorialSetup.cs` | Transition configuration between steps |
+| `Steps/*.cs` | Individual step definitions with content and behavior |
+
+### WPF Layer (`Guidely.WPF/` + `AvailabilityCompass.WpfClient/`)
+
+| Component | Purpose |
+|-----------|---------|
+| `TutorialOverlay.xaml` | Visual tooltip + highlight control |
+| `TutorialElementRegistry.cs` | Tracks loaded UI elements by key |
+| `TutorialTarget` attached property | Marks elements as tutorial targets |
 
 ---
 
@@ -181,6 +186,39 @@ Welcome
 
 ---
 
+## Tutorial Step Details
+
+| # | Step ID | Group | Target Element | Trigger | Auto-Advances When | Context Updated |
+|---|---------|-------|----------------|---------|-------------------|-----------------|
+| 1 | Welcome | Introduction | None (centered) | - | Manual: Next button | - |
+| 2 | PointToSourcesButton | Sources | SourcesHeaderButton | DialogChanged | Sources dialog opens | CurrentDialog = Sources |
+| 3 | SourcesDialogRefreshButtons | Sources | RefreshAllButton, SourceCardRefreshButton | SourceRefreshed | Any source is refreshed | HasRefreshedSource = true |
+| 4 | WaitForSourceRefresh | Sources | SourcesHeaderButton | SourceRefreshed | Refresh completes | HasSourcesWithData = true |
+| 5 | PointToCalendarsButton | Calendars | CalendarsHeaderButton | DialogChanged | Calendars dialog opens | CurrentDialog = Calendars |
+| 6 | CalendarsOverview | Calendars | None (centered) | - | Manual: Next button | - |
+| 7a | ClickExistingCalendar | Calendars | CalendarSelector | CalendarSelected | A calendar is clicked | IsCalendarSelected = true, HasCalendarEntries |
+| 7b | ClickAddCalendarButton | Calendars | AddCalendarButton | CalendarFormExpanded | Add form expands | IsAddCalendarExpanded = true |
+| 8 | AddCalendarFormExplanation | Calendars | AddCalendarForm | CalendarAdded | Calendar is saved | HasCalendars = true |
+| 9 | CalendarViewOverview | Calendars | CalendarWidget | - | Manual: Next button | - |
+| 10 | AddDaysExplanation | Calendars | AddDaysButton | DateEntryAdded | Date entry is saved | HasCalendarEntries = true |
+| 11 | DateEntriesExplanation | Calendars | DateEntriesPanel | - | Manual: Next button | - |
+| 12 | PointToSearchView | Search | None (centered) | DialogChanged | Calendars dialog closes | CurrentDialog = None |
+| 13 | CalendarFilterExplanation | Search | CalendarFilterSection | FilterSelected | Calendar filter toggled | HasCalendarFilterSelected = true |
+| 14 | SourcesFilterExplanation | Search | SourcesFilterSection | FilterSelected | Source filter toggled | HasSourceFilterSelected = true |
+| 15 | SourceFilterOptionsExplanation | Search | SourceFilterOptions | - | Manual: Next button | - |
+| 16 | FiltersExplanation | Search | FiltersSection | - | Manual: Next button | - |
+| 17 | SearchButtonExplanation | Search | SearchButton | SearchPerformed | Search returns results | HasSearchResults = true |
+| 18 | ResultsExplanation | Search | ResultsSection | - | Manual: Next button | - |
+| 19 | TutorialComplete | Complete | None (centered) | - | User clicks Finish | - |
+
+**Notes:**
+
+- Steps 7a/7b are mutually exclusive based on `HasCalendars` context
+- Steps marked with "-" for Trigger require manual advancement via Next button
+- Skippable steps check `IsComplete()` - if already satisfied, the step is auto-skipped
+
+---
+
 ## Marked UI Elements
 
 ### MainWindow.xaml
@@ -285,19 +323,34 @@ State stored via Settings key-value pairs:
 
 ---
 
-## Events
+## Triggers and Context
 
-The tutorial subscribes to these app events for auto-advancement:
+### Application Triggers (AppTutorialTrigger)
 
-- `SourcesDataChangedEvent` - Source data refreshed
-- `CalendarAddedEvent` - New calendar created
-- `DateEntryAddedEvent` - Date entry added
+| Trigger | Fired By | Steps That Listen |
+|---------|----------|-------------------|
+| DialogChanged | MainViewModel.OnCurrentDialogViewModelChanged() | PointToSourcesStep, PointToCalendarsStep, PointToSearchStep |
+| SourceRefreshed | ManageSourcesViewModel.RefreshSourceData() | SourcesRefreshStep, WaitForRefreshStep |
+| CalendarFormExpanded | ManageCalendarsViewModel (on AddCalendarFormExpandedEvent) | ClickAddCalendarStep |
+| CalendarAdded | ManageCalendarsViewModel (on CalendarAddedEvent) | AddCalendarFormStep |
+| CalendarSelected | ManageCalendarsViewModel.OnSelectedCalendarChanged() | ClickExistingCalendarStep |
+| DateEntryAdded | ManageCalendarsViewModel (on DateEntryAddedEvent) | AddDaysStep |
+| FilterSelected | SearchViewModel (on filter collection changes) | CalendarFilterStep, SourcesFilterStep |
+| SearchPerformed | SearchViewModel.OnSearch() | SearchButtonStep |
 
-The tutorial publishes these events:
+### Context Properties (AvailabilityCompassContext)
 
-- `TutorialStartedEvent`
-- `TutorialStepChangedEvent`
-- `TutorialCompletedEvent`
-- `TutorialSkippedEvent`
-- `TutorialContextChangedEvent`
+| Property | Type | Used By | Updated When |
+|----------|------|---------|--------------|
+| HasSources | bool | - | DialogChanged |
+| HasSourcesWithData | bool | WaitForRefreshStep | DialogChanged, SourceRefreshed |
+| HasRefreshedSource | bool | SourcesRefreshStep, WaitForRefreshStep | SourceRefreshed |
+| HasCalendars | bool | CalendarsOverview transition, step completion | DialogChanged, CalendarAdded |
+| HasCalendarEntries | bool | CalendarViewOverview transition, AddDaysStep | CalendarSelected, DateEntryAdded |
+| CurrentDialog | DialogType | PointToSourcesStep, PointToCalendarsStep, PointToSearchStep | DialogChanged |
+| IsAddCalendarExpanded | bool | ClickAddCalendarStep | CalendarFormExpanded |
+| IsCalendarSelected | bool | ClickExistingCalendarStep | CalendarSelected |
+| HasSearchResults | bool | SearchButtonStep | SearchPerformed |
+| HasSourceFilterSelected | bool | SourcesFilterStep, transition | FilterSelected |
+| HasCalendarFilterSelected | bool | CalendarFilterStep | FilterSelected |
 

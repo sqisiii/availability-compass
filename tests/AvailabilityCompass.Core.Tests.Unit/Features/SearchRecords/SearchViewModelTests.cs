@@ -363,5 +363,6 @@ public class SearchViewModelTests
         _searchCommandFactory,
         _dialogNavigationService,
         null!,
+        null!,
         null!);
 }
