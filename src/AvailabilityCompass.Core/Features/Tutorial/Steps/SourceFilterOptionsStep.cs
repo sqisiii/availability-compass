@@ -5,21 +5,18 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 [TutorialStep(TutorialStepIds.SourceFilterOptionsExplanation,
     Group = AppTutorialGroup.Search,
     Position = TooltipPosition.Bottom,
-    Order = 3)]
+    ClickThroughMode = ClickThroughMode.TargetOnly,
+    Order = 4)]
 [TutorialTarget("SourceFilterOptions")]
 public class SourceFilterOptionsStep : ITutorialStepContent
 {
     public string Title => "Source-Specific Filters";
 
     public string Description => """
-                                 When you select a source, additional filter options may appear below.
+                                 Toggle source cards to include or exclude specific trip providers from your search results.
 
-                                 Each source has different criteria you can filter by, such as:
-                                 • Destination preferences
-                                 • Trip type (cruise, tour, etc.)
-                                 • Price ranges
-                                 • Other source-specific options
+                                 Disabled sources (those you turned off in source management) appear grayed out.
 
-                                 These filters are optional and help narrow down results.
+                                 When you select a source, additional filter options may appear below with source-specific criteria.
                                  """;
 }
