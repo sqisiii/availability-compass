@@ -212,7 +212,8 @@ public partial class TutorialViewModel<TContext, TTrigger, TGroup> : ObservableO
     /// </summary>
     protected virtual void UpdateButtonState(TutorialStepMetadata<TTrigger, TGroup> step)
     {
-        if (_tutorialService.IsTutorialCompleted)
+        if (_tutorialService.IsTutorialCompleted ||
+            _tutorialService.CurrentStepNumber == _tutorialService.TotalSteps)
         {
             NextButtonText = "Finish";
             ShowNextButton = true;
