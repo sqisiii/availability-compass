@@ -426,6 +426,7 @@
                                             Margin="8,0,0,0" />
                                 </StackPanel>
                                 <ItemsControl ItemsSource="{Binding Calendars}"
+                                              guidely:TutorialTarget.Element="CalendarCards"
                                               Visibility="{Binding CalendarsAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
@@ -479,6 +480,7 @@
                                 </StackPanel>
                                 <!-- Source cards -->
                                 <ItemsControl ItemsSource="{Binding Sources}"
+                                              guidely:TutorialTarget.Element="SourceCards"
                                               Visibility="{Binding SourcesAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
@@ -574,7 +576,8 @@
                         <Border CornerRadius="8" Padding="12,8" Margin="0,0,0,8"
                                 Background="{DynamicResource GlassBackgroundBrush}"
                                 Visibility="{Binding IsFiltersSectionExpanded, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal"
+                                        guidely:TutorialTarget.Element="GlobalFilterFields">
                                 <TextBox
                                     Width="200"
                                     helpers:GlassHint.Hint="Search phrase"
