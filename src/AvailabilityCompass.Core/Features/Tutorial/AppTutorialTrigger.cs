@@ -43,5 +43,50 @@ public enum AppTutorialTrigger
     /// <summary>
     /// A search was performed.
     /// </summary>
-    SearchPerformed
+    SearchPerformed,
+
+    /// <summary>
+    /// Dates were selected on the calendar widget.
+    /// </summary>
+    DatesSelected,
+
+    /// <summary>
+    /// The edit calendar form was expanded.
+    /// </summary>
+    CalendarEditStarted,
+
+    /// <summary>
+    /// The edit calendar form was closed (saved or canceled).
+    /// </summary>
+    CalendarEditCompleted,
+
+    /// <summary>
+    /// The delete confirmation dialog was opened.
+    /// </summary>
+    DeleteConfirmationOpened,
+
+    /// <summary>
+    /// The delete confirmation dialog was closed (confirmed or canceled).
+    /// </summary>
+    DeleteConfirmationClosed,
+
+    /// <summary>
+    /// The date entry editor was opened.
+    /// </summary>
+    EditorOpened,
+
+    /// <summary>
+    /// The calendar filter section was expanded in the search view.
+    /// </summary>
+    CalendarFilterExpanded,
+
+    /// <summary>
+    /// The sources filter section was expanded in the search view.
+    /// </summary>
+    SourcesFilterExpanded,
+
+    /// <summary>
+    /// The global filters section was expanded in the search view.
+    /// </summary>
+    FiltersExpanded
 }
