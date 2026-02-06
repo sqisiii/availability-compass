@@ -182,6 +182,7 @@ public class SelectiveHitTestBorder : Border
 
     /// <summary>
     /// Gets the bounds of a target element relative to this border's coordinate space.
+    /// Uses Window as common coordinate space to handle elements in dialogs.
     /// </summary>
     private Rect? GetTargetBoundsRelativeToThis(FrameworkElement target)
     {
@@ -190,19 +191,32 @@ public class SelectiveHitTestBorder : Border
             return null;
         }
 
+        var window = Window.GetWindow(this);
+        if (window == null)
+        {
+            return null;
+        }
+
         try
         {
-            var targetPosition = target.TransformToVisual(this).Transform(new Point(0, 0));
+            // Transform target bounds through Window coordinate space
+            var targetToWindow = target.TransformToAncestor(window);
+            var targetBoundsInWindow = targetToWindow.TransformBounds(new Rect(target.RenderSize));
+
+            // Transform this control's origin through Window
+            var thisOriginInWindow = TransformToAncestor(window).Transform(new Point(0, 0));
+
+            // Calculate bounds relative to this control
             var bounds = new Rect(
-                targetPosition.X - CutoutPadding,
-                targetPosition.Y - CutoutPadding,
-                target.RenderSize.Width + CutoutPadding * 2,
-                target.RenderSize.Height + CutoutPadding * 2);
+                targetBoundsInWindow.X - thisOriginInWindow.X - CutoutPadding,
+                targetBoundsInWindow.Y - thisOriginInWindow.Y - CutoutPadding,
+                targetBoundsInWindow.Width + CutoutPadding * 2,
+                targetBoundsInWindow.Height + CutoutPadding * 2);
             return bounds;
         }
         catch (InvalidOperationException)
         {
-            // Target is not in the same visual tree
+            // Target is not connected to the window
             return null;
         }
     }
