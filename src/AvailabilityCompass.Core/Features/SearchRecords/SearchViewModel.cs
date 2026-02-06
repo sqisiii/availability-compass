@@ -197,13 +197,40 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
     }
 
     partial void OnIsCalendarsSectionExpandedChanged(bool value)
-        => CollapseOtherSections(value, nameof(IsCalendarsSectionExpanded));
+    {
+        CollapseOtherSections(value, nameof(IsCalendarsSectionExpanded));
+
+        if (value)
+        {
+            _tutorialViewModel?.FireTrigger(
+                AppTutorialTrigger.CalendarFilterExpanded,
+                ctx => ctx with { IsCalendarFilterExpanded = true });
+        }
+    }
 
     partial void OnIsSourcesSectionExpandedChanged(bool value)
-        => CollapseOtherSections(value, nameof(IsSourcesSectionExpanded));
+    {
+        CollapseOtherSections(value, nameof(IsSourcesSectionExpanded));
+
+        if (value)
+        {
+            _tutorialViewModel?.FireTrigger(
+                AppTutorialTrigger.SourcesFilterExpanded,
+                ctx => ctx with { IsSourcesFilterExpanded = true });
+        }
+    }
 
     partial void OnIsFiltersSectionExpandedChanged(bool value)
-        => CollapseOtherSections(value, nameof(IsFiltersSectionExpanded));
+    {
+        CollapseOtherSections(value, nameof(IsFiltersSectionExpanded));
+
+        if (value)
+        {
+            _tutorialViewModel?.FireTrigger(
+                AppTutorialTrigger.FiltersExpanded,
+                ctx => ctx with { IsFiltersExpanded = true });
+        }
+    }
 
     private void CollapseOtherSections(bool isExpanding, string expandedSection)
     {
