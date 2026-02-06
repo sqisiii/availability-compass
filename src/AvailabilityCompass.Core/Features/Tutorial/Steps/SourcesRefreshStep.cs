@@ -4,7 +4,7 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 
 [TutorialStep(TutorialStepIds.SourcesDialogRefreshButtons,
     Group = AppTutorialGroup.Sources,
-    Position = TooltipPosition.Right,
+    Position = TooltipPosition.Bottom,
     RequiresUserAction = true,
     ClickThroughMode = ClickThroughMode.TargetOnly,
     Order = 1)]
