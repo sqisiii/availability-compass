@@ -124,6 +124,12 @@ public partial class TutorialViewModel<TContext, TTrigger, TGroup> : ObservableO
     [RelayCommand]
     private void OnNext()
     {
+        if (_tutorialService.IsTutorialCompleted)
+        {
+            IsVisible = false;
+            return;
+        }
+
         _tutorialService.AdvanceStep();
     }
 
