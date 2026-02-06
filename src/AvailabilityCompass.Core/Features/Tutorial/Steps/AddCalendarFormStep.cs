@@ -4,7 +4,7 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 
 [TutorialStep(TutorialStepIds.AddCalendarFormExplanation,
     Group = AppTutorialGroup.Calendars,
-    Position = TooltipPosition.Right,
+    Position = TooltipPosition.Bottom,
     RequiresUserAction = true,
     ClickThroughMode = ClickThroughMode.All,
     Order = 4)]

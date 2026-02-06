@@ -4,7 +4,7 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 
 [TutorialStep(TutorialStepIds.ResultsExplanation,
     Group = AppTutorialGroup.Search,
-    Position = TooltipPosition.Top,
+    Position = TooltipPosition.Bottom,
     Order = 6)]
 [TutorialTarget("ResultsSection")]
 public class ResultsStep : ITutorialStepContent
