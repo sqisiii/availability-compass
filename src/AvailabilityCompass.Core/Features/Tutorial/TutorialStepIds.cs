@@ -12,6 +12,7 @@ public static class TutorialStepIds
     // Sources group
     public const string PointToSourcesButton = nameof(PointToSourcesButton);
     public const string SourcesDialogRefreshButtons = nameof(SourcesDialogRefreshButtons);
+    public const string SourcesRefreshOptionalStep = nameof(SourcesRefreshOptionalStep);
     public const string WaitForSourceRefresh = nameof(WaitForSourceRefresh);
 
     // Calendars group

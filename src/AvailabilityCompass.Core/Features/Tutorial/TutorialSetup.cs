@@ -14,12 +14,17 @@ public static class TutorialSetup
     {
         // Introduction -> Sources
         builder.From(TutorialStepIds.Welcome)
+            .GoToIf(TutorialStepIds.SourcesRefreshOptionalStep, ctx => ctx.CurrentDialog == DialogType.Sources && ctx.HasSourcesWithData)
             .GoToIf(TutorialStepIds.SourcesDialogRefreshButtons, ctx => ctx.CurrentDialog == DialogType.Sources)
             .GoTo(TutorialStepIds.PointToSourcesButton);
 
         // Sources flow
         builder.From(TutorialStepIds.PointToSourcesButton)
+            .GoToIf(TutorialStepIds.SourcesRefreshOptionalStep, ctx => ctx.HasSourcesWithData)
             .GoTo(TutorialStepIds.SourcesDialogRefreshButtons);
+
+        builder.From(TutorialStepIds.SourcesRefreshOptionalStep)
+            .GoTo(TutorialStepIds.PointToCalendarsButton);
 
         builder.From(TutorialStepIds.SourcesDialogRefreshButtons)
             .GoToIf(TutorialStepIds.PointToCalendarsButton, ctx => ctx.HasRefreshedSource)
