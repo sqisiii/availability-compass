@@ -4,7 +4,14 @@ using System.ComponentModel;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using AvailabilityCompass.Core.Features.ManageCalendars;
+using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarRequest;
+using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddDateEntryRequest;
+using AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteCalendarRequest;
+using AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteDateEntryRequest;
+using AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateCalendarRequest;
+using AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateDateEntryRequest;
 using AvailabilityCompass.Core.Features.ManageSources;
+using AvailabilityCompass.Core.Features.ManageSources.Commands.ReplaceSourceDataRequest;
 using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetCalendars;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetSources;
@@ -18,6 +25,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Guidely.Core;
 using MediatR;
+using Unit = System.Reactive.Unit;
 
 namespace AvailabilityCompass.Core.Features.SearchRecords;
 
@@ -111,7 +119,14 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
         Calendars.CollectionChanged += CalendarsOnCollectionChanged;
         Results.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasResults));
 
-        _calendarAddedSubscription = eventBus.ListenToAll()
+        _calendarAddedSubscription = Observable.Merge(
+                eventBus.Listen<CalendarAddedEvent>().Select(_ => Unit.Default),
+                eventBus.Listen<CalendarUpdatedEvent>().Select(_ => Unit.Default),
+                eventBus.Listen<CalendarDeletedEvent>().Select(_ => Unit.Default),
+                eventBus.Listen<DateEntryAddedEvent>().Select(_ => Unit.Default),
+                eventBus.Listen<DateEntryUpdatedEvent>().Select(_ => Unit.Default),
+                eventBus.Listen<DateEntryDeletedEvent>().Select(_ => Unit.Default),
+                eventBus.Listen<SourcesDataChangedEvent>().Select(_ => Unit.Default))
             .SelectMany(_ => Observable.FromAsync(OnFilterDataChanged))
             .Subscribe();
     }
@@ -352,6 +367,11 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
     {
         UnsubscribeFromFormElements();
 
+        var previouslySelectedSourceIds = Sources
+            .Where(s => s.IsSelected)
+            .Select(s => s.SourceId)
+            .ToHashSet();
+
         var getSourcesForFilteringDto = await _mediator.Send(new GetSourcesForFilteringQuery(), ct);
         Sources.Clear();
         _formGroups.Clear();
@@ -361,6 +381,12 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
             var filters = _formElementFactory.CreateFormElement(source);
             _formGroups.Add(filters);
             sourceViewModel.FilterFormGroup = filters;
+
+            if (previouslySelectedSourceIds.Contains(source.SourceId))
+            {
+                sourceViewModel.IsSelected = true;
+            }
+
             Sources.Add(sourceViewModel);
         }
 
