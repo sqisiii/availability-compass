@@ -88,6 +88,19 @@ When a step with `[TutorialTarget("MyButton")]` becomes active, the overlay auto
 3. Positions the tooltip relative to the element
 4. Enables click-through if configured
 
+### Multiple Targets
+
+A step can highlight multiple elements by adding multiple `[TutorialTarget]` attributes:
+
+```csharp
+[TutorialStep(StepIds.SelectAndSave, Position = TooltipPosition.Right)]
+[TutorialTarget("CalendarWidget")]   // First target - tooltip positions here
+[TutorialTarget("SaveButton")]       // Also highlighted
+public class SelectAndSaveStep : ITutorialStepContent { ... }
+```
+
+**Note:** When multiple targets are specified, the tooltip is positioned relative to the **first** `[TutorialTarget]` attribute. All targets will be highlighted with glowing borders.
+
 ### Click-Through Modes
 
 The overlay supports three interaction modes controlled by `ClickThroughMode`:
