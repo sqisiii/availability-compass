@@ -4,10 +4,11 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 
 [TutorialStep(TutorialStepIds.PointToSearchView,
     Group = AppTutorialGroup.Search,
-    Position = TooltipPosition.Center,
+    Position = TooltipPosition.Bottom,
     RequiresUserAction = true,
     ClickThroughMode = ClickThroughMode.All,
     Order = 0)]
+[TutorialTarget("DialogCloseButton")]
 [AutoAdvanceOn(AppTutorialTrigger.DialogChanged)]
 public class PointToSearchStep : ITutorialStepContent, IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>
 {

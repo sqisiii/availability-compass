@@ -9,24 +9,18 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
     ClickThroughMode = ClickThroughMode.TargetOnly,
     Order = 1)]
 [TutorialTarget("CalendarFilterSection")]
-[AutoAdvanceOn(AppTutorialTrigger.FilterSelected)]
+[AutoAdvanceOn(AppTutorialTrigger.CalendarFilterExpanded)]
 public class CalendarFilterStep : ITutorialStepContent, IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>
 {
     public bool ShouldAutoAdvance(
         AppTutorialTrigger trigger,
         AvailabilityCompassContext? previousContext,
         AvailabilityCompassContext currentContext)
-        => trigger == AppTutorialTrigger.FilterSelected && currentContext.HasCalendarFilterSelected;
+        => trigger == AppTutorialTrigger.CalendarFilterExpanded && currentContext.IsCalendarFilterExpanded;
 
     public string Title => "Filter by Calendar";
 
     public string Description => """
-                                 Click 'Calendars' to expand this section and select which calendars to apply when searching.
-
-                                 You can select multiple calendars:
-                                 • Green checkmark calendars = Allowed days (results must fall within these dates)
-                                 • Orange checkmark calendars = Blocked days (results will exclude these dates)
-
-                                 If no calendars are selected, all dates are considered available.
+                                 Click 'Calendars' to expand this section and view available calendar filters.
                                  """;
 }

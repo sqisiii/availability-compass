@@ -4,9 +4,10 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 
 [TutorialStep(TutorialStepIds.CalendarViewOverview,
     Group = AppTutorialGroup.Calendars,
-    Position = TooltipPosition.Top,
+    Position = TooltipPosition.Right,
+    ClickThroughMode = ClickThroughMode.None,
     Order = 5)]
-[TutorialTarget("CalendarWidget")]
+[TutorialTarget("CalendarSection")]
 public class CalendarViewOverviewStep : ITutorialStepContent
 {
     public string Title => "Managing Calendar Dates";

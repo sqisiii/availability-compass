@@ -48,9 +48,27 @@ public static class TutorialSetup
 
         builder.From(TutorialStepIds.CalendarViewOverview)
             .GoToIf(TutorialStepIds.DateEntriesExplanation, ctx => ctx.HasCalendarEntries)
+            .GoTo(TutorialStepIds.EditCalendarStep);
+
+        builder.From(TutorialStepIds.EditCalendarStep)
+            .GoTo(TutorialStepIds.EditCalendarFormStep);
+
+        builder.From(TutorialStepIds.EditCalendarFormStep)
+            .GoTo(TutorialStepIds.DeleteCalendarStep);
+
+        builder.From(TutorialStepIds.DeleteCalendarStep)
+            .GoTo(TutorialStepIds.DeleteConfirmationStep);
+
+        builder.From(TutorialStepIds.DeleteConfirmationStep)
+            .GoTo(TutorialStepIds.SelectDatesExplanation);
+
+        builder.From(TutorialStepIds.SelectDatesExplanation)
             .GoTo(TutorialStepIds.AddDaysExplanation);
 
         builder.From(TutorialStepIds.AddDaysExplanation)
+            .GoTo(TutorialStepIds.AddDatesDialogExplanation);
+
+        builder.From(TutorialStepIds.AddDatesDialogExplanation)
             .GoTo(TutorialStepIds.DateEntriesExplanation);
 
         builder.From(TutorialStepIds.DateEntriesExplanation)
@@ -62,16 +80,25 @@ public static class TutorialSetup
 
         // Search flow
         builder.From(TutorialStepIds.CalendarFilterExplanation)
+            .GoToIf(TutorialStepIds.CalendarTypesExplanation, ctx => ctx.HasCalendars)
+            .GoTo(TutorialStepIds.SourcesFilterExplanation);
+
+        builder.From(TutorialStepIds.CalendarTypesExplanation)
             .GoTo(TutorialStepIds.SourcesFilterExplanation);
 
         builder.From(TutorialStepIds.SourcesFilterExplanation)
-            .GoToIf(TutorialStepIds.SourceFilterOptionsExplanation, ctx => ctx.HasSourceFilterSelected)
-            .GoTo(TutorialStepIds.FiltersExplanation);
+            .GoTo(TutorialStepIds.SelectSourceStep);
+
+        builder.From(TutorialStepIds.SelectSourceStep)
+            .GoTo(TutorialStepIds.SourceFilterOptionsExplanation);
 
         builder.From(TutorialStepIds.SourceFilterOptionsExplanation)
             .GoTo(TutorialStepIds.FiltersExplanation);
 
         builder.From(TutorialStepIds.FiltersExplanation)
+            .GoTo(TutorialStepIds.FiltersOptionsExplanation);
+
+        builder.From(TutorialStepIds.FiltersOptionsExplanation)
             .GoTo(TutorialStepIds.SearchButtonExplanation);
 
         builder.From(TutorialStepIds.SearchButtonExplanation)

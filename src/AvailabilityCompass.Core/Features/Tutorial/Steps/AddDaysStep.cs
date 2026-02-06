@@ -4,12 +4,13 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 
 [TutorialStep(TutorialStepIds.AddDaysExplanation,
     Group = AppTutorialGroup.Calendars,
-    Position = TooltipPosition.Left,
+    Position = TooltipPosition.Right,
     RequiresUserAction = true,
     ClickThroughMode = ClickThroughMode.All,
     Order = 6)]
 [TutorialTarget("AddDaysButton")]
-[AutoAdvanceOn(AppTutorialTrigger.DateEntryAdded)]
+[TutorialTarget("CalendarWidget")]
+[AutoAdvanceOn(AppTutorialTrigger.EditorOpened)]
 public class AddDaysStep : ITutorialStepContent,
     IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
     ITutorialStepComplete<AvailabilityCompassContext>
@@ -18,25 +19,19 @@ public class AddDaysStep : ITutorialStepContent,
         AppTutorialTrigger trigger,
         AvailabilityCompassContext? previousContext,
         AvailabilityCompassContext currentContext)
-        => trigger == AppTutorialTrigger.DateEntryAdded &&
-           (previousContext == null || !previousContext.HasCalendarEntries) &&
-           currentContext.HasCalendarEntries;
+        => trigger == AppTutorialTrigger.EditorOpened &&
+           (previousContext == null || !previousContext.IsEditorOpen) &&
+           currentContext.IsEditorOpen;
 
-    public bool IsComplete(AvailabilityCompassContext context)
-        => context.HasCalendarEntries;
+    public bool IsComplete(AvailabilityCompassContext context) => context.IsEditorOpen;
 
     public string Title => "Add Date Entries";
 
     public string Description => """
-                                 After selecting dates on the calendar, click 'Add Dates' to create an entry.
+                                 You can still select more dates if you want.
 
-                                 In the popup:
-                                 • Description: Add a note explaining this date range (e.g., 'Family reunion', 'Conference')
+                                 Click and drag on the calendar to select dates. Hold Ctrl for non-consecutive dates, or hold Shift to select a range.
 
-                                 • 'Make this recurring' checkbox: Enable this for dates that repeat regularly. You can then set:
-                                   - Frequency: How many days between occurrences (e.g., 7 for weekly, 14 for bi-weekly)
-                                   - Repetitions: How many times it should repeat
-
-                                 This is useful for regular commitments like weekly meetings or monthly events.
+                                 When you're ready, click the 'Add Dates' button to continue.
                                  """;
 }

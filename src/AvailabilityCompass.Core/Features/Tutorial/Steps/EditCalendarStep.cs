@@ -1,0 +1,32 @@
+using Guidely.Core.Abstractions;
+
+namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
+
+[TutorialStep(TutorialStepIds.EditCalendarStep,
+    Group = AppTutorialGroup.Calendars,
+    Position = TooltipPosition.Left,
+    RequiresUserAction = true,
+    ClickThroughMode = ClickThroughMode.TargetOnly,
+    Order = 6)]
+[TutorialTarget("CalendarEditButton")]
+[AutoAdvanceOn(AppTutorialTrigger.CalendarEditStarted)]
+public class EditCalendarStep : ITutorialStepContent,
+    IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
+    ITutorialStepComplete<AvailabilityCompassContext>
+{
+    public bool ShouldAutoAdvance(
+        AppTutorialTrigger trigger,
+        AvailabilityCompassContext? previousContext,
+        AvailabilityCompassContext currentContext)
+        => trigger == AppTutorialTrigger.CalendarEditStarted && currentContext.IsEditCalendarExpanded;
+
+    public bool IsComplete(AvailabilityCompassContext context) => context.IsEditCalendarExpanded;
+
+    public string Title => "Edit Calendar";
+
+    public string Description => """
+                                 Click the Edit button to modify this calendar's settings.
+
+                                 You can change the calendar name and toggle whether it only allows defined dates.
+                                 """;
+}

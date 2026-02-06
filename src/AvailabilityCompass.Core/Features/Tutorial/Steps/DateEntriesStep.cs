@@ -19,6 +19,6 @@ public class DateEntriesStep : ITutorialStepContent
                                  • The date or date range
                                  • Recurring pattern info (if applicable)
 
-                                 Click on any entry to edit its details or delete it. You can also click directly on a colored date in the calendar widget to edit that specific entry.
+                                 Entries can be edited by clicking on them or by clicking colored dates in the calendar widget.
                                  """;
 }
