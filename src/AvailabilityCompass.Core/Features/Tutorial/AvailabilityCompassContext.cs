@@ -68,6 +68,36 @@ public record AvailabilityCompassContext : TutorialContextBase
     public bool HasCalendarFilterSelected { get; init; }
 
     /// <summary>
+    /// Whether any dates are currently selected on the calendar widget.
+    /// </summary>
+    public bool HasSelectedDates { get; init; }
+
+    /// <summary>
+    /// Whether the edit calendar inline form is expanded.
+    /// </summary>
+    public bool IsEditCalendarExpanded { get; init; }
+
+    /// <summary>
+    /// Whether the delete confirmation dialog is open.
+    /// </summary>
+    public bool IsDeleteConfirmationOpen { get; init; }
+
+    /// <summary>
+    /// Whether the calendar filter section is expanded in the search view.
+    /// </summary>
+    public bool IsCalendarFilterExpanded { get; init; }
+
+    /// <summary>
+    /// Whether the sources filter section is expanded in the search view.
+    /// </summary>
+    public bool IsSourcesFilterExpanded { get; init; }
+
+    /// <summary>
+    /// Whether the global filters section is expanded in the search view.
+    /// </summary>
+    public bool IsFiltersExpanded { get; init; }
+
+    /// <summary>
     /// Creates a default context with all values set to their defaults.
     /// </summary>
     public static AvailabilityCompassContext Default => new();
