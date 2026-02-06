@@ -3,11 +3,14 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 
+// ReSharper disable RedundantCast
+
 namespace AvailabilityCompass.WpfClient.Pages;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
+// ReSharper disable once RedundantExtendsListEntry
 public partial class MainWindow : Window
 {
     private const int DefaultLowOrderWordMask = 0xFFFF;
@@ -29,12 +32,36 @@ public partial class MainWindow : Window
     }
 
     [DllImport("user32.dll")]
-    private static extern IntPtr SendMessage(IntPtr hWnd, int wMsg, int wParam, int lParam);
+    private static extern IntPtr SendMessage(
+        IntPtr hWnd,
+        int wMsg,
+        int wParam,
+        int lParam);
 
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
         HwndSource? source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
         source?.AddHook(WndProc);
+
+        // Constrain dialog to window bounds when window size changes
+        SizeChanged += OnWindowSizeChanged;
+        UpdateDialogMaxHeight();
+    }
+
+    private void OnWindowSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        UpdateDialogMaxHeight();
+    }
+
+    private void UpdateDialogMaxHeight()
+    {
+        // Calculate available height: window height - header (56) - margins (80)
+        const double headerHeight = 56;
+        const double dialogMargins = 80;
+        var availableHeight = ActualHeight - headerHeight - dialogMargins;
+
+        // Clamp between reasonable min and max values
+        DialogContent.MaxHeight = Math.Max(300, Math.Min(800, availableHeight));
     }
 
     private void ControlBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -70,7 +97,12 @@ public partial class MainWindow : Window
         WindowState = WindowState.Minimized;
     }
 
-    private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    private IntPtr WndProc(
+        IntPtr hwnd,
+        int msg,
+        IntPtr wParam,
+        IntPtr lParam,
+        ref bool handled)
     {
         // Handle window messages for resizing and moving
         return msg switch

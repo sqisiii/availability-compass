@@ -193,7 +193,8 @@
                         Background="{DynamicResource GlassOverlayBrush}"
                         Visibility="{Binding IsDialogOpen, Converter={StaticResource BooleanToVisibilityConverter}}"
                         MouseDown="DialogOverlay_MouseDown">
-                    <Border Style="{StaticResource GlassDialogCard}"
+                    <Border x:Name="DialogContent"
+                            Style="{StaticResource GlassDialogCard}"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             MinWidth="400"
