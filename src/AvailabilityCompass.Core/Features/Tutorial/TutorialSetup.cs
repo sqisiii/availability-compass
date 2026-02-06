@@ -60,6 +60,7 @@ public static class TutorialSetup
             .GoTo(TutorialStepIds.DeleteConfirmationStep);
 
         builder.From(TutorialStepIds.DeleteConfirmationStep)
+            .GoToIf(TutorialStepIds.CalendarsOverview, ctx => !ctx.HasCalendars)
             .GoTo(TutorialStepIds.SelectDatesExplanation);
 
         builder.From(TutorialStepIds.SelectDatesExplanation)

@@ -373,9 +373,18 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
                 }
                 else
                 {
+                    // Compute HasCalendars based on whether deletion happened
+                    // Calendars collection not yet updated, so check count - 1 if deleted
+                    var wasDeleted = _calendarCrud.WasCalendarDeleted;
+                    var hasCalendarsAfter = wasDeleted ? Calendars.Count > 1 : Calendars.Count > 0;
+
                     _tutorialViewModel.FireTrigger(
                         AppTutorialTrigger.DeleteConfirmationClosed,
-                        ctx => ctx with { IsDeleteConfirmationOpen = false });
+                        ctx => ctx with
+                        {
+                            IsDeleteConfirmationOpen = false,
+                            HasCalendars = hasCalendarsAfter
+                        });
                 }
 
                 break;

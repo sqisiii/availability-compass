@@ -50,6 +50,8 @@ public partial class CalendarCrudController : ObservableObject, ICalendarCrudCon
         _eventBus = eventBus;
     }
 
+    public bool WasCalendarDeleted { get; private set; }
+
     /// <inheritdoc />
     public async Task AddCalendarAsync()
     {
@@ -129,12 +131,14 @@ public partial class CalendarCrudController : ObservableObject, ICalendarCrudCon
         }
 
         await _mediator.Send(new DeleteCalendarFromDbRequest(_pendingDeleteCalendarId.Value));
+        WasCalendarDeleted = true;
         ResetDeleteState();
     }
 
     /// <inheritdoc />
     public void CancelDeleteCalendar()
     {
+        WasCalendarDeleted = false;
         ResetDeleteState();
     }
 

@@ -21,6 +21,7 @@ public interface ICalendarCrudController : INotifyPropertyChanged
     // Delete Confirmation State
     bool IsDeleteConfirmationOpen { get; }
     string DeleteCalendarName { get; }
+    bool WasCalendarDeleted { get; }
 
     /// <summary>
     /// Adds a new calendar using the current add form state.
