@@ -62,7 +62,8 @@
                             Command="{Binding CloseCommand}"
                             ToolTip="Close"
                             Width="32"
-                            Height="32">
+                            Height="32"
+                            guidely:TutorialTarget.Element="DialogCloseButton">
                         <TextBlock FontFamily="{DynamicResource GlassIconFontFamily}"
                                    FontSize="18"
                                    Text="{x:Static controls:FluentIcons.Close}"
@@ -207,7 +208,8 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Left Panel: Calendar -->
-                    <StackPanel Grid.Column="0">
+                    <StackPanel Grid.Column="0"
+                                guidely:TutorialTarget.Element="CalendarSection">
                         <!-- Calendar Info Header (Display Mode) -->
                         <Border Background="{DynamicResource GlassMutedBrush}"
                                 CornerRadius="8"
@@ -287,7 +289,8 @@
                                 Margin="0,0,0,8"
                                 Width="620"
                                 MinHeight="90"
-                                Visibility="{Binding IsEditCalendarExpanded, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                Visibility="{Binding IsEditCalendarExpanded, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                guidely:TutorialTarget.Element="CalendarEditForm">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -544,6 +547,7 @@
                                    MinDialogWidth="350"
                                    MaxDialogWidth="400">
                 <controls1:DateEntryEditorPanel
+                    guidely:TutorialTarget.Element="DateEntryEditorPanel"
                     Title="{Binding EditorTitle}"
                     Description="{Binding EditorDescription, Mode=TwoWay}"
                     IsRecurring="{Binding EditorIsRecurring, Mode=TwoWay}"
@@ -562,7 +566,8 @@
             <controls:ModalOverlay Grid.Row="0" Grid.RowSpan="3"
                                    IsOpen="{Binding IsDeleteConfirmationOpen}"
                                    MinDialogWidth="300"
-                                   MaxDialogWidth="400">
+                                   MaxDialogWidth="400"
+                                   guidely:TutorialTarget.Element="DeleteConfirmationDialog">
                 <StackPanel>
                     <TextBlock Text="Delete Calendar"
                                Style="{StaticResource GlassHeading3}"

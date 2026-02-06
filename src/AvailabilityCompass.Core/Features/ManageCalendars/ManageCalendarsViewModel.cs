@@ -330,10 +330,56 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
             });
     }
 
+    partial void OnHasSelectedDatesChanged(bool value)
+    {
+        if (value)
+        {
+            _tutorialViewModel.FireTrigger(
+                AppTutorialTrigger.DatesSelected,
+                ctx => ctx with { HasSelectedDates = true });
+        }
+    }
+
     private void OnCalendarCrudPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         // Forward property change notifications to maintain XAML bindings
         OnPropertyChanged(e.PropertyName);
+
+        // Fire tutorial triggers for edit/delete state changes
+        switch (e.PropertyName)
+        {
+            case nameof(IsEditCalendarExpanded):
+                if (IsEditCalendarExpanded)
+                {
+                    _tutorialViewModel.FireTrigger(
+                        AppTutorialTrigger.CalendarEditStarted,
+                        ctx => ctx with { IsEditCalendarExpanded = true });
+                }
+                else
+                {
+                    _tutorialViewModel.FireTrigger(
+                        AppTutorialTrigger.CalendarEditCompleted,
+                        ctx => ctx with { IsEditCalendarExpanded = false });
+                }
+
+                break;
+
+            case nameof(IsDeleteConfirmationOpen):
+                if (IsDeleteConfirmationOpen)
+                {
+                    _tutorialViewModel.FireTrigger(
+                        AppTutorialTrigger.DeleteConfirmationOpened,
+                        ctx => ctx with { IsDeleteConfirmationOpen = true });
+                }
+                else
+                {
+                    _tutorialViewModel.FireTrigger(
+                        AppTutorialTrigger.DeleteConfirmationClosed,
+                        ctx => ctx with { IsDeleteConfirmationOpen = false });
+                }
+
+                break;
+        }
     }
 
     private void OnDateEntryEditorPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -345,6 +391,14 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
         if (e.PropertyName == nameof(IDateEntryEditorController.HasErrors))
         {
             SaveEntryCommand.NotifyCanExecuteChanged();
+        }
+
+        // Fire tutorial trigger when editor opens
+        if (e.PropertyName == nameof(IDateEntryEditorController.IsEditorOpen) && IsEditorOpen)
+        {
+            _tutorialViewModel.FireTrigger(
+                AppTutorialTrigger.EditorOpened,
+                ctx => ctx with { IsEditorOpen = true });
         }
     }
 
