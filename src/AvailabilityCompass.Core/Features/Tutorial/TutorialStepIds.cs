@@ -29,6 +29,8 @@ public static class TutorialStepIds
     public const string AddDaysExplanation = nameof(AddDaysExplanation);
     public const string AddDatesDialogExplanation = nameof(AddDatesDialogExplanation);
     public const string DateEntriesExplanation = nameof(DateEntriesExplanation);
+    public const string ClickDateEntryStep = nameof(ClickDateEntryStep);
+    public const string EditDateEntryExplanation = nameof(EditDateEntryExplanation);
 
     // Search group
     public const string PointToSearchView = nameof(PointToSearchView);

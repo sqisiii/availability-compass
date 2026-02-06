@@ -452,7 +452,8 @@
                                           VerticalScrollBarVisibility="Auto"
                                           HorizontalScrollBarVisibility="Disabled"
                                           Padding="0,0,8,0">
-                                <ItemsControl ItemsSource="{Binding DateEntries}">
+                                <ItemsControl ItemsSource="{Binding DateEntries}"
+                                              guidely:TutorialTarget.Element="DateEntryItems">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate DataType="{x:Type viewModels:DateEntryViewModel}">
                                             <Border Background="{DynamicResource GlassInputBrush}"

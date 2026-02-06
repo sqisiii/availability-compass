@@ -76,6 +76,11 @@ public enum AppTutorialTrigger
     EditorOpened,
 
     /// <summary>
+    /// The date entry editor was closed (saved, canceled, or deleted).
+    /// </summary>
+    EditorClosed,
+
+    /// <summary>
     /// The calendar filter section was expanded in the search view.
     /// </summary>
     CalendarFilterExpanded,

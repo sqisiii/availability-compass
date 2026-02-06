@@ -72,6 +72,12 @@ public static class TutorialSetup
             .GoTo(TutorialStepIds.DateEntriesExplanation);
 
         builder.From(TutorialStepIds.DateEntriesExplanation)
+            .GoTo(TutorialStepIds.ClickDateEntryStep);
+
+        builder.From(TutorialStepIds.ClickDateEntryStep)
+            .GoTo(TutorialStepIds.EditDateEntryExplanation);
+
+        builder.From(TutorialStepIds.EditDateEntryExplanation)
             .GoTo(TutorialStepIds.PointToSearchView);
 
         // Calendars -> Search

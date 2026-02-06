@@ -393,12 +393,18 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
             SaveEntryCommand.NotifyCanExecuteChanged();
         }
 
-        // Fire tutorial trigger when editor opens
+        // Fire tutorial trigger when editor opens or closes
         if (e.PropertyName == nameof(IDateEntryEditorController.IsEditorOpen) && IsEditorOpen)
         {
             _tutorialViewModel.FireTrigger(
                 AppTutorialTrigger.EditorOpened,
                 ctx => ctx with { IsEditorOpen = true });
+        }
+        else if (e.PropertyName == nameof(IDateEntryEditorController.IsEditorOpen) && !IsEditorOpen)
+        {
+            _tutorialViewModel.FireTrigger(
+                AppTutorialTrigger.EditorClosed,
+                ctx => ctx with { IsEditorOpen = false });
         }
     }
 
