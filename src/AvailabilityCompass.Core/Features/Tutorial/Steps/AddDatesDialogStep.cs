@@ -18,9 +18,7 @@ public class AddDatesDialogStep : ITutorialStepContent,
         AppTutorialTrigger trigger,
         AvailabilityCompassContext? previousContext,
         AvailabilityCompassContext currentContext)
-        => trigger == AppTutorialTrigger.DateEntryAdded &&
-           (previousContext == null || !previousContext.HasCalendarEntries) &&
-           currentContext.HasCalendarEntries;
+        => trigger == AppTutorialTrigger.DateEntryAdded && currentContext.HasCalendarEntries;
 
     public bool IsComplete(AvailabilityCompassContext context) => context.HasCalendarEntries;
 

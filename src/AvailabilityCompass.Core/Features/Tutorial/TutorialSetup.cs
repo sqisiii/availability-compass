@@ -52,7 +52,6 @@ public static class TutorialSetup
             .GoTo(TutorialStepIds.CalendarViewOverview);
 
         builder.From(TutorialStepIds.CalendarViewOverview)
-            .GoToIf(TutorialStepIds.DateEntriesExplanation, ctx => ctx.HasCalendarEntries)
             .GoTo(TutorialStepIds.EditCalendarStep);
 
         builder.From(TutorialStepIds.EditCalendarStep)
