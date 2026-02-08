@@ -12,15 +12,13 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 [AutoAdvanceOn(AppTutorialTrigger.DeleteConfirmationOpened)]
 public class DeleteCalendarStep : ITutorialStepContent,
     IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
-    ITutorialStepComplete<AvailabilityCompassContext>
+    ITutorialStepSkippable<AvailabilityCompassContext>
 {
     public bool ShouldAutoAdvance(
         AppTutorialTrigger trigger,
         AvailabilityCompassContext? previousContext,
         AvailabilityCompassContext currentContext)
         => trigger == AppTutorialTrigger.DeleteConfirmationOpened && currentContext.IsDeleteConfirmationOpen;
-
-    public bool IsComplete(AvailabilityCompassContext context) => context.IsDeleteConfirmationOpen;
 
     public string Title => "Delete Calendar";
 
@@ -29,4 +27,10 @@ public class DeleteCalendarStep : ITutorialStepContent,
 
                                  A confirmation dialog will appear to prevent accidental deletion.
                                  """;
+
+    public bool CanSkip(AvailabilityCompassContext context) => true;
+
+    public string SkipTitle => "Delete Calendar";
+
+    public string SkipDescription => "Click 'Delete' to see how calendar deletion works, or press 'Next' to skip to adding dates.";
 }

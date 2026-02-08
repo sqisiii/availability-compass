@@ -11,17 +11,13 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 [TutorialTarget("AddCalendarButton")]
 [AutoAdvanceOn(AppTutorialTrigger.CalendarFormExpanded)]
 public class ClickAddCalendarStep : ITutorialStepContent,
-    IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
-    ITutorialStepComplete<AvailabilityCompassContext>
+    IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>
 {
     public bool ShouldAutoAdvance(
         AppTutorialTrigger trigger,
         AvailabilityCompassContext? previousContext,
         AvailabilityCompassContext currentContext)
         => trigger == AppTutorialTrigger.CalendarFormExpanded && currentContext.IsAddCalendarExpanded;
-
-    public bool IsComplete(AvailabilityCompassContext context)
-        => context.HasCalendars;
 
     public string Title => "Create Your First Calendar";
 

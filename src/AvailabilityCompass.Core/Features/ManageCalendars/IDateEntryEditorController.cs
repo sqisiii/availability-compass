@@ -12,6 +12,7 @@ public interface IDateEntryEditorController : INotifyPropertyChanged
     // Editor State
     bool IsEditorOpen { get; }
     bool IsEditMode { get; }
+    bool WasEntryDeleted { get; }
     string EditorTitle { get; }
 
     // Validation

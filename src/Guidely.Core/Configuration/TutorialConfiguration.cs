@@ -37,6 +37,20 @@ public class TutorialConfiguration<TContext, TTrigger, TGroup>
         = Array.Empty<TransitionRule>();
 
     /// <summary>
+    /// Skip transitions mapping step ID to skip target step ID.
+    /// Used when a step implements <see cref="Abstractions.ITutorialStepSkippable{TContext}"/>
+    /// and CanSkip returns true.
+    /// </summary>
+    public IReadOnlyDictionary<string, string> SkipTransitions { get; internal init; }
+        = new Dictionary<string, string>();
+
+    /// <summary>
+    /// Maps tutorial groups to view/page conditions for restart-from-current-view behavior.
+    /// </summary>
+    public IReadOnlyDictionary<TGroup, Func<TContext, bool>> GroupViewMappings { get; internal init; }
+        = new Dictionary<TGroup, Func<TContext, bool>>();
+
+    /// <summary>
     /// Whether to automatically start the tutorial on the first run (no persisted state).
     /// </summary>
     public bool AutoStartOnFirstRun { get; internal init; }

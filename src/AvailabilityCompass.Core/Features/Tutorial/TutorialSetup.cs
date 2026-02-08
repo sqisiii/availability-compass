@@ -14,23 +14,20 @@ public static class TutorialSetup
     {
         // Introduction -> Sources
         builder.From(TutorialStepIds.Welcome)
-            .GoToIf(TutorialStepIds.SourcesRefreshOptionalStep, ctx => ctx.CurrentDialog == DialogType.Sources && ctx.HasSourcesWithData)
             .GoToIf(TutorialStepIds.SourcesDialogRefreshButtons, ctx => ctx.CurrentDialog == DialogType.Sources)
             .GoTo(TutorialStepIds.PointToSourcesButton);
 
         // Sources flow
         builder.From(TutorialStepIds.PointToSourcesButton)
-            .GoToIf(TutorialStepIds.SourcesRefreshOptionalStep, ctx => ctx.HasSourcesWithData)
             .GoTo(TutorialStepIds.SourcesDialogRefreshButtons);
-
-        builder.From(TutorialStepIds.SourcesRefreshOptionalStep)
-            .GoTo(TutorialStepIds.PointToCalendarsButton);
 
         builder.From(TutorialStepIds.SourcesDialogRefreshButtons)
             .GoToIf(TutorialStepIds.PointToCalendarsButton, ctx => ctx.HasRefreshedSource)
+            .SkipTo(TutorialStepIds.PointToCalendarsButton)
             .GoTo(TutorialStepIds.WaitForSourceRefresh);
 
         builder.From(TutorialStepIds.WaitForSourceRefresh)
+            .SkipTo(TutorialStepIds.PointToCalendarsButton)
             .GoTo(TutorialStepIds.PointToCalendarsButton);
 
         // Sources -> Calendars
@@ -43,6 +40,7 @@ public static class TutorialSetup
             .GoTo(TutorialStepIds.ClickAddCalendarButton);
 
         builder.From(TutorialStepIds.ClickExistingCalendar)
+            .SkipTo(TutorialStepIds.CalendarViewOverview)
             .GoTo(TutorialStepIds.CalendarViewOverview);
 
         builder.From(TutorialStepIds.ClickAddCalendarButton)
@@ -55,12 +53,14 @@ public static class TutorialSetup
             .GoTo(TutorialStepIds.EditCalendarStep);
 
         builder.From(TutorialStepIds.EditCalendarStep)
+            .SkipTo(TutorialStepIds.SelectDatesExplanation)
             .GoTo(TutorialStepIds.EditCalendarFormStep);
 
         builder.From(TutorialStepIds.EditCalendarFormStep)
             .GoTo(TutorialStepIds.DeleteCalendarStep);
 
         builder.From(TutorialStepIds.DeleteCalendarStep)
+            .SkipTo(TutorialStepIds.SelectDatesExplanation)
             .GoTo(TutorialStepIds.DeleteConfirmationStep);
 
         builder.From(TutorialStepIds.DeleteConfirmationStep)
@@ -68,21 +68,26 @@ public static class TutorialSetup
             .GoTo(TutorialStepIds.SelectDatesExplanation);
 
         builder.From(TutorialStepIds.SelectDatesExplanation)
+            .SkipTo(TutorialStepIds.DateEntriesExplanation)
             .GoTo(TutorialStepIds.AddDaysExplanation);
 
         builder.From(TutorialStepIds.AddDaysExplanation)
+            .SkipTo(TutorialStepIds.DateEntriesExplanation)
             .GoTo(TutorialStepIds.AddDatesDialogExplanation);
 
         builder.From(TutorialStepIds.AddDatesDialogExplanation)
+            .SkipTo(TutorialStepIds.DateEntriesExplanation)
             .GoTo(TutorialStepIds.DateEntriesExplanation);
 
         builder.From(TutorialStepIds.DateEntriesExplanation)
             .GoTo(TutorialStepIds.ClickDateEntryStep);
 
         builder.From(TutorialStepIds.ClickDateEntryStep)
+            .SkipTo(TutorialStepIds.PointToSearchView)
             .GoTo(TutorialStepIds.EditDateEntryExplanation);
 
         builder.From(TutorialStepIds.EditDateEntryExplanation)
+            .GoToIf(TutorialStepIds.SelectDatesExplanation, ctx => !ctx.HasCalendarEntries)
             .GoTo(TutorialStepIds.PointToSearchView);
 
         // Calendars -> Search

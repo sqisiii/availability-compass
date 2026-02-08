@@ -11,16 +11,13 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 [TutorialTarget("CalendarEditForm")]
 [AutoAdvanceOn(AppTutorialTrigger.CalendarEditCompleted)]
 public class EditCalendarFormStep : ITutorialStepContent,
-    IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
-    ITutorialStepComplete<AvailabilityCompassContext>
+    IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>
 {
     public bool ShouldAutoAdvance(
         AppTutorialTrigger trigger,
         AvailabilityCompassContext? previousContext,
         AvailabilityCompassContext currentContext)
         => trigger == AppTutorialTrigger.CalendarEditCompleted && !currentContext.IsEditCalendarExpanded;
-
-    public bool IsComplete(AvailabilityCompassContext context) => !context.IsEditCalendarExpanded;
 
     public string Title => "Edit Calendar Form";
 

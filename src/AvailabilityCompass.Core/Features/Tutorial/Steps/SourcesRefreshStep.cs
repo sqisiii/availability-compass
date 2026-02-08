@@ -11,7 +11,9 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 [TutorialTarget("RefreshAllButton")]
 [TutorialTarget("SourceCardRefreshButton")]
 [AutoAdvanceOn(AppTutorialTrigger.SourceRefreshed)]
-public class SourcesRefreshStep : ITutorialStepContent, IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>
+public class SourcesRefreshStep : ITutorialStepContent,
+    IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
+    ITutorialStepSkippable<AvailabilityCompassContext>
 {
     public bool ShouldAutoAdvance(
         AppTutorialTrigger trigger,
@@ -30,4 +32,18 @@ public class SourcesRefreshStep : ITutorialStepContent, IConditionalAutoAdvance<
 
                                  The progress bar shows the download status. Once refreshed, you'll see how many trip records were loaded and when they were last updated.
                                  """;
+
+    public bool CanSkip(AvailabilityCompassContext context) => context.HasSourcesWithData;
+
+    public string SkipTitle => "Refresh Your Trip Data";
+
+    public string SkipDescription => """
+                                     You already have trip data loaded from a previous session.
+
+                                     You can either:
+                                     • Click 'Refresh All' or a source's 'Refresh' button to get the latest data
+                                     • Click 'Next' to continue with your existing data
+
+                                     Refreshing ensures you have the most up-to-date trip information.
+                                     """;
 }

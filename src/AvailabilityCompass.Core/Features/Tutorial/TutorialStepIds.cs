@@ -12,11 +12,10 @@ public static class TutorialStepIds
     // Sources group
     public const string PointToSourcesButton = nameof(PointToSourcesButton);
     public const string SourcesDialogRefreshButtons = nameof(SourcesDialogRefreshButtons);
-    public const string SourcesRefreshOptionalStep = nameof(SourcesRefreshOptionalStep);
     public const string WaitForSourceRefresh = nameof(WaitForSourceRefresh);
+    public const string PointToCalendarsButton = nameof(PointToCalendarsButton);
 
     // Calendars group
-    public const string PointToCalendarsButton = nameof(PointToCalendarsButton);
     public const string CalendarsOverview = nameof(CalendarsOverview);
     public const string ClickExistingCalendar = nameof(ClickExistingCalendar);
     public const string ClickAddCalendarButton = nameof(ClickAddCalendarButton);
@@ -32,9 +31,9 @@ public static class TutorialStepIds
     public const string DateEntriesExplanation = nameof(DateEntriesExplanation);
     public const string ClickDateEntryStep = nameof(ClickDateEntryStep);
     public const string EditDateEntryExplanation = nameof(EditDateEntryExplanation);
+    public const string PointToSearchView = nameof(PointToSearchView);
 
     // Search group
-    public const string PointToSearchView = nameof(PointToSearchView);
     public const string CalendarFilterExplanation = nameof(CalendarFilterExplanation);
     public const string CalendarTypesExplanation = nameof(CalendarTypesExplanation);
     public const string SourcesFilterExplanation = nameof(SourcesFilterExplanation);

@@ -30,6 +30,9 @@ public static class CoreExtensions
             builder.ConfigureTransitions(TutorialSetup.ConfigureTransitions);
             builder.SetStartStep(TutorialStepIds.Welcome);
             builder.EnableAutoStart();
+            builder.MapGroupToView(AppTutorialGroup.Introduction, ctx => ctx.CurrentDialog == DialogType.None);
+            builder.MapGroupToView(AppTutorialGroup.Sources, ctx => ctx.CurrentDialog == DialogType.Sources);
+            builder.MapGroupToView(AppTutorialGroup.Calendars, ctx => ctx.CurrentDialog == DialogType.Calendars);
         });
 
         return services;

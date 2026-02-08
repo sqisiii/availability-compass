@@ -23,6 +23,6 @@ public class CalendarViewOverviewStep : ITutorialStepContent
                                  • Dark red = One-time dates
                                  • Salmon = Recurring dates
 
-                                 Click on any colored date to edit that entry.
+                                 Clicking on any colored date will open the editor for that entry.
                                  """;
 }

@@ -3,11 +3,11 @@ using Guidely.Core.Abstractions;
 namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 
 [TutorialStep(TutorialStepIds.PointToCalendarsButton,
-    Group = AppTutorialGroup.Calendars,
+    Group = AppTutorialGroup.Sources,
     Position = TooltipPosition.Bottom,
     RequiresUserAction = true,
     ClickThroughMode = ClickThroughMode.TargetOnly,
-    Order = 0)]
+    Order = 3)]
 [TutorialTarget("CalendarsHeaderButton")]
 [AutoAdvanceOn(AppTutorialTrigger.DialogChanged)]
 public class PointToCalendarsStep : ITutorialStepContent, IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>

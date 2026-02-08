@@ -12,15 +12,12 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 [AutoAdvanceOn(AppTutorialTrigger.DateEntryAdded)]
 public class AddDatesDialogStep : ITutorialStepContent,
     IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
-    ITutorialStepComplete<AvailabilityCompassContext>
+    ITutorialStepSkippable<AvailabilityCompassContext>
 {
     public bool ShouldAutoAdvance(
         AppTutorialTrigger trigger,
-        AvailabilityCompassContext? previousContext,
-        AvailabilityCompassContext currentContext)
+        AvailabilityCompassContext? previousContext,        AvailabilityCompassContext currentContext)
         => trigger == AppTutorialTrigger.DateEntryAdded && currentContext.HasCalendarEntries;
-
-    public bool IsComplete(AvailabilityCompassContext context) => context.HasCalendarEntries;
 
     public string Title => "Configure Date Entry";
 
@@ -35,4 +32,10 @@ public class AddDatesDialogStep : ITutorialStepContent,
 
                                  Click 'Save' when you're done.
                                  """;
+
+    public bool CanSkip(AvailabilityCompassContext context) => context.HasCalendarEntries;
+
+    public string SkipTitle => "Configure Date Entry";
+
+    public string SkipDescription => "You already have date entries in this calendar. Click 'Next' to continue, or select dates and click 'Add Dates' to add another entry.";
 }

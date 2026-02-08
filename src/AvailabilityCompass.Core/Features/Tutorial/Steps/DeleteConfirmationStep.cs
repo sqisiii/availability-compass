@@ -11,16 +11,13 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 [TutorialTarget("DeleteConfirmationDialog")]
 [AutoAdvanceOn(AppTutorialTrigger.DeleteConfirmationClosed)]
 public class DeleteConfirmationStep : ITutorialStepContent,
-    IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
-    ITutorialStepComplete<AvailabilityCompassContext>
+    IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>
 {
     public bool ShouldAutoAdvance(
         AppTutorialTrigger trigger,
         AvailabilityCompassContext? previousContext,
         AvailabilityCompassContext currentContext)
         => trigger == AppTutorialTrigger.DeleteConfirmationClosed && !currentContext.IsDeleteConfirmationOpen;
-
-    public bool IsComplete(AvailabilityCompassContext context) => !context.IsDeleteConfirmationOpen;
 
     public string Title => "Confirm Deletion";
 

@@ -411,9 +411,14 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
         }
         else if (e.PropertyName == nameof(IDateEntryEditorController.IsEditorOpen) && !IsEditorOpen)
         {
+            // Compute HasCalendarEntries based on whether deletion happened
+            // DateEntries collection not yet updated, so check count - 1 if deleted
+            var wasDeleted = _dateEntryEditor.WasEntryDeleted;
+            var hasEntriesAfter = wasDeleted ? DateEntries.Count > 1 : DateEntries.Count > 0;
+
             _tutorialViewModel.FireTrigger(
                 AppTutorialTrigger.EditorClosed,
-                ctx => ctx with { IsEditorOpen = false });
+                ctx => ctx with { IsEditorOpen = false, HasCalendarEntries = hasEntriesAfter });
         }
     }
 

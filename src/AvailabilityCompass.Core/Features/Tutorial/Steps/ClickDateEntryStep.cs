@@ -12,15 +12,13 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 [AutoAdvanceOn(AppTutorialTrigger.EditorOpened)]
 public class ClickDateEntryStep : ITutorialStepContent,
     IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
-    ITutorialStepComplete<AvailabilityCompassContext>
+    ITutorialStepSkippable<AvailabilityCompassContext>
 {
     public bool ShouldAutoAdvance(
         AppTutorialTrigger trigger,
         AvailabilityCompassContext? previousContext,
         AvailabilityCompassContext currentContext)
         => trigger == AppTutorialTrigger.EditorOpened && currentContext.IsEditorOpen;
-
-    public bool IsComplete(AvailabilityCompassContext context) => context.IsEditorOpen;
 
     public string Title => "Click an Entry";
 
@@ -29,4 +27,11 @@ public class ClickDateEntryStep : ITutorialStepContent,
 
                                  This will allow you to view and modify the entry's details.
                                  """;
+
+    public bool CanSkip(AvailabilityCompassContext context) => context.HasCalendarEntries;
+
+    public string SkipTitle => "Click an Entry";
+
+    public string SkipDescription =>
+        "Click on a date entry to see how editing works, or press 'Next' to continue to the search setup.";
 }

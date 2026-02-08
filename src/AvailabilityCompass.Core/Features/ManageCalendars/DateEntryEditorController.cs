@@ -236,13 +236,18 @@ public partial class DateEntryEditorController : ObservableValidator, IDateEntry
         }
 
         await _mediator.Send(new DeleteDateEntryFromDbRequest(calendarId, _editingEntryId.Value));
+        WasEntryDeleted = true;
         Close();
     }
+
+    /// <inheritdoc />
+    public bool WasEntryDeleted { get; private set; }
 
     /// <inheritdoc />
     public void Close()
     {
         IsEditorOpen = false;
+        WasEntryDeleted = false;
         _editingEntryId = null;
         _pendingSelections = null;
         EditorDetectedSelections.Clear();

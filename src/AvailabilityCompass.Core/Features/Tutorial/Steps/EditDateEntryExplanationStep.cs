@@ -11,16 +11,13 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 [TutorialTarget("DateEntryEditorPanel")]
 [AutoAdvanceOn(AppTutorialTrigger.EditorClosed)]
 public class EditDateEntryExplanationStep : ITutorialStepContent,
-    IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
-    ITutorialStepComplete<AvailabilityCompassContext>
+    IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>
 {
     public bool ShouldAutoAdvance(
         AppTutorialTrigger trigger,
         AvailabilityCompassContext? previousContext,
         AvailabilityCompassContext currentContext)
         => trigger == AppTutorialTrigger.EditorClosed && !currentContext.IsEditorOpen;
-
-    public bool IsComplete(AvailabilityCompassContext context) => !context.IsEditorOpen;
 
     public string Title => "Edit Date Entry";
 

@@ -11,8 +11,7 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 [TutorialTarget("AddCalendarForm")]
 [AutoAdvanceOn(AppTutorialTrigger.CalendarAdded)]
 public class AddCalendarFormStep : ITutorialStepContent,
-    IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
-    ITutorialStepComplete<AvailabilityCompassContext>
+    IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>
 {
     public bool ShouldAutoAdvance(
         AppTutorialTrigger trigger,
@@ -21,9 +20,6 @@ public class AddCalendarFormStep : ITutorialStepContent,
         => trigger == AppTutorialTrigger.CalendarAdded &&
            (previousContext == null || !previousContext.HasCalendars) &&
            currentContext.HasCalendars;
-
-    public bool IsComplete(AvailabilityCompassContext context)
-        => context.HasCalendars;
 
     public string Title => "Configure Your Calendar";
 

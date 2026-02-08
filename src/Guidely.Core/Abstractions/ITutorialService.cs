@@ -59,6 +59,11 @@ public interface ITutorialService<TContext, TTrigger, TGroup> : INotifyPropertyC
     bool CanGoBack { get; }
 
     /// <summary>
+    /// Whether the current step can be skipped (implements ITutorialStepSkippable and CanSkip returns true).
+    /// </summary>
+    bool IsCurrentStepSkippable { get; }
+
+    /// <summary>
     /// Initializes the tutorial service, loading any persisted state.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
@@ -105,15 +110,19 @@ public interface ITutorialService<TContext, TTrigger, TGroup> : INotifyPropertyC
 
     /// <summary>
     /// Restarts the tutorial from the beginning of the specified group.
-    /// Auto-advances through steps where IsComplete() returns true.
     /// </summary>
     /// <param name="group">The group to restart from.</param>
     void RestartGroup(TGroup group);
 
     /// <summary>
-    /// Gets the status of a specific step.
+    /// Navigates using the configured skip transition for the current step.
     /// </summary>
-    /// <param name="stepId">The step ID.</param>
-    /// <returns>The status of the step.</returns>
-    StepStatus GetStepStatus(string stepId);
+    void SkipStep();
+
+    /// <summary>
+    /// Restarts the tutorial from the group matching the current view/page.
+    /// Falls back to full restart if no group matches.
+    /// </summary>
+    /// <param name="ct">Cancellation token.</param>
+    Task RestartFromCurrentViewAsync(CancellationToken ct = default);
 }

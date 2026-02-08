@@ -9,6 +9,7 @@ namespace Guidely.Core.Configuration;
 public class TransitionBuilder<TContext> where TContext : TutorialContextBase
 {
     private readonly List<TransitionRule> _rules = [];
+    private readonly Dictionary<string, string> _skipTransitions = new();
     private string? _currentFromStep;
 
     /// <summary>
@@ -48,16 +49,37 @@ public class TransitionBuilder<TContext> where TContext : TutorialContextBase
     }
 
     /// <summary>
+    /// Configures the skip target step for the current source step.
+    /// When the step implements <see cref="Abstractions.ITutorialStepSkippable{TContext}"/>
+    /// and CanSkip returns true, clicking Next will navigate to this target.
+    /// </summary>
+    /// <param name="stepId">The target step ID to skip to.</param>
+    /// <returns>The builder for chaining.</returns>
+    public TransitionBuilder<TContext> SkipTo(string stepId)
+    {
+        EnsureFromStepSet();
+        _skipTransitions[_currentFromStep!] = stepId;
+        return this;
+    }
+
+    /// <summary>
     /// Builds the list of transition rules.
     /// </summary>
     /// <returns>The configured transition rules.</returns>
     internal IReadOnlyList<TransitionRule> Build() => _rules.AsReadOnly();
 
+    /// <summary>
+    /// Builds the skip transitions dictionary.
+    /// </summary>
+    /// <returns>The configured skip transitions.</returns>
+    internal IReadOnlyDictionary<string, string> BuildSkipTransitions() =>
+        new Dictionary<string, string>(_skipTransitions);
+
     private void EnsureFromStepSet()
     {
         if (string.IsNullOrEmpty(_currentFromStep))
         {
-            throw new InvalidOperationException("Must call From() before GoTo() or GoToIf()");
+            throw new InvalidOperationException("Must call From() before GoTo(), GoToIf(), or SkipTo()");
         }
     }
 }

@@ -10,6 +10,8 @@ A powerful, framework-agnostic tutorial state machine library for .NET applicati
 - **Context-Aware** - Track application state with strongly-typed context records for intelligent decision-making
 - **Step Groups** - Organize steps into logical sections (Introduction, Setup, Features, etc.) with ordering support
 - **Back Navigation** - Built-in support for navigating to previous steps
+- **Skippable Steps** - Steps that require user action can show alternate content and a Next button when their goal is already achieved, with configurable skip targets
+- **Group-to-View Mapping** - Map tutorial groups to application views/pages for intelligent restart-from-current-view behavior
 - **Persistence Ready** - Implement `ITutorialPersistence` to save/restore tutorial progress across sessions
 - **Framework Agnostic** - Core logic works with any .NET UI framework (WPF, MAUI, Avalonia, Blazor)
 - **Dependency Injection** - First-class support for Microsoft.Extensions.DependencyInjection
@@ -174,6 +176,11 @@ builder.From(StepIds.Welcome)
 builder.From(StepIds.Welcome)
     .GoToIf(StepIds.Features, ctx => ctx.HasCompletedSetup)
     .GoTo(StepIds.Setup);  // Fallback if condition is false
+
+// Skip transition (used when step is skippable)
+builder.From(StepIds.Setup)
+    .SkipTo(StepIds.Features)   // Where Next goes when CanSkip returns true
+    .GoTo(StepIds.Features);    // Normal transition after auto-advance
 ```
 
 ### Auto-Advance Triggers
@@ -203,23 +210,56 @@ tutorialService.FireTrigger(MyTrigger.ButtonClicked);
 tutorialService.FireTrigger(MyTrigger.DataLoaded, ctx => ctx with { ItemCount = 5 });
 ```
 
-### Step Completion Detection
+### Skippable Steps
 
-Steps can implement `ITutorialStepComplete<TContext>` to be auto-skipped when their goal is already achieved. This is useful when restarting a tutorial group - steps that are already complete will be skipped automatically.
+Steps that require user action can show alternate content and a Next button when their goal is already achieved. This is useful for tutorial reruns where some data already exists.
+
+Implement `ITutorialStepSkippable<TContext>` on the step class:
 
 ```csharp
-[TutorialStep(StepIds.CreateFirstItem, ...)]
-public class CreateFirstItemStep : ITutorialStepContent, ITutorialStepComplete<MyAppContext>
+[TutorialStep(StepIds.RefreshData,
+    RequiresUserAction = true,
+    ClickThroughMode = ClickThroughMode.TargetOnly)]
+[TutorialTarget("RefreshButton")]
+[AutoAdvanceOn(MyTrigger.DataRefreshed)]
+public class RefreshDataStep : ITutorialStepContent, ITutorialStepSkippable<MyAppContext>
 {
-    public string Title => "Create Your First Item";
-    public string Description => "Let's create your first item.";
+    public string Title => "Refresh Data";
+    public string Description => "Click Refresh to load the latest data.";
 
-    public bool IsComplete(MyAppContext context)
-        => context.HasItems;  // Skip if user already has items
+    // When CanSkip returns true, the ViewModel shows SkipTitle/SkipDescription
+    // and displays the Next button even though RequiresUserAction is true
+    public bool CanSkip(MyAppContext context) => context.HasData;
+    public string SkipTitle => "Refresh Data";
+    public string SkipDescription => "You already have data loaded. Click Next to continue, or Refresh to update.";
 }
 ```
 
-When `RestartGroup()` is called or the tutorial advances, steps where `IsComplete()` returns `true` are automatically skipped.
+Configure the skip target in transitions using `SkipTo()`:
+
+```csharp
+builder.From(StepIds.RefreshData)
+    .SkipTo(StepIds.NextSection)    // Where Next goes when step is skippable
+    .GoTo(StepIds.WaitForRefresh);  // Normal transition after auto-advance
+```
+
+When `CanSkip` returns true:
+- The step shows `SkipTitle` and `SkipDescription` instead of the normal content
+- The Next button appears even if `RequiresUserAction = true`
+- Clicking Next navigates to the `SkipTo` target
+- Auto-advance still works if the user performs the action
+- Back navigates to the last shown step (via step history)
+
+### Group-to-View Mapping
+
+Map tutorial groups to application views/pages so that restart begins at the relevant group:
+
+```csharp
+builder.MapGroupToView(MyGroup.Settings, ctx => ctx.CurrentPage == "Settings");
+builder.MapGroupToView(MyGroup.Dashboard, ctx => ctx.CurrentPage == "Dashboard");
+```
+
+When `RestartFromCurrentViewAsync()` is called, the service evaluates these conditions against the current context and restarts from the matching group. If no group matches, it falls back to a full restart.
 
 ### Groups
 
@@ -252,6 +292,7 @@ Main service interface for controlling the tutorial.
 | `CurrentStepNumber` | `int` | Current step number (1-based) |
 | `TotalSteps` | `int` | Total number of steps |
 | `CanGoBack` | `bool` | Whether back navigation is available |
+| `IsCurrentStepSkippable` | `bool` | Whether the current step can be skipped |
 
 | Method | Description |
 |--------|-------------|
@@ -259,12 +300,13 @@ Main service interface for controlling the tutorial.
 | `StartTutorial()` | Start or restart the tutorial |
 | `AdvanceStep()` | Move to the next step |
 | `GoBack()` | Go to the previous step |
+| `SkipStep()` | Navigate using the configured skip transition |
 | `SkipTutorial()` | Skip the tutorial entirely |
 | `RestartTutorialAsync()` | Restart from the beginning |
+| `RestartFromCurrentViewAsync()` | Restart from the group matching the current view |
 | `FireTrigger(trigger, contextUpdate?)` | Fire a trigger with optional context update |
 | `UpdateContext(update)` | Update context without firing a trigger |
 | `RestartGroup(group)` | Restart from the beginning of a group |
-| `GetStepStatus(stepId)` | Get the status of a specific step |
 
 ### Attributes
 
@@ -389,6 +431,7 @@ services.AddGuidely<MyAppContext, MyTrigger, MyGroup>(builder =>
 | `SetStartStep(stepId)` | Sets the starting step ID |
 | `EnableAutoStart()` | Enables automatic tutorial start on first run (no persisted state) |
 | `UseStepFactory(factory)` | Sets a custom factory for creating step instances |
+| `MapGroupToView(group, condition)` | Maps a group to a view condition for restart-from-current-view |
 
 ### AddGuidelyPersistence&lt;TPersistence&gt;
 

@@ -15,6 +15,7 @@ public class TutorialConfigBuilder<TContext, TTrigger, TGroup>
     where TGroup : Enum
 {
     private readonly List<Assembly> _assemblies = [];
+    private readonly Dictionary<TGroup, Func<TContext, bool>> _groupViewMappings = new();
     private readonly TransitionBuilder<TContext> _transitionBuilder = new();
     private bool _autoStartOnFirstRun;
     private string _startStepId = string.Empty;
@@ -78,6 +79,22 @@ public class TutorialConfigBuilder<TContext, TTrigger, TGroup>
     }
 
     /// <summary>
+    /// Maps a tutorial group to a view/page condition for restart-from-current-view behavior.
+    /// When <see cref="Abstractions.ITutorialService{TContext, TTrigger, TGroup}.RestartFromCurrentViewAsync"/>
+    /// is called, the service evaluates these conditions to determine which group matches the current view.
+    /// </summary>
+    /// <param name="group">The tutorial group.</param>
+    /// <param name="condition">A condition that returns true when the user is on the view associated with this group.</param>
+    /// <returns>The builder for chaining.</returns>
+    public TutorialConfigBuilder<TContext, TTrigger, TGroup> MapGroupToView(
+        TGroup group,
+        Func<TContext, bool> condition)
+    {
+        _groupViewMappings[group] = condition;
+        return this;
+    }
+
+    /// <summary>
     /// Builds the tutorial configuration.
     /// </summary>
     /// <param name="serviceProvider">The service provider for resolving dependencies.</param>
@@ -102,6 +119,8 @@ public class TutorialConfigBuilder<TContext, TTrigger, TGroup>
             Steps = steps,
             OrderedSteps = orderedSteps,
             Transitions = _transitionBuilder.Build(),
+            SkipTransitions = _transitionBuilder.BuildSkipTransitions(),
+            GroupViewMappings = new Dictionary<TGroup, Func<TContext, bool>>(_groupViewMappings),
             AutoStartOnFirstRun = _autoStartOnFirstRun
         };
     }

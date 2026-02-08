@@ -12,16 +12,13 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 [AutoAdvanceOn(AppTutorialTrigger.SourceRefreshed)]
 public class WaitForRefreshStep : ITutorialStepContent,
     IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
-    ITutorialStepComplete<AvailabilityCompassContext>
+    ITutorialStepSkippable<AvailabilityCompassContext>
 {
     public bool ShouldAutoAdvance(
         AppTutorialTrigger trigger,
         AvailabilityCompassContext? previousContext,
         AvailabilityCompassContext currentContext)
         => trigger == AppTutorialTrigger.SourceRefreshed && currentContext.HasRefreshedSource;
-
-    public bool IsComplete(AvailabilityCompassContext context)
-        => context.HasRefreshedSource || context.HasSourcesWithData;
 
     public string Title => "Refresh Sources First";
 
@@ -30,4 +27,15 @@ public class WaitForRefreshStep : ITutorialStepContent,
 
                                  Click the 'Sources' button and use the Refresh buttons to download trip information.
                                  """;
+
+    public bool CanSkip(AvailabilityCompassContext context)
+        => context.HasRefreshedSource || context.HasSourcesWithData;
+
+    public string SkipTitle => "Refresh Sources First";
+
+    public string SkipDescription => """
+                                     You already have trip data loaded. Click 'Next' to continue to the calendars setup.
+
+                                     Or click the 'Sources' button to refresh your data first.
+                                     """;
 }

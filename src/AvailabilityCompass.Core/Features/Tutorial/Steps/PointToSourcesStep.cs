@@ -3,11 +3,11 @@ using Guidely.Core.Abstractions;
 namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 
 [TutorialStep(TutorialStepIds.PointToSourcesButton,
-    Group = AppTutorialGroup.Sources,
+    Group = AppTutorialGroup.Introduction,
     Position = TooltipPosition.Bottom,
     RequiresUserAction = true,
     ClickThroughMode = ClickThroughMode.TargetOnly,
-    Order = 0)]
+    Order = 1)]
 [TutorialTarget("SourcesHeaderButton")]
 [AutoAdvanceOn(AppTutorialTrigger.DialogChanged)]
 public class PointToSourcesStep : ITutorialStepContent, IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>

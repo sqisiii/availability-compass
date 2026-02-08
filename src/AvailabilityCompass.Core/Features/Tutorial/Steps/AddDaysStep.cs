@@ -13,7 +13,7 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 [AutoAdvanceOn(AppTutorialTrigger.EditorOpened)]
 public class AddDaysStep : ITutorialStepContent,
     IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
-    ITutorialStepComplete<AvailabilityCompassContext>
+    ITutorialStepSkippable<AvailabilityCompassContext>
 {
     public bool ShouldAutoAdvance(
         AppTutorialTrigger trigger,
@@ -22,8 +22,6 @@ public class AddDaysStep : ITutorialStepContent,
         => trigger == AppTutorialTrigger.EditorOpened &&
            (previousContext == null || !previousContext.IsEditorOpen) &&
            currentContext.IsEditorOpen;
-
-    public bool IsComplete(AvailabilityCompassContext context) => context.IsEditorOpen;
 
     public string Title => "Add Date Entries";
 
@@ -34,4 +32,11 @@ public class AddDaysStep : ITutorialStepContent,
 
                                  When you're ready, click the 'Add Dates' button to continue.
                                  """;
+
+    public bool CanSkip(AvailabilityCompassContext context) => context.HasCalendarEntries;
+
+    public string SkipTitle => "Add Date Entries";
+
+    public string SkipDescription =>
+        "You already have date entries in this calendar. Click 'Next' to continue, or add more dates if you'd like by pressing 'Add Dates' button.";
 }

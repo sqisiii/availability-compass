@@ -97,11 +97,6 @@ public partial class TutorialViewModel<TContext, TTrigger, TGroup> : ObservableO
     /// </summary>
     public void FireTrigger(TTrigger trigger, Func<TContext, TContext>? contextUpdate = null)
     {
-        if (!_tutorialService.IsTutorialActive)
-        {
-            return;
-        }
-
         _tutorialService.FireTrigger(trigger, contextUpdate);
     }
 
@@ -130,7 +125,14 @@ public partial class TutorialViewModel<TContext, TTrigger, TGroup> : ObservableO
             return;
         }
 
-        _tutorialService.AdvanceStep();
+        if (_tutorialService.IsCurrentStepSkippable)
+        {
+            _tutorialService.SkipStep();
+        }
+        else
+        {
+            _tutorialService.AdvanceStep();
+        }
     }
 
     [RelayCommand]
@@ -149,7 +151,7 @@ public partial class TutorialViewModel<TContext, TTrigger, TGroup> : ObservableO
     [RelayCommand]
     private async Task OnRestartAsync(CancellationToken ct)
     {
-        await _tutorialService.RestartTutorialAsync(ct);
+        await _tutorialService.RestartFromCurrentViewAsync(ct);
     }
 
     [RelayCommand]
@@ -166,6 +168,7 @@ public partial class TutorialViewModel<TContext, TTrigger, TGroup> : ObservableO
             case nameof(ITutorialService<TContext, TTrigger, TGroup>.IsTutorialActive):
             case nameof(ITutorialService<TContext, TTrigger, TGroup>.IsTutorialCompleted):
             case nameof(ITutorialService<TContext, TTrigger, TGroup>.CurrentStepId):
+            case nameof(ITutorialService<TContext, TTrigger, TGroup>.IsCurrentStepSkippable):
                 UpdateFromCurrentStep();
                 break;
         }
@@ -187,8 +190,20 @@ public partial class TutorialViewModel<TContext, TTrigger, TGroup> : ObservableO
         IsVisible = _tutorialService.IsTutorialActive;
         IsTutorialCompleted = _tutorialService.IsTutorialCompleted;
         CurrentStepId = _tutorialService.CurrentStepId;
-        Title = step.Title;
-        Description = step.Description;
+
+        // Use skip content when step is skippable
+        if (_tutorialService.IsCurrentStepSkippable
+            && step.StepInstance is ITutorialStepSkippable<TContext> skippable)
+        {
+            Title = skippable.SkipTitle;
+            Description = skippable.SkipDescription;
+        }
+        else
+        {
+            Title = step.Title;
+            Description = step.Description;
+        }
+
         Targets = step.Targets;
         TooltipPosition = step.Position;
         CanGoBack = _tutorialService.CanGoBack;
@@ -216,6 +231,12 @@ public partial class TutorialViewModel<TContext, TTrigger, TGroup> : ObservableO
             _tutorialService.CurrentStepNumber == _tutorialService.TotalSteps)
         {
             NextButtonText = "Finish";
+            ShowNextButton = true;
+        }
+        else if (_tutorialService.IsCurrentStepSkippable)
+        {
+            // Step can be skipped — show Next even if RequiresUserAction
+            NextButtonText = "Next";
             ShowNextButton = true;
         }
         else if (step.RequiresUserAction)

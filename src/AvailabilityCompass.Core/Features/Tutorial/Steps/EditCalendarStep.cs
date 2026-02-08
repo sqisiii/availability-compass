@@ -12,15 +12,13 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 [AutoAdvanceOn(AppTutorialTrigger.CalendarEditStarted)]
 public class EditCalendarStep : ITutorialStepContent,
     IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
-    ITutorialStepComplete<AvailabilityCompassContext>
+    ITutorialStepSkippable<AvailabilityCompassContext>
 {
     public bool ShouldAutoAdvance(
         AppTutorialTrigger trigger,
         AvailabilityCompassContext? previousContext,
         AvailabilityCompassContext currentContext)
         => trigger == AppTutorialTrigger.CalendarEditStarted && currentContext.IsEditCalendarExpanded;
-
-    public bool IsComplete(AvailabilityCompassContext context) => context.IsEditCalendarExpanded;
 
     public string Title => "Edit Calendar";
 
@@ -29,4 +27,10 @@ public class EditCalendarStep : ITutorialStepContent,
 
                                  You can change the calendar name and toggle whether it only allows defined dates.
                                  """;
+
+    public bool CanSkip(AvailabilityCompassContext context) => true;
+
+    public string SkipTitle => "Edit Calendar";
+
+    public string SkipDescription => "Click 'Edit' to see how calendar editing works, or press 'Next' to skip to adding dates.";
 }

@@ -12,16 +12,13 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 [AutoAdvanceOn(AppTutorialTrigger.CalendarSelected)]
 public class ClickExistingCalendarStep : ITutorialStepContent,
     IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
-    ITutorialStepComplete<AvailabilityCompassContext>
+    ITutorialStepSkippable<AvailabilityCompassContext>
 {
     public bool ShouldAutoAdvance(
         AppTutorialTrigger trigger,
         AvailabilityCompassContext? previousContext,
         AvailabilityCompassContext currentContext)
         => trigger == AppTutorialTrigger.CalendarSelected && currentContext.IsCalendarSelected;
-
-    public bool IsComplete(AvailabilityCompassContext context)
-        => context.IsCalendarSelected;
 
     public string Title => "Select a Calendar";
 
@@ -32,4 +29,10 @@ public class ClickExistingCalendarStep : ITutorialStepContent,
 
                                  The selected calendar's details will appear below.
                                  """;
+
+    public bool CanSkip(AvailabilityCompassContext context) => context.IsCalendarSelected;
+
+    public string SkipTitle => "Select a Calendar";
+
+    public string SkipDescription => "A calendar is already selected. Click 'Next' to continue, or click another calendar to view its details.";
 }

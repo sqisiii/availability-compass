@@ -12,15 +12,13 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
 [AutoAdvanceOn(AppTutorialTrigger.DatesSelected)]
 public class SelectDatesStep : ITutorialStepContent,
     IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
-    ITutorialStepComplete<AvailabilityCompassContext>
+    ITutorialStepSkippable<AvailabilityCompassContext>
 {
     public bool ShouldAutoAdvance(
         AppTutorialTrigger trigger,
         AvailabilityCompassContext? previousContext,
         AvailabilityCompassContext currentContext)
         => trigger == AppTutorialTrigger.DatesSelected && currentContext.HasSelectedDates;
-
-    public bool IsComplete(AvailabilityCompassContext context) => context.HasSelectedDates;
 
     public string Title => "Select Dates";
 
@@ -31,4 +29,11 @@ public class SelectDatesStep : ITutorialStepContent,
 
                                  Selected dates will be highlighted.
                                  """;
+
+    public bool CanSkip(AvailabilityCompassContext context) => context.HasCalendarEntries;
+
+    public string SkipTitle => "Select Dates";
+
+    public string SkipDescription =>
+        "You already have date entries in this calendar. Click 'Next' to continue, or select dates to follow along with the tutorial.";
 }
