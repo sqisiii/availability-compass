@@ -169,6 +169,7 @@ public partial class TutorialViewModel<TContext, TTrigger, TGroup> : ObservableO
             case nameof(ITutorialService<TContext, TTrigger, TGroup>.IsTutorialCompleted):
             case nameof(ITutorialService<TContext, TTrigger, TGroup>.CurrentStepId):
             case nameof(ITutorialService<TContext, TTrigger, TGroup>.IsCurrentStepSkippable):
+            case nameof(ITutorialService<TContext, TTrigger, TGroup>.CanGoBack):
                 UpdateFromCurrentStep();
                 break;
         }

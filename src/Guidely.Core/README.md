@@ -9,7 +9,7 @@ A powerful, framework-agnostic tutorial state machine library for .NET applicati
 - **Auto-Advance Triggers** - Steps automatically advance when users complete actions (button clicks, form submissions, etc.)
 - **Context-Aware** - Track application state with strongly-typed context records for intelligent decision-making
 - **Step Groups** - Organize steps into logical sections (Introduction, Setup, Features, etc.) with ordering support
-- **Back Navigation** - Built-in support for navigating to previous steps
+- **Back Navigation** - Navigate to previous steps within the current group
 - **Skippable Steps** - Steps that require user action can show alternate content and a Next button when their goal is already achieved, with configurable skip targets
 - **Group-to-View Mapping** - Map tutorial groups to application views/pages for intelligent restart-from-current-view behavior
 - **Persistence Ready** - Implement `ITutorialPersistence` to save/restore tutorial progress across sessions
@@ -181,6 +181,16 @@ builder.From(StepIds.Welcome)
 builder.From(StepIds.Setup)
     .SkipTo(StepIds.Features)   // Where Next goes when CanSkip returns true
     .GoTo(StepIds.Features);    // Normal transition after auto-advance
+
+// Explicit back target (overrides history-based back)
+builder.From(StepIds.Summary)
+    .BackTo(StepIds.Overview)
+    .GoTo(StepIds.Complete);
+
+// Disable back navigation for a step
+builder.From(StepIds.Setup)
+    .DisableBack()
+    .GoTo(StepIds.Features);
 ```
 
 ### Auto-Advance Triggers
@@ -244,11 +254,33 @@ builder.From(StepIds.RefreshData)
 ```
 
 When `CanSkip` returns true:
+
 - The step shows `SkipTitle` and `SkipDescription` instead of the normal content
 - The Next button appears even if `RequiresUserAction = true`
 - Clicking Next navigates to the `SkipTo` target
 - Auto-advance still works if the user performs the action
-- Back navigates to the last shown step (via step history)
+- Back navigation skips over steps whose `CanSkip` returns true and stops at group boundaries
+
+### Back Navigation
+
+Back navigation is group-bounded and skip-aware by default:
+
+- The back button is hidden when at the first step of a group (group boundary)
+- Steps whose `CanSkip` returns true are automatically skipped when going back
+
+For custom back behavior, use `BackTo()` and `DisableBack()` in the transition builder:
+
+```csharp
+// Explicit back target — overrides history-based back
+builder.From(StepIds.Summary)
+    .BackTo(StepIds.Overview)
+    .GoTo(StepIds.Complete);
+
+// Disable back navigation entirely for a step
+builder.From(StepIds.Confirmation)
+    .DisableBack()
+    .GoTo(StepIds.Done);
+```
 
 ### Group-to-View Mapping
 
@@ -281,45 +313,45 @@ public enum MyGroup
 
 Main service interface for controlling the tutorial.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `CurrentStepId` | `string` | ID of the current step |
-| `CurrentStep` | `TutorialStepMetadata?` | Metadata for the current step |
-| `CurrentGroup` | `TGroup` | Group of the current step |
-| `IsTutorialActive` | `bool` | Whether tutorial is running |
-| `IsTutorialCompleted` | `bool` | Whether tutorial is finished |
-| `Context` | `TContext` | Current tutorial context |
-| `CurrentStepNumber` | `int` | Current step number (1-based) |
-| `TotalSteps` | `int` | Total number of steps |
-| `CanGoBack` | `bool` | Whether back navigation is available |
-| `IsCurrentStepSkippable` | `bool` | Whether the current step can be skipped |
+| Property                 | Type                    | Description                                                                              |
+| ------------------------ | ----------------------- | ---------------------------------------------------------------------------------------- |
+| `CurrentStepId`          | `string`                | ID of the current step                                                                   |
+| `CurrentStep`            | `TutorialStepMetadata?` | Metadata for the current step                                                            |
+| `CurrentGroup`           | `TGroup`                | Group of the current step                                                                |
+| `IsTutorialActive`       | `bool`                  | Whether tutorial is running                                                              |
+| `IsTutorialCompleted`    | `bool`                  | Whether tutorial is finished                                                             |
+| `Context`                | `TContext`              | Current tutorial context                                                                 |
+| `CurrentStepNumber`      | `int`                   | Current step number (1-based)                                                            |
+| `TotalSteps`             | `int`                   | Total number of steps                                                                    |
+| `CanGoBack`              | `bool`                  | Whether back navigation is available (within current group, considering skippable steps) |
+| `IsCurrentStepSkippable` | `bool`                  | Whether the current step can be skipped                                                  |
 
-| Method | Description |
-|--------|-------------|
-| `InitializeAsync()` | Load persisted state and initialize |
-| `StartTutorial()` | Start or restart the tutorial |
-| `AdvanceStep()` | Move to the next step |
-| `GoBack()` | Go to the previous step |
-| `SkipStep()` | Navigate using the configured skip transition |
-| `SkipTutorial()` | Skip the tutorial entirely |
-| `RestartTutorialAsync()` | Restart from the beginning |
-| `RestartFromCurrentViewAsync()` | Restart from the group matching the current view |
-| `FireTrigger(trigger, contextUpdate?)` | Fire a trigger with optional context update |
-| `UpdateContext(update)` | Update context without firing a trigger |
-| `RestartGroup(group)` | Restart from the beginning of a group |
+| Method                                 | Description                                                    |
+| -------------------------------------- | -------------------------------------------------------------- |
+| `InitializeAsync()`                    | Load persisted state and initialize                            |
+| `StartTutorial()`                      | Start or restart the tutorial                                  |
+| `AdvanceStep()`                        | Move to the next step                                          |
+| `GoBack()`                             | Go to the previous non-skippable step within the current group |
+| `SkipStep()`                           | Navigate using the configured skip transition                  |
+| `SkipTutorial()`                       | Skip the tutorial entirely                                     |
+| `RestartTutorialAsync()`               | Restart from the beginning                                     |
+| `RestartFromCurrentViewAsync()`        | Restart from the group matching the current view               |
+| `FireTrigger(trigger, contextUpdate?)` | Fire a trigger with optional context update                    |
+| `UpdateContext(update)`                | Update context without firing a trigger                        |
+| `RestartGroup(group)`                  | Restart from the beginning of a group                          |
 
 ### Attributes
 
 #### [TutorialStep]
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `Id` | `string` | Required | Unique step identifier |
-| `Group` | `object?` | `null` | Group enum value (e.g., `MyGroup.Introduction`) |
-| `Position` | `TooltipPosition` | `Bottom` | Tooltip position relative to target |
-| `RequiresUserAction` | `bool` | `false` | Hides Next button when true |
-| `ClickThroughMode` | `ClickThroughMode` | `None` | Overlay interaction mode |
-| `Order` | `int` | `0` | Order within group |
+| Property             | Type               | Default  | Description                                     |
+| -------------------- | ------------------ | -------- | ----------------------------------------------- |
+| `Id`                 | `string`           | Required | Unique step identifier                          |
+| `Group`              | `object?`          | `null`   | Group enum value (e.g., `MyGroup.Introduction`) |
+| `Position`           | `TooltipPosition`  | `Bottom` | Tooltip position relative to target             |
+| `RequiresUserAction` | `bool`             | `false`  | Hides Next button when true                     |
+| `ClickThroughMode`   | `ClickThroughMode` | `None`   | Overlay interaction mode                        |
+| `Order`              | `int`              | `0`      | Order within group                              |
 
 #### [TutorialTarget]
 
@@ -424,14 +456,14 @@ services.AddGuidely<MyAppContext, MyTrigger, MyGroup>(builder =>
 
 #### Builder Methods
 
-| Method | Description |
-|--------|-------------|
-| `ScanStepsFromAssembly(assembly)` | Scans an assembly for step classes marked with `[TutorialStep]` |
-| `ConfigureTransitions(action)` | Configures transitions between steps using `TransitionBuilder` |
-| `SetStartStep(stepId)` | Sets the starting step ID |
-| `EnableAutoStart()` | Enables automatic tutorial start on first run (no persisted state) |
-| `UseStepFactory(factory)` | Sets a custom factory for creating step instances |
-| `MapGroupToView(group, condition)` | Maps a group to a view condition for restart-from-current-view |
+| Method                             | Description                                                        |
+| ---------------------------------- | ------------------------------------------------------------------ |
+| `ScanStepsFromAssembly(assembly)`  | Scans an assembly for step classes marked with `[TutorialStep]`    |
+| `ConfigureTransitions(action)`     | Configures transitions between steps using `TransitionBuilder`     |
+| `SetStartStep(stepId)`             | Sets the starting step ID                                          |
+| `EnableAutoStart()`                | Enables automatic tutorial start on first run (no persisted state) |
+| `UseStepFactory(factory)`          | Sets a custom factory for creating step instances                  |
+| `MapGroupToView(group, condition)` | Maps a group to a view condition for restart-from-current-view     |
 
 ### AddGuidelyPersistence&lt;TPersistence&gt;
 

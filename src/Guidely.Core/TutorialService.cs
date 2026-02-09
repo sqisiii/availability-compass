@@ -28,6 +28,7 @@ public partial class TutorialService<TContext, TTrigger, TGroup>
     [NotifyPropertyChangedFor(nameof(CurrentStepNumber))]
     [NotifyPropertyChangedFor(nameof(CurrentGroup))]
     [NotifyPropertyChangedFor(nameof(IsCurrentStepSkippable))]
+    [NotifyPropertyChangedFor(nameof(CanGoBack))]
     private string _currentStepId;
 
     [ObservableProperty]
@@ -68,21 +69,53 @@ public partial class TutorialService<TContext, TTrigger, TGroup>
 
     public int TotalSteps => _configuration.OrderedSteps.Count;
 
-    public bool CanGoBack => _stepHistory.Count > 0;
+    public bool CanGoBack
+    {
+        get
+        {
+            if (CurrentStep == null)
+            {
+                return false;
+            }
+
+            if (_configuration.NoBackSteps.Contains(CurrentStepId))
+            {
+                return false;
+            }
+
+            if (_configuration.BackTransitions.ContainsKey(CurrentStepId))
+            {
+                return true;
+            }
+
+            if (_stepHistory.Count == 0)
+            {
+                return false;
+            }
+
+            var currentGroup = CurrentGroup;
+
+            foreach (var stepId in _stepHistory)
+            {
+                var step = _configuration.Steps.GetValueOrDefault(stepId);
+
+                if (step == null || !EqualityComparer<TGroup>.Default.Equals(step.Group, currentGroup))
+                    return false;
+
+                if (!IsStepSkippable(stepId, step))
+                    return true;
+            }
+
+            return false;
+        }
+    }
 
     public bool IsCurrentStepSkippable
     {
         get
         {
             var step = CurrentStep;
-            if (step == null)
-                return false;
-
-            if (!_configuration.SkipTransitions.ContainsKey(CurrentStepId))
-                return false;
-
-            return step.StepInstance is ITutorialStepSkippable<TContext> skippable
-                   && skippable.CanSkip(Context);
+            return step != null && IsStepSkippable(CurrentStepId, step);
         }
     }
 
@@ -142,20 +175,62 @@ public partial class TutorialService<TContext, TTrigger, TGroup>
         _stepHistory.Push(CurrentStepId);
         CurrentStepId = nextStepId;
 
-        OnPropertyChanged(nameof(CanGoBack));
         OnPropertyChanged(nameof(IsCurrentStepSkippable));
         PersistStateAsync().ConfigureAwait(false);
     }
 
     public void GoBack()
     {
-        if (!IsTutorialActive || _stepHistory.Count == 0)
+        if (!IsTutorialActive)
             return;
 
-        CurrentStepId = _stepHistory.Pop();
+        // Explicit back target — pop history up to target, then navigate
+        if (_configuration.BackTransitions.TryGetValue(CurrentStepId, out var backTarget))
+        {
+            while (_stepHistory.Count > 0 && _stepHistory.Peek() != backTarget)
+                _stepHistory.Pop();
+
+            if (_stepHistory.Count > 0)
+                _stepHistory.Pop();
+
+            CurrentStepId = backTarget;
+            OnPropertyChanged(nameof(IsCurrentStepSkippable));
+            PersistStateAsync().ConfigureAwait(false);
+            return;
+        }
+
+        if (_stepHistory.Count == 0)
+            return;
+
+        var currentGroup = CurrentGroup;
+
+        while (_stepHistory.Count > 0)
+        {
+            var candidateId = _stepHistory.Peek();
+            var candidateStep = _configuration.Steps.GetValueOrDefault(candidateId);
+
+            // Stop at group boundary - don't pop
+            if (candidateStep == null ||
+                !EqualityComparer<TGroup>.Default.Equals(candidateStep.Group, currentGroup))
+            {
+                break;
+            }
+
+            _stepHistory.Pop();
+
+            // Skip steps whose goal is already achieved
+            if (IsStepSkippable(candidateId, candidateStep))
+                continue;
+
+            // Found valid target
+            CurrentStepId = candidateId;
+            OnPropertyChanged(nameof(IsCurrentStepSkippable));
+            PersistStateAsync().ConfigureAwait(false);
+            return;
+        }
+
+        // No valid back target found (all in-group history steps were skippable)
         OnPropertyChanged(nameof(CanGoBack));
-        OnPropertyChanged(nameof(IsCurrentStepSkippable));
-        PersistStateAsync().ConfigureAwait(false);
     }
 
     public void SkipTutorial()
@@ -192,12 +267,15 @@ public partial class TutorialService<TContext, TTrigger, TGroup>
         }
 
         CheckForAutoAdvance(trigger, previousContext, Context);
+        OnPropertyChanged(nameof(IsCurrentStepSkippable));
+        OnPropertyChanged(nameof(CanGoBack));
     }
 
     public void UpdateContext(Func<TContext, TContext> update)
     {
         Context = update(Context);
         OnPropertyChanged(nameof(IsCurrentStepSkippable));
+        OnPropertyChanged(nameof(CanGoBack));
     }
 
     public void RestartGroup(TGroup group)
@@ -220,7 +298,6 @@ public partial class TutorialService<TContext, TTrigger, TGroup>
         _stepHistory.Push(CurrentStepId);
         CurrentStepId = targetStepId;
 
-        OnPropertyChanged(nameof(CanGoBack));
         OnPropertyChanged(nameof(IsCurrentStepSkippable));
         PersistStateAsync().ConfigureAwait(false);
     }
@@ -263,7 +340,6 @@ public partial class TutorialService<TContext, TTrigger, TGroup>
         _stepHistory.Clear();
         CurrentStepId = firstStep.Id;
 
-        OnPropertyChanged(nameof(CanGoBack));
         OnPropertyChanged(nameof(IsCurrentStepSkippable));
         PersistStateAsync().ConfigureAwait(false);
     }
@@ -316,6 +392,17 @@ public partial class TutorialService<TContext, TTrigger, TGroup>
         }
 
         return null;
+    }
+
+    private bool IsStepSkippable(string stepId, TutorialStepMetadata<TTrigger, TGroup> step)
+    {
+        if (!_configuration.SkipTransitions.ContainsKey(stepId))
+        {
+            return false;
+        }
+
+        return step.StepInstance is ITutorialStepSkippable<TContext> skippable
+               && skippable.CanSkip(Context);
     }
 
     private void CompleteTutorial()

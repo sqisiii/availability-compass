@@ -53,21 +53,25 @@ public static class TutorialSetup
             .GoTo(TutorialStepIds.EditCalendarStep);
 
         builder.From(TutorialStepIds.EditCalendarStep)
-            .SkipTo(TutorialStepIds.SelectDatesExplanation)
+            .DisableBack()
+            .SkipTo(TutorialStepIds.DeleteCalendarStep)
             .GoTo(TutorialStepIds.EditCalendarFormStep);
 
         builder.From(TutorialStepIds.EditCalendarFormStep)
             .GoTo(TutorialStepIds.DeleteCalendarStep);
 
         builder.From(TutorialStepIds.DeleteCalendarStep)
+            .DisableBack()
             .SkipTo(TutorialStepIds.SelectDatesExplanation)
             .GoTo(TutorialStepIds.DeleteConfirmationStep);
 
         builder.From(TutorialStepIds.DeleteConfirmationStep)
+            .DisableBack()
             .GoToIf(TutorialStepIds.CalendarsOverview, ctx => !ctx.HasCalendars)
             .GoTo(TutorialStepIds.SelectDatesExplanation);
 
         builder.From(TutorialStepIds.SelectDatesExplanation)
+            .BackTo(TutorialStepIds.CalendarViewOverview)
             .SkipTo(TutorialStepIds.DateEntriesExplanation)
             .GoTo(TutorialStepIds.AddDaysExplanation);
 

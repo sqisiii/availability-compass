@@ -49,9 +49,10 @@ public class ThemeService : IThemeService
     private static void UpdateGlassTheme(bool isDark)
     {
         var resources = WpfApp.Current.Resources;
-        var darkTheme = new Uri("pack://application:,,,/AvailabilityCompass.WpfClient;component/Themes/GlassDarkTheme.xaml",
+        var assemblyName = typeof(ThemeService).Assembly.GetName().Name;
+        var darkTheme = new Uri($"pack://application:,,,/{assemblyName};component/Themes/GlassDarkTheme.xaml",
             UriKind.Absolute);
-        var lightTheme = new Uri("pack://application:,,,/AvailabilityCompass.WpfClient;component/Themes/GlassLightTheme.xaml",
+        var lightTheme = new Uri($"pack://application:,,,/{assemblyName};component/Themes/GlassLightTheme.xaml",
             UriKind.Absolute);
 
         // Find ALL theme dictionaries (match by filename, not full URI)

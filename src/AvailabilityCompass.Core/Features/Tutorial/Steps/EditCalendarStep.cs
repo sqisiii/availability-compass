@@ -32,5 +32,5 @@ public class EditCalendarStep : ITutorialStepContent,
 
     public string SkipTitle => "Edit Calendar";
 
-    public string SkipDescription => "Click 'Edit' to see how calendar editing works, or press 'Next' to skip to adding dates.";
+    public string SkipDescription => "Click 'Edit' to see how calendar editing works, or press 'Next' to continue.";
 }

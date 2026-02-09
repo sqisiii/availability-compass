@@ -120,6 +120,8 @@ public class TutorialConfigBuilder<TContext, TTrigger, TGroup>
             OrderedSteps = orderedSteps,
             Transitions = _transitionBuilder.Build(),
             SkipTransitions = _transitionBuilder.BuildSkipTransitions(),
+            BackTransitions = _transitionBuilder.BuildBackTransitions(),
+            NoBackSteps = _transitionBuilder.BuildNoBackSteps(),
             GroupViewMappings = new Dictionary<TGroup, Func<TContext, bool>>(_groupViewMappings),
             AutoStartOnFirstRun = _autoStartOnFirstRun
         };

@@ -45,6 +45,19 @@ public class TutorialConfiguration<TContext, TTrigger, TGroup>
         = new Dictionary<string, string>();
 
     /// <summary>
+    /// Explicit back transitions mapping step ID to back target step ID.
+    /// Overrides history-based back navigation for the specified steps.
+    /// </summary>
+    public IReadOnlyDictionary<string, string> BackTransitions { get; internal init; }
+        = new Dictionary<string, string>();
+
+    /// <summary>
+    /// Steps with back navigation disabled. The back button will be hidden for these steps.
+    /// </summary>
+    public IReadOnlySet<string> NoBackSteps { get; internal init; }
+        = new HashSet<string>();
+
+    /// <summary>
     /// Maps tutorial groups to view/page conditions for restart-from-current-view behavior.
     /// </summary>
     public IReadOnlyDictionary<TGroup, Func<TContext, bool>> GroupViewMappings { get; internal init; }

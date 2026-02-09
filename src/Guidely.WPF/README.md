@@ -161,7 +161,7 @@ Bind to `TutorialViewModel<TContext, TTrigger, TGroup>` from Guidely.Core. The o
 - `TooltipPosition` - Initial tooltip position relative to target (user can drag to reposition)
 - `ClickThroughMode` - Overlay interaction mode
 - `ShowNextButton` - Whether to show the Next button
-- `CanGoBack` - Whether Back button is available
+- `CanGoBack` - Whether Back button is available (group-bounded, skip-aware)
 - `StepProgress` - Progress text (e.g., "Step 3 of 10")
 - `NextButtonText` - Text for Next button ("Next" or "Finish")
 - Commands: `NextCommand`, `BackCommand`, `SkipCommand`

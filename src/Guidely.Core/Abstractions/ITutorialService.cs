@@ -54,7 +54,7 @@ public interface ITutorialService<TContext, TTrigger, TGroup> : INotifyPropertyC
     int TotalSteps { get; }
 
     /// <summary>
-    /// Whether back navigation is available.
+    /// Whether back navigation is available within the current group, considering skippable steps.
     /// </summary>
     bool CanGoBack { get; }
 
@@ -80,7 +80,9 @@ public interface ITutorialService<TContext, TTrigger, TGroup> : INotifyPropertyC
     void AdvanceStep();
 
     /// <summary>
-    /// Goes back to the previous step.
+    /// Goes back to the previous non-skippable step within the current group.
+    /// Steps whose CanSkip returns true are skipped over.
+    /// Does nothing if at a group boundary or no valid back target exists.
     /// </summary>
     void GoBack();
 
