@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.IO;
 using System.Windows;
+using System.Windows.Threading;
 using AvailabilityCompass.Core.Application.DependencyInjection;
 using AvailabilityCompass.WpfClient.Application.DependencyInjection;
 using AvailabilityCompass.WpfClient.Application.Initialization;
@@ -32,8 +33,10 @@ public partial class App
         CultureInfo.DefaultThreadCurrentCulture = customCulture;
         CultureInfo.DefaultThreadCurrentUICulture = customCulture;
 
-        var serilogOptions = new ConfigurationReaderOptions(typeof(FileLoggerConfigurationExtensions).Assembly, typeof(MapLoggerConfigurationExtensions).Assembly);
+        var serilogOptions = new ConfigurationReaderOptions(typeof(FileLoggerConfigurationExtensions).Assembly,
+            typeof(MapLoggerConfigurationExtensions).Assembly);
         _host = Host.CreateDefaultBuilder()
+            .ConfigureAppConfiguration((_, config) => { config.AddJsonStream(GetEmbeddedAppSettingsStream()); })
             .UseDefaultServiceProvider((_, options) => { options.ValidateScopes = true; })
             .ConfigureServices((context, services) =>
             {
@@ -50,14 +53,11 @@ public partial class App
                     Log.Logger = new LoggerConfiguration()
                         .MinimumLevel.Information()
                         .Enrich.WithThreadId()
-                        .ReadFrom.Configuration(
-                            new ConfigurationBuilder()
-                                .SetBasePath(Directory.GetCurrentDirectory())
-                                .AddJsonFile("appsettings.json")
-                                .Build(), serilogOptions)
+                        .ReadFrom.Configuration(context.Configuration, serilogOptions)
                         .WriteTo.Map("LogName", "WpfApp",
                             (logName, wt) => wt.File($"./Logs/{logName}.log",
-                                outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}:{ThreadId}] {Message} {NewLine}{Exception}"),
+                                outputTemplate:
+                                "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}:{ThreadId}] {Message} {NewLine}{Exception}"),
                             20)
                         .CreateLogger());
             })
