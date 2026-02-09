@@ -12,8 +12,11 @@ public static class TutorialSetup
     /// </summary>
     public static void ConfigureTransitions(TransitionBuilder<AvailabilityCompassContext> builder)
     {
-        // Introduction -> Sources
+        // Introduction flow
         builder.From(TutorialStepIds.Welcome)
+            .GoTo(TutorialStepIds.TutorialUsage);
+
+        builder.From(TutorialStepIds.TutorialUsage)
             .GoToIf(TutorialStepIds.SourcesDialogRefreshButtons, ctx => ctx.CurrentDialog == DialogType.Sources)
             .GoTo(TutorialStepIds.PointToSourcesButton);
 
@@ -87,6 +90,7 @@ public static class TutorialSetup
             .GoTo(TutorialStepIds.ClickDateEntryStep);
 
         builder.From(TutorialStepIds.ClickDateEntryStep)
+            .DisableBack()
             .SkipTo(TutorialStepIds.PointToSearchView)
             .GoTo(TutorialStepIds.EditDateEntryExplanation);
 
@@ -107,6 +111,7 @@ public static class TutorialSetup
             .GoTo(TutorialStepIds.SourcesFilterExplanation);
 
         builder.From(TutorialStepIds.SourcesFilterExplanation)
+            .DisableBack()
             .GoTo(TutorialStepIds.SelectSourceStep);
 
         builder.From(TutorialStepIds.SelectSourceStep)
@@ -116,15 +121,20 @@ public static class TutorialSetup
             .GoTo(TutorialStepIds.FiltersExplanation);
 
         builder.From(TutorialStepIds.FiltersExplanation)
+            .DisableBack()
             .GoTo(TutorialStepIds.FiltersOptionsExplanation);
 
         builder.From(TutorialStepIds.FiltersOptionsExplanation)
             .GoTo(TutorialStepIds.SearchButtonExplanation);
 
         builder.From(TutorialStepIds.SearchButtonExplanation)
-            .GoTo(TutorialStepIds.ResultsExplanation);
+            .GoToIf(TutorialStepIds.ResultsExplanation, ctx => ctx.HasSearchResults)
+            .GoTo(TutorialStepIds.NoResultsExplanation);
 
         builder.From(TutorialStepIds.ResultsExplanation)
+            .GoTo(TutorialStepIds.TutorialComplete);
+
+        builder.From(TutorialStepIds.NoResultsExplanation)
             .GoTo(TutorialStepIds.TutorialComplete);
     }
 }

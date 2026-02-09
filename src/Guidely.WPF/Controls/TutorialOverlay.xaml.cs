@@ -181,7 +181,7 @@ public partial class TutorialOverlay : UserControl
     private void UpdateActionHint()
     {
         var showNextButton = GetProperty<bool>("ShowNextButton");
-        ActionHint.Visibility = showNextButton ? Visibility.Collapsed : Visibility.Visible;
+        ActionHintBanner.Visibility = showNextButton ? Visibility.Collapsed : Visibility.Visible;
     }
 
     private T? GetProperty<T>(string name, T? defaultValue = default)

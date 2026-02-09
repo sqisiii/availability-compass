@@ -15,8 +15,8 @@ public class CalendarTypesStep : ITutorialStepContent
     public string Description => """
                                  Select which calendars to apply when searching:
 
-                                 • Green checkmark calendars = Allowed days (results must fall within these dates)
-                                 • Orange checkmark calendars = Blocked days (results will exclude these dates)
+                                 • Green ✓ icon calendars = Available days (results must fall within these dates)
+                                 • Teal ⊘ icon calendars = Blocked days (results will exclude these dates)
 
                                  If no calendars are selected, all dates are considered available.
                                  """;

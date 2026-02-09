@@ -16,9 +16,7 @@ public class SearchButtonStep : ITutorialStepContent, IConditionalAutoAdvance<Av
         AppTutorialTrigger trigger,
         AvailabilityCompassContext? previousContext,
         AvailabilityCompassContext currentContext)
-        => trigger == AppTutorialTrigger.SearchPerformed &&
-           (previousContext == null || !previousContext.HasSearchResults) &&
-           currentContext.HasSearchResults;
+        => trigger == AppTutorialTrigger.SearchPerformed;
 
     public string Title => "Run Your Search";
 

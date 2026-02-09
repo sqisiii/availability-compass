@@ -13,10 +13,8 @@ public class SourceFilterOptionsStep : ITutorialStepContent
     public string Title => "Source-Specific Filters";
 
     public string Description => """
-                                 Toggle source cards to include or exclude specific trip providers from your search results.
+                                 After selecting sources, additional filter options may appear below each source card.
 
-                                 Disabled sources (those you turned off in source management) appear grayed out.
-
-                                 When you select a source, additional filter options may appear below with source-specific criteria.
+                                 These source-specific filters let you narrow down results based on criteria unique to each trip provider (e.g., destination type, trip category).
                                  """;
 }

@@ -8,6 +8,7 @@ public static class TutorialStepIds
 {
     // Introduction group
     public const string Welcome = nameof(Welcome);
+    public const string TutorialUsage = nameof(TutorialUsage);
 
     // Sources group
     public const string PointToSourcesButton = nameof(PointToSourcesButton);
@@ -43,6 +44,7 @@ public static class TutorialStepIds
     public const string FiltersOptionsExplanation = nameof(FiltersOptionsExplanation);
     public const string SearchButtonExplanation = nameof(SearchButtonExplanation);
     public const string ResultsExplanation = nameof(ResultsExplanation);
+    public const string NoResultsExplanation = nameof(NoResultsExplanation);
 
     // Complete group
     public const string TutorialComplete = nameof(TutorialComplete);

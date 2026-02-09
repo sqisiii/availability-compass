@@ -24,5 +24,7 @@ public class CalendarViewOverviewStep : ITutorialStepContent
                                  • Salmon = Recurring dates
 
                                  Clicking on any colored date will open the editor for that entry.
+
+                                 Click 'Next' to continue.
                                  """;
 }

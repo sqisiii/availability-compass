@@ -20,5 +20,7 @@ public class DateEntriesStep : ITutorialStepContent
                                  • Recurring pattern info (if applicable)
 
                                  Entries can be edited by clicking on them or by clicking colored dates in the calendar widget.
+
+                                 Click 'Next' to continue.
                                  """;
 }
