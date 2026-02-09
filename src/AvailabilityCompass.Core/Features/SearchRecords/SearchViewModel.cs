@@ -58,6 +58,10 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
     [DateValidation]
     private string? _endDate;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowNoResults))]
+    private bool _hasSearched;
+
     private bool _initialDataLoaded;
 
     [ObservableProperty]
@@ -117,7 +121,11 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
         _tutorialViewModel = tutorialViewModel;
         Sources.CollectionChanged += SourcesOnCollectionChanged;
         Calendars.CollectionChanged += CalendarsOnCollectionChanged;
-        Results.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasResults));
+        Results.CollectionChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(HasResults));
+            OnPropertyChanged(nameof(ShowNoResults));
+        };
 
         _calendarAddedSubscription = Observable.Merge(
                 eventBus.Listen<CalendarAddedEvent>().Select(_ => Unit.Default),
@@ -151,6 +159,8 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
     public List<string> SortOptions { get; } = ["Date", "Source", "Title"];
 
     public bool HasResults => Results.Count > 0;
+
+    public bool ShowNoResults => HasSearched && !HasResults;
 
     public string CalendarsSummary => GetCalendarsSummary();
     public string SourcesSummary => GetSourcesSummary();
@@ -194,6 +204,7 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
 
     private async Task OnFilterDataChanged(CancellationToken ct)
     {
+        HasSearched = false;
         Results.Clear();
         await LoadCalendarsAsync(ct);
         await LoadSourcesAsync(ct);
@@ -299,6 +310,7 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
         IsFiltersSectionExpanded = false;
 
         await _searchCommandFactory.Create().ExecuteAsync();
+        HasSearched = true;
 
         _tutorialViewModel?.FireTrigger(
             AppTutorialTrigger.SearchPerformed,

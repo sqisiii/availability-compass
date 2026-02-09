@@ -403,6 +403,22 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
                     </DockPanel>
+
+                    <!-- No Results Section -->
+                    <StackPanel Grid.Row="1"
+                                Visibility="{Binding ShowNoResults, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                guidely:TutorialTarget.Element="NoResultsSection">
+                        <TextBlock Text="No matching results found"
+                                   Style="{StaticResource GlassBody}"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="Try adjusting your filters or calendar settings"
+                                   Style="{StaticResource GlassCaption}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,4,0,0" />
+                    </StackPanel>
                 </Grid>
 
                 <!-- Layer 1: Expanded content overlay (renders on top) -->
