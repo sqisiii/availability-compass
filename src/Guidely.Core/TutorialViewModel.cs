@@ -20,6 +20,9 @@ public partial class TutorialViewModel<TContext, TTrigger, TGroup> : ObservableO
     private readonly ITutorialService<TContext, TTrigger, TGroup> _tutorialService;
 
     [ObservableProperty]
+    private string _actionHintText = "Perform the action to continue";
+
+    [ObservableProperty]
     private bool _canGoBack;
 
     [ObservableProperty]
@@ -208,6 +211,7 @@ public partial class TutorialViewModel<TContext, TTrigger, TGroup> : ObservableO
         Targets = step.Targets;
         TooltipPosition = step.Position;
         CanGoBack = _tutorialService.CanGoBack;
+        ActionHintText = GetActionHintText(step.Position);
 
         // Update progress
         var currentNumber = _tutorialService.CurrentStepNumber;
@@ -221,6 +225,15 @@ public partial class TutorialViewModel<TContext, TTrigger, TGroup> : ObservableO
         // Determine button visibility based on step configuration
         UpdateButtonState(step);
     }
+
+    private static string GetActionHintText(TooltipPosition position) => position switch
+    {
+        TooltipPosition.Top => "Perform the action below to continue",
+        TooltipPosition.Bottom => "Perform the action above to continue",
+        TooltipPosition.Left => "Perform the action to the right to continue",
+        TooltipPosition.Right => "Perform the action to the left to continue",
+        _ => "Perform the highlighted action to continue"
+    };
 
     /// <summary>
     /// Updates button text and visibility based on the current step.
