@@ -21,6 +21,10 @@ public partial class App
 
     public App()
     {
+        DispatcherUnhandledException += OnDispatcherUnhandledException;
+        AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+        TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+
         var customCulture = (CultureInfo)CultureInfo.InvariantCulture.Clone();
         customCulture.DateTimeFormat.ShortDatePattern = "yyyy-MM-dd";
         customCulture.DateTimeFormat.DateSeparator = "-";
@@ -82,5 +86,43 @@ public partial class App
         {
             // ignored
         }
+    }
+
+    private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+    {
+        LogAndShowError(e.Exception);
+        e.Handled = true;
+    }
+
+    private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        if (e.ExceptionObject is Exception ex)
+            LogAndShowError(ex);
+    }
+
+    private void OnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
+    {
+        LogAndShowError(e.Exception);
+        e.SetObserved();
+    }
+
+    private static void LogAndShowError(Exception ex)
+    {
+        Log.Fatal(ex, "Unhandled exception");
+        MessageBox.Show(ex.ToString(), "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
+    }
+
+    private static Stream GetEmbeddedAppSettingsStream()
+    {
+        var resourceStream = typeof(App).Assembly.GetManifestResourceStream("appsettings.json");
+        if (resourceStream is null)
+        {
+            throw new InvalidOperationException("Embedded appsettings.json resource not found.");
+        }
+
+        var memoryStream = new MemoryStream();
+        resourceStream.CopyTo(memoryStream);
+        memoryStream.Position = 0;
+        return memoryStream;
     }
 }
