@@ -11,6 +11,11 @@ public enum AppTutorialTrigger
     DialogChanged,
 
     /// <summary>
+    /// A source refresh was started.
+    /// </summary>
+    SourceRefreshStarted,
+
+    /// <summary>
     /// A source was refreshed.
     /// </summary>
     SourceRefreshed,

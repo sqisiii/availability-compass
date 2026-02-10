@@ -8,7 +8,7 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
     RequiresUserAction = true,
     ClickThroughMode = ClickThroughMode.TargetOnly,
     Order = 2)]
-[TutorialTarget("SourcesHeaderButton")]
+[TutorialTarget("RefreshAllButton")]
 [AutoAdvanceOn(AppTutorialTrigger.SourceRefreshed)]
 public class WaitForRefreshStep : ITutorialStepContent,
     IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
@@ -20,22 +20,19 @@ public class WaitForRefreshStep : ITutorialStepContent,
         AvailabilityCompassContext currentContext)
         => trigger == AppTutorialTrigger.SourceRefreshed && currentContext.HasRefreshedSource;
 
-    public string Title => "Refresh Sources First";
+    public string Title => "Refreshing Sources...";
 
     public string Description => """
-                                 Before setting up calendars, please refresh at least one source to load trip data.
+                                 Your trip data is being downloaded. Please wait for the refresh to complete.
 
-                                 Click the 'Sources' button and use the Refresh buttons to download trip information.
+                                 You can see the progress on each source card.
                                  """;
 
     public bool CanSkip(AvailabilityCompassContext context)
         => context.HasRefreshedSource || context.HasSourcesWithData;
 
-    public string SkipTitle => "Refresh Sources First";
+    public string SkipTitle => "Refreshing Sources...";
 
-    public string SkipDescription => """
-                                     You already have trip data loaded. Click 'Next' to continue to the calendars setup.
-
-                                     Or click the 'Sources' button to refresh your data first.
-                                     """;
+    public string SkipDescription =>
+        "You already have trip data loaded. Click 'Next' to continue to the calendars setup, or wait for the current refresh to finish.";
 }

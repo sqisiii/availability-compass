@@ -25,7 +25,6 @@ public static class TutorialSetup
             .GoTo(TutorialStepIds.SourcesDialogRefreshButtons);
 
         builder.From(TutorialStepIds.SourcesDialogRefreshButtons)
-            .GoToIf(TutorialStepIds.PointToCalendarsButton, ctx => ctx.HasRefreshedSource)
             .SkipTo(TutorialStepIds.PointToCalendarsButton)
             .GoTo(TutorialStepIds.WaitForSourceRefresh);
 

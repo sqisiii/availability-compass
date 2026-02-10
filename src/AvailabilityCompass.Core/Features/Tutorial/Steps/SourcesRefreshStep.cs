@@ -10,7 +10,7 @@ namespace AvailabilityCompass.Core.Features.Tutorial.Steps;
     Order = 1)]
 [TutorialTarget("RefreshAllButton")]
 [TutorialTarget("SourceCardRefreshButton")]
-[AutoAdvanceOn(AppTutorialTrigger.SourceRefreshed)]
+[AutoAdvanceOn(AppTutorialTrigger.SourceRefreshStarted)]
 public class SourcesRefreshStep : ITutorialStepContent,
     IConditionalAutoAdvance<AvailabilityCompassContext, AppTutorialTrigger>,
     ITutorialStepSkippable<AvailabilityCompassContext>
@@ -19,7 +19,7 @@ public class SourcesRefreshStep : ITutorialStepContent,
         AppTutorialTrigger trigger,
         AvailabilityCompassContext? previousContext,
         AvailabilityCompassContext currentContext)
-        => trigger == AppTutorialTrigger.SourceRefreshed && currentContext.HasRefreshedSource;
+        => trigger == AppTutorialTrigger.SourceRefreshStarted;
 
     public string Title => "Refresh Your Trip Data";
 

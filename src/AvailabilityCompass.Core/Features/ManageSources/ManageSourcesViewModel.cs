@@ -82,6 +82,8 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
             return;
         }
 
+        _tutorialViewModel.FireTrigger(AppTutorialTrigger.SourceRefreshStarted);
+
         RefreshSourceCommand.NotifyCanExecuteChanged();
         RefreshAllSourcesCommand.NotifyCanExecuteChanged();
         var sourceService = _sourceServiceFactory.GetService(sourceId);
