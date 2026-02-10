@@ -522,9 +522,10 @@
                                             VerticalAlignment="Center"
                                             Margin="8,0,0,0" />
                                 </StackPanel>
-                                <ItemsControl ItemsSource="{Binding Calendars}"
-                                              guidely:TutorialTarget.Element="CalendarCards"
-                                              Visibility="{Binding CalendarsAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsControl ItemsSource="{Binding Calendars}"
+                                                  guidely:TutorialTarget.Element="CalendarCards"
+                                                  Visibility="{Binding CalendarsAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <WrapPanel Orientation="Horizontal" />
@@ -538,7 +539,7 @@
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
                                                 <ToggleButton Grid.Column="0"
-                                                              MinWidth="180"
+                                                              MinWidth="220"
                                                               Padding="12,0,44,0"
                                                               IsChecked="{Binding IsSelected, Mode=TwoWay}"
                                                               Style="{Binding IsOnly, Converter={StaticResource CalendarTypeToStyleConverter}}">
@@ -598,7 +599,8 @@
                                             </Grid>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
-                                </ItemsControl>
+                                    </ItemsControl>
+                                </ScrollViewer>
                             </StackPanel>
                         </Border>
 
@@ -620,9 +622,10 @@
                                             Margin="8,0,0,0" />
                                 </StackPanel>
                                 <!-- Source cards -->
-                                <ItemsControl ItemsSource="{Binding Sources}"
-                                              guidely:TutorialTarget.Element="SourceCards"
-                                              Visibility="{Binding SourcesAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsControl ItemsSource="{Binding Sources}"
+                                                  guidely:TutorialTarget.Element="SourceCards"
+                                                  Visibility="{Binding SourcesAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <WrapPanel Orientation="Horizontal" />
@@ -654,7 +657,8 @@
                                             </ToggleButton>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
-                                </ItemsControl>
+                                    </ItemsControl>
+                                </ScrollViewer>
                                 <!-- Source filters (separate from cards) -->
                                 <ItemsControl ItemsSource="{Binding Sources}"
                                               Visibility="{Binding SourcesAvailable, Converter={StaticResource BooleanToVisibilityConverter}}"

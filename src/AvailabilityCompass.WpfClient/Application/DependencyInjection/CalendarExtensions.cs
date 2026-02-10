@@ -1,6 +1,5 @@
 ﻿using AvailabilityCompass.Core.Features.ManageCalendars;
 using AvailabilityCompass.Core.Features.ManageCalendars.DatesCalculator;
-using AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;
 using AvailabilityCompass.Core.Features.SearchRecords;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,10 +25,6 @@ public static class CalendarExtensions
 
         services.AddSingleton<ICalendarFilterViewModelFactory, CalendarFilterViewModelFactory>();
         services.AddSingleton<ICalendarViewModelFactory, CalendarViewModelFactory>();
-
-        services.AddAbstractFactory<AddCalendarViewModel>();
-        services.AddAbstractFactory<DeleteCalendarViewModel>();
-        services.AddAbstractFactory<UpdateCalendarViewModel>();
 
         services.AddSingleton<IDateProcessor, DateEntryProcessor>();
         services.AddSingleton<IReservedDatesCalculator, ReservedDatesCalculator>();

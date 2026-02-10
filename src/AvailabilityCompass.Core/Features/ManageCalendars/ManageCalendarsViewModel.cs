@@ -197,7 +197,6 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
         _dialogNavigationService.CloseView();
     }
 
-
     [RelayCommand]
     private Task OnAddCalendarInline() => _calendarCrud.AddCalendarAsync();
 

@@ -17,6 +17,7 @@ public partial class CalendarViewModel : ObservableValidator
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Name is required")]
+    [StringLength(16, ErrorMessage = "Name cannot exceed 16 characters")]
     private string _name = string.Empty;
 
     public string Type => IsOnly ? "Available days" : "Blocked days";
