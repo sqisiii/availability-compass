@@ -5,9 +5,7 @@
     xmlns:views="clr-namespace:AvailabilityCompass.WpfClient.Pages"
     xmlns:vms="clr-namespace:AvailabilityCompass.Core.Features;assembly=AvailabilityCompass.Core"
     xmlns:manageSources="clr-namespace:AvailabilityCompass.Core.Features.ManageSources;assembly=AvailabilityCompass.Core"
-    xmlns:searchRecords="clr-namespace:AvailabilityCompass.Core.Features.SearchRecords;assembly=AvailabilityCompass.Core"
-    xmlns:dialogs="clr-namespace:AvailabilityCompass.Core.Features.ManageCalendars.Dialogs;assembly=AvailabilityCompass.Core"
-    xmlns:dialogsViews="clr-namespace:AvailabilityCompass.WpfClient.Pages.ManageCalendars.Dialogs">
+    xmlns:searchRecords="clr-namespace:AvailabilityCompass.Core.Features.SearchRecords;assembly=AvailabilityCompass.Core">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -26,15 +24,6 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type manageSources:ManageSourcesViewModel}">
                 <views:ManageSourcesView />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type dialogs:AddCalendarViewModel}">
-                <dialogsViews:AddCalendarView />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type dialogs:UpdateCalendarViewModel}">
-                <dialogsViews:UpdateCalendarView />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type dialogs:DeleteCalendarViewModel}">
-                <dialogsViews:DeleteCalendarView />
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
