@@ -46,6 +46,16 @@ public partial class SourceFilterViewModel : ObservableObject, IDisposable
 
     public string IconFileName { get; init; } = string.Empty;
 
+    public bool HasTrips { get; init; }
+
+    public bool IsInteractable => IsActive && HasTrips;
+
+    public string? Tooltip => !IsActive
+        ? "This source is currently unavailable."
+        : !HasTrips
+            ? "No trips available. Refresh this source to load trips."
+            : null;
+
     public string IconPath => string.IsNullOrEmpty(IconFileName) ? string.Empty : $"/Images/Sources/{IconFileName}";
 
     public string LastUpdated => GetRelativeTime(ChangeAt);

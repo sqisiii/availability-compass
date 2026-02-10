@@ -325,16 +325,18 @@
                                         <Border.Style>
                                             <Style TargetType="Border">
                                                 <Setter Property="Background" Value="{DynamicResource GlassCardBrush}" />
-                                                <Setter Property="BorderBrush" Value="{DynamicResource GlassBorderSolidBrush}" />
+                                                <Setter Property="BorderBrush"
+                                                        Value="{DynamicResource GlassBorderSolidBrush}" />
                                                 <Setter Property="BorderThickness" Value="1" />
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
                                                         <Setter Property="Effect">
                                                             <Setter.Value>
-                                                                <DropShadowEffect Color="{DynamicResource GlassPrimaryColor}"
-                                                                                  BlurRadius="14"
-                                                                                  ShadowDepth="0"
-                                                                                  Opacity="0.35" />
+                                                                <DropShadowEffect
+                                                                    Color="{DynamicResource GlassPrimaryColor}"
+                                                                    BlurRadius="14"
+                                                                    ShadowDepth="0"
+                                                                    Opacity="0.35" />
                                                             </Setter.Value>
                                                         </Setter>
                                                     </Trigger>
@@ -465,7 +467,8 @@
                                                             <StackPanel Margin="0,4,0,0">
                                                                 <TextBlock Style="{StaticResource GlassCaption}"
                                                                            TextWrapping="Wrap">
-                                                                    <Run Text="{Binding CalendarName}" FontWeight="Medium" />
+                                                                    <Run Text="{Binding CalendarName}"
+                                                                         FontWeight="Medium" />
                                                                     <Run Text=": " />
                                                                     <Run Text="{Binding ConflictSummary}" />
                                                                 </TextBlock>
@@ -550,7 +553,8 @@
                                                             IconSize="24"
                                                             VerticalAlignment="Center"
                                                             Foreground="{Binding IsOnly, Converter={StaticResource CalendarTypeToColorConverter}}" />
-                                                        <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                                                        <StackPanel Grid.Column="1" Margin="10,0,0,0"
+                                                                    VerticalAlignment="Center">
                                                             <TextBlock Text="{Binding Name}"
                                                                        FontWeight="Medium"
                                                                        FontSize="13"
@@ -570,18 +574,21 @@
                                                               HorizontalAlignment="Right"
                                                               VerticalAlignment="Top"
                                                               ToolTip="Toggle mark-only (no filtering)">
-                                                    <TextBlock FontWeight="Bold" 
-                                                               FontSize="14" 
-                                                               VerticalAlignment="Center" 
+                                                    <TextBlock FontWeight="Bold"
+                                                               FontSize="14"
+                                                               VerticalAlignment="Center"
                                                                HorizontalAlignment="Center">
                                                         <TextBlock.Style>
                                                             <Style TargetType="TextBlock">
                                                                 <Setter Property="Text" Value="F" />
-                                                                <Setter Property="Foreground" Value="{DynamicResource GlassPrimaryBrush}" />
+                                                                <Setter Property="Foreground"
+                                                                        Value="{DynamicResource GlassPrimaryBrush}" />
                                                                 <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding IsMarkOnly}" Value="True">
+                                                                    <DataTrigger Binding="{Binding IsMarkOnly}"
+                                                                            Value="True">
                                                                         <Setter Property="Text" Value="M" />
-                                                                        <Setter Property="Foreground" Value="{DynamicResource GlassWarningBrush}" />
+                                                                        <Setter Property="Foreground"
+                                                                                Value="{DynamicResource GlassWarningBrush}" />
                                                                     </DataTrigger>
                                                                 </Style.Triggers>
                                                             </Style>
@@ -625,7 +632,9 @@
                                         <DataTemplate DataType="{x:Type viewModels:SourceFilterViewModel}">
                                             <ToggleButton Margin="0,0,8,8"
                                                           IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                                          IsEnabled="{Binding IsActive}"
+                                                          IsEnabled="{Binding IsInteractable}"
+                                                          ToolTip="{Binding Tooltip}"
+                                                          ToolTipService.ShowOnDisabled="True"
                                                           Style="{StaticResource GlassFloatingCardSource}">
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
                                                             Margin="12,0">
@@ -684,11 +693,12 @@
                                                                         Style="{StaticResource GlassCheckBox}"
                                                                         ToolTip="{Binding Label}" />
                                                                     <StackPanel Orientation="Horizontal"
-                                                                                Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=MultiSelect}">
-                                                                        <TextBlock Text="{Binding Label, StringFormat='{}{0}:'}"
-                                                                                   Style="{StaticResource GlassCaption}"
-                                                                                   VerticalAlignment="Center"
-                                                                                   Margin="0,0,8,0" />
+                                                                            Visibility="{Binding Type, Converter={StaticResource VisibilityConverter}, ConverterParameter=MultiSelect}">
+                                                                        <TextBlock
+                                                                            Text="{Binding Label, StringFormat='{}{0}:'}"
+                                                                            Style="{StaticResource GlassCaption}"
+                                                                            VerticalAlignment="Center"
+                                                                            Margin="0,0,8,0" />
                                                                         <controls:MultiSelectComboBoxView
                                                                             ItemSource="{Binding Options}"
                                                                             Label="{Binding Label}"

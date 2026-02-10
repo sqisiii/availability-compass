@@ -17,7 +17,8 @@ public class GetSourcesForFilteringResponse
 
     public List<Source> Sources { get; } = [];
 
-    public IReadOnlyDictionary<string, IReadOnlyCollection<string>> AvailableFilters { get; } = new Dictionary<string, IReadOnlyCollection<string>>();
+    public IReadOnlyDictionary<string, IReadOnlyCollection<string>> AvailableFilters { get; } =
+        new Dictionary<string, IReadOnlyCollection<string>>();
 
     /// <summary>
     /// Represents a source with its metadata and filter configuration.
@@ -30,6 +31,7 @@ public class GetSourcesForFilteringResponse
         public string Name { get; init; } = string.Empty;
         public string Language { get; init; } = string.Empty;
         public string IconFileName { get; init; } = string.Empty;
+        public bool HasTrips { get; init; }
 
         public List<SourceFilter> Filters { get; init; } = [];
     }

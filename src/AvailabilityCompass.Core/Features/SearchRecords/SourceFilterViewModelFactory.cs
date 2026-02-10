@@ -27,7 +27,8 @@ public class SourceFilterViewModelFactory : ISourceFilterViewModelFactory
             IsSelected = false,
             ChangeAt = getSourcesResponse.ChangedAt,
             Name = getSourcesResponse.Name,
-            IconFileName = getSourcesResponse.IconFileName
+            IconFileName = getSourcesResponse.IconFileName,
+            HasTrips = getSourcesResponse.HasTrips
         };
     }
 }

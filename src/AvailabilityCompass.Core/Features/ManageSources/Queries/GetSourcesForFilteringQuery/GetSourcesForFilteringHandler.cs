@@ -41,6 +41,7 @@ public class GetSourcesForFilteringHandler : IRequestHandler<
         var sourcesData = _sourceStore.GetSourceMetaData();
         var sourceChangeAtDates = (await GetSourceChangedAtDatesAsync()).ToList();
         var disabledSourceIds = await GetDisabledSourceIdsAsync();
+        var sourceIdsWithTrips = await GetSourceIdsWithTripsAsync();
 
         foreach (var sourceData in sourcesData.OrderBy(i => i.Name))
         {
@@ -76,6 +77,7 @@ public class GetSourcesForFilteringHandler : IRequestHandler<
                 Language = sourceData.Language,
                 IsEnabled = sourceData.IsEnabled,
                 IconFileName = sourceData.IconFileName,
+                HasTrips = sourceIdsWithTrips.Contains(sourceData.Id),
                 Filters = filterOptions.Select(f => new GetSourcesForFilteringResponse.SourceFilter
                     {
                         Label = f.Label,
@@ -138,6 +140,27 @@ public class GetSourcesForFilteringHandler : IRequestHandler<
         catch (Exception e)
         {
             Log.Error(e, "Failed to get disabled sources from the database");
+        }
+
+        return [];
+    }
+
+    private async Task<HashSet<string>> GetSourceIdsWithTripsAsync()
+    {
+        try
+        {
+            using var connection = _dbConnectionFactory.Connect();
+            connection.Open();
+
+            // language=SQLite
+            const string query = "SELECT DISTINCT SourceId FROM SourceAdditionalData;";
+
+            var sourceIds = await connection.QueryAsync<string>(query).ConfigureAwait(false);
+            return sourceIds.ToHashSet();
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Failed to get source IDs with trips from the database");
         }
 
         return [];
