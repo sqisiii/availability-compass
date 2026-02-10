@@ -50,15 +50,17 @@ Configure and refresh data from trip providers.
 
 ## Tutorial
 
-First-time users are automatically greeted with an interactive tutorial that guides them through:
+First-time users are automatically greeted with a comprehensive 34-step interactive tutorial that walks through every feature of the app:
 
-- Creating calendars and configuring date entries
-- Refreshing trip sources to get current offerings
-- Performing searches with multiple filters
-- Understanding the difference between filtering and marking conflict modes
-- Finding and booking trips that match group availability
+- **Creating and managing calendars** to define your availability
+- **Refreshing trip sources** to get current offerings
+- **Filtering and searching** with multiple criteria
+- **Understanding conflict marking** vs filtering modes
+- **Finding and booking trips** that match everyone's schedule
 
-The tutorial can be restarted anytime from the application menu, making it easy to refresh your knowledge or show others how to use the app.
+The tutorial automatically advances as you complete each task and remembers your progress. You can restart it anytime from the application menu—useful for refreshing your knowledge or showing others how to use the app.
+
+For a detailed walkthrough with screenshots of each phase, see the [Interactive Tutorial Guide](src/AvailabilityCompass.Core/Features/Tutorial/README.md).
 
 ## Getting Started
 
