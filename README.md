@@ -12,7 +12,7 @@ Planning a group trip is hard. Coordinating availability across family and frien
 
 ## Features
 
-- **Calendar Management** - Create calendars for each person with "available" or "blocked" date types, supporting both single dates and recurring patterns
+- **Calendar Management** - Create calendars for each person with "available" or "blocked" date types, supporting both single dates and recurring patterns. Calendars can be used for filtering or for marking conflicts on results
 - **Source Integration** - Connect to trip providers via web scraping, APIs, or AI agents with easy extensibility for new sources
 - **Smart Search** - Filter results across multiple sources and calendars with date ranges, search phrases, and source-specific filters
 - **Modern UI** - Glass-style design with light and dark theme support
@@ -45,7 +45,7 @@ Configure and refresh data from trip providers.
 
 2. **Configure Sources** - Go to Sources and refresh data from your preferred trip providers. The app scrapes websites or calls APIs to get current offerings.
 
-3. **Search & Book** - Select calendars and sources, apply filters, and search. Results show trips matching everyone's availability. Click any result to open the booking page.
+3. **Search & Book** - Select calendars and sources, apply filters, and search. Calendars can either filter results or mark conflicts on each result card. Click any result to open the booking page.
 
 ## Getting Started
 

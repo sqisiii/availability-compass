@@ -1,7 +1,6 @@
 using AvailabilityCompass.Core.Features.ManageCalendars.DatesCalculator;
+using AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetCalendarsWithEntries;
 using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetAvailableDates;
-using AvailabilityCompass.Core.Shared.Database;
-using Dapper;
 using MediatR;
 using Serilog;
 
@@ -17,22 +16,22 @@ namespace AvailabilityCompass.Core.Features.ManageCalendars.Queries.GetAvailable
 /// </remarks>
 public class GetAvailableDatesHandler : IRequestHandler<GetAvailableDatesQuery, GetAvailableDatesResponse>
 {
-    private readonly IDbConnectionFactory _dbConnectionFactory;
+    private readonly IMediator _mediator;
     private readonly IReservedDatesCalculator _reservedDatesCalculator;
 
     public GetAvailableDatesHandler(
-        IDbConnectionFactory dbConnectionFactory,
-        IReservedDatesCalculator reservedDatesCalculator)
+        IReservedDatesCalculator reservedDatesCalculator,
+        IMediator mediator)
     {
-        _dbConnectionFactory = dbConnectionFactory;
         _reservedDatesCalculator = reservedDatesCalculator;
+        _mediator = mediator;
     }
 
     public async Task<GetAvailableDatesResponse> Handle(GetAvailableDatesQuery request, CancellationToken cancellationToken)
     {
         try
         {
-            var filteredCalendars = await GetCalendars(request.CalendarIds);
+            var filteredCalendars = await GetCalendars(request.CalendarIds, cancellationToken);
 
             var reservedDates = _reservedDatesCalculator.GetReservedDates(filteredCalendars);
 
@@ -45,46 +44,12 @@ public class GetAvailableDatesHandler : IRequestHandler<GetAvailableDatesQuery, 
         }
     }
 
-    private async Task<List<CalendarDto>> GetCalendars(List<Guid> calendarIds)
+    private async Task<List<CalendarDto>> GetCalendars(List<Guid> calendarIds, CancellationToken cancellationToken)
     {
         try
         {
-            using var connection = _dbConnectionFactory.Connect();
-            connection.Open();
-
-            // language=SQLite
-            const string sql = """
-                                SELECT c.CalendarId, c.Name, c.IsOnly, c.ChangeDate,
-                                    de.Id as DateEntryId, de.CalendarId, de.Description, de.StartDate,
-                                    de.IsRecurring, de.Duration, de.Frequency, de.NumberOfRepetitions, de.ChangeDate
-                                FROM Calendar c
-                                LEFT JOIN DateEntry de ON c.CalendarId = de.CalendarId
-                                WHERE c.CalendarId IN @CalendarIds
-                               """;
-
-            var calendarDict = new Dictionary<Guid, CalendarDto>();
-
-            await connection.QueryAsync<CalendarDto, DateEntryDto?, CalendarDto>(
-                sql,
-                map: (calendar, dateEntry) =>
-                {
-                    if (!calendarDict.TryGetValue(calendar.CalendarId, out var calendarEntry))
-                    {
-                        calendarEntry = calendar;
-                        calendarDict.Add(calendar.CalendarId, calendarEntry);
-                    }
-
-                    if (dateEntry is not null && calendarEntry.DateEntries.All(x => x.DateEntryId != dateEntry.DateEntryId))
-                    {
-                        calendarEntry.DateEntries.Add(dateEntry);
-                    }
-
-                    return calendarEntry;
-                },
-                param: new { CalendarIds = calendarIds },
-                splitOn: "DateEntryId");
-
-            return calendarDict.Values.ToList();
+            var response = await _mediator.Send(new GetCalendarsWithEntriesQuery(calendarIds), cancellationToken);
+            return response.IsSuccess ? response.Calendars : [];
         }
         catch (Exception ex)
         {

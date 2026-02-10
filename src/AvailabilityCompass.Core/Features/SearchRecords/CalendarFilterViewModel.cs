@@ -8,6 +8,11 @@ namespace AvailabilityCompass.Core.Features.SearchRecords;
 public partial class CalendarFilterViewModel : ObservableObject
 {
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsMarkMode))]
+    [NotifyPropertyChangedFor(nameof(IsFilterMode))]
+    private bool _isMarkOnly;
+
+    [ObservableProperty]
     private bool _isOnly;
 
     [ObservableProperty]
@@ -23,5 +28,25 @@ public partial class CalendarFilterViewModel : ObservableObject
 
     public string Type => IsOnly ? "Available days" : "Blocked days";
 
+    public bool IsMarkMode => IsMarkOnly;
+
+    public bool IsFilterMode => !IsMarkOnly;
+
     public Guid Id { get; }
+
+    partial void OnIsMarkOnlyChanged(bool value)
+    {
+        if (value && !IsSelected)
+        {
+            IsSelected = true;
+        }
+    }
+
+    partial void OnIsSelectedChanged(bool value)
+    {
+        if (!value && IsMarkOnly)
+        {
+            IsMarkOnly = false;
+        }
+    }
 }

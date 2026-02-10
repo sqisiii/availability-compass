@@ -18,7 +18,9 @@ public class DictionaryToAdditionalFieldsConverter : IValueConverter
         "Url",
         "StartDate",
         "EndDate",
-        "Destination"
+        "Destination",
+        "CalendarOverlaps",
+        "HasCalendarOverlaps"
     ];
 
     // Priority order for additional fields (lower = higher priority)

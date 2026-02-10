@@ -20,6 +20,11 @@ public class ResultsStep : ITutorialStepContent
                                  • Trip title and details
                                  • Additional information specific to each source
 
+                                 Calendar behavior affects results:
+                                 • Calendars in Filter mode remove trips that fall on their excluded dates
+                                 • Calendars in Mark-only mode do not filter, but add conflict dates to each card
+                                 • Conflict dates show which days overlap the selected calendars
+
                                  Click on any result card to open the trip's page on the source website in your browser. You can also sort results using the dropdown at the top right.
                                  """;
 }

@@ -23,11 +23,52 @@
         <converters:CalendarTypeToIconConverter x:Key="CalendarTypeToIconConverter" />
         <converters:CalendarTypeToStyleConverter x:Key="CalendarTypeToStyleConverter" />
         <converters:CalendarTypeToColorConverter x:Key="CalendarTypeToColorConverter" />
+        <converters:DictionaryToCalendarOverlapsConverter x:Key="CalendarOverlapsConverter" />
         <sharedConverters:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" Invert="True" />
         <converters:ContainerWidthToCardWidthConverter x:Key="CardWidthConverter" CardsPerRow="4" CardMargin="8"
                                                        MinCardWidth="180" />
         <converters:DictionaryToAdditionalFieldsConverter x:Key="AdditionalFieldsConverter" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <SolidColorBrush x:Key="GlassConflictTintBrush"
+                         Color="{DynamicResource GlassDestructiveColor}"
+                         Opacity="0.12" />
+        <Style x:Key="GlassIconToggleButton" TargetType="ToggleButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource GlassForegroundBrush}" />
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="Padding" Value="6" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="PART_Border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{DynamicResource GlassRadius}"
+                                Width="{TemplateBinding Width}"
+                                Height="{TemplateBinding Height}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="PART_Border" Property="Background"
+                                        Value="{DynamicResource GlassMutedBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="PART_Border" Property="Background"
+                                        Value="{DynamicResource GlassInputBorderBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="PART_Border" Property="Opacity" Value="0.5" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <!-- ReSharper disable once Xaml.RedundantResource -->
         <DataTemplate x:Key="UrlCellTemplate">
             <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
@@ -278,20 +319,24 @@
                                         MinHeight="200"
                                         Margin="8"
                                         CornerRadius="12" Padding="12"
-                                        Background="{DynamicResource GlassCardBrush}"
-                                        BorderBrush="{DynamicResource GlassBorderSolidBrush}"
-                                        BorderThickness="1"
                                         Cursor="Hand"
                                         MouseLeftButtonUp="ResultCard_Click"
                                         Tag="{Binding [Url]}">
                                         <Border.Style>
                                             <Style TargetType="Border">
+                                                <Setter Property="Background" Value="{DynamicResource GlassCardBrush}" />
+                                                <Setter Property="BorderBrush" Value="{DynamicResource GlassBorderSolidBrush}" />
+                                                <Setter Property="BorderThickness" Value="1" />
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="BorderBrush"
-                                                                Value="{DynamicResource GlassPrimaryBrush}" />
-                                                        <Setter Property="Background"
-                                                                Value="{DynamicResource GlassPrimaryLightBrush}" />
+                                                        <Setter Property="Effect">
+                                                            <Setter.Value>
+                                                                <DropShadowEffect Color="{DynamicResource GlassPrimaryColor}"
+                                                                                  BlurRadius="14"
+                                                                                  ShadowDepth="0"
+                                                                                  Opacity="0.35" />
+                                                            </Setter.Value>
+                                                        </Setter>
                                                     </Trigger>
                                                     <DataTrigger
                                                         Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
@@ -301,6 +346,14 @@
                                                         <Setter Property="BorderThickness" Value="2" />
                                                         <Setter Property="Background"
                                                                 Value="{DynamicResource GlassPrimaryLightBrush}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding [HasCalendarOverlaps]}"
+                                                                 Value="True">
+                                                        <Setter Property="BorderBrush"
+                                                                Value="{DynamicResource GlassDestructiveBrush}" />
+                                                        <Setter Property="Background"
+                                                                Value="{StaticResource GlassConflictTintBrush}" />
+                                                        <Setter Property="BorderThickness" Value="2" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -312,6 +365,7 @@
                                                 <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="*" />
+                                                <RowDefinition Height="Auto" />
                                             </Grid.RowDefinitions>
 
                                             <!-- Row 0: Source Badge + Language -->
@@ -397,6 +451,30 @@
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
 
+                                            <!-- Row 4: Conflicts -->
+                                            <StackPanel Grid.Row="4"
+                                                        Visibility="{Binding ElementName=ConflictsList, Path=HasItems, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <TextBlock Text="Conflicts"
+                                                           Style="{StaticResource GlassCaption}"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource GlassWarningBrush}" />
+                                                <ItemsControl x:Name="ConflictsList"
+                                                              ItemsSource="{Binding Converter={StaticResource CalendarOverlapsConverter}}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Margin="0,4,0,0">
+                                                                <TextBlock Style="{StaticResource GlassCaption}"
+                                                                           TextWrapping="Wrap">
+                                                                    <Run Text="{Binding CalendarName}" FontWeight="Medium" />
+                                                                    <Run Text=": " />
+                                                                    <Run Text="{Binding ConflictSummary}" />
+                                                                </TextBlock>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -451,26 +529,66 @@
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate DataType="{x:Type viewModels:CalendarFilterViewModel}">
-                                            <ToggleButton Margin="0,0,8,8"
-                                                          IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                                          Style="{Binding IsOnly, Converter={StaticResource CalendarTypeToStyleConverter}}">
-                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
-                                                            Margin="12,0">
-                                                    <sharedControls:FluentIcon
-                                                        Glyph="{Binding IsOnly, Converter={StaticResource CalendarTypeToIconConverter}}"
-                                                        IconSize="24"
-                                                        VerticalAlignment="Center"
-                                                        Foreground="{Binding IsOnly, Converter={StaticResource CalendarTypeToColorConverter}}" />
-                                                    <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
-                                                        <TextBlock Text="{Binding Name}"
-                                                                   FontWeight="Medium"
-                                                                   FontSize="13" />
-                                                        <TextBlock Text="{Binding Type}"
-                                                                   Style="{StaticResource GlassCaption}"
-                                                                   Margin="0,2,0,0" />
-                                                    </StackPanel>
-                                                </StackPanel>
-                                            </ToggleButton>
+                                            <Grid Margin="0,0,8,8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <ToggleButton Grid.Column="0"
+                                                              MinWidth="180"
+                                                              Padding="12,0,44,0"
+                                                              IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                              Style="{Binding IsOnly, Converter={StaticResource CalendarTypeToStyleConverter}}">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <sharedControls:FluentIcon
+                                                            Grid.Column="0"
+                                                            Glyph="{Binding IsOnly, Converter={StaticResource CalendarTypeToIconConverter}}"
+                                                            IconSize="24"
+                                                            VerticalAlignment="Center"
+                                                            Foreground="{Binding IsOnly, Converter={StaticResource CalendarTypeToColorConverter}}" />
+                                                        <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding Name}"
+                                                                       FontWeight="Medium"
+                                                                       FontSize="13"
+                                                                       TextTrimming="CharacterEllipsis" />
+                                                            <TextBlock Text="{Binding Type}"
+                                                                       Style="{StaticResource GlassCaption}"
+                                                                       Margin="0,2,0,0" />
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </ToggleButton>
+                                                <ToggleButton Grid.Column="1"
+                                                              IsChecked="{Binding IsMarkOnly, Mode=TwoWay}"
+                                                              Style="{StaticResource GlassIconToggleButton}"
+                                                              Width="28"
+                                                              Height="28"
+                                                              Margin="-36,6,6,0"
+                                                              HorizontalAlignment="Right"
+                                                              VerticalAlignment="Top"
+                                                              ToolTip="Toggle mark-only (no filtering)">
+                                                    <TextBlock FontWeight="Bold" 
+                                                               FontSize="14" 
+                                                               VerticalAlignment="Center" 
+                                                               HorizontalAlignment="Center">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Text" Value="F" />
+                                                                <Setter Property="Foreground" Value="{DynamicResource GlassPrimaryBrush}" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsMarkOnly}" Value="True">
+                                                                        <Setter Property="Text" Value="M" />
+                                                                        <Setter Property="Foreground" Value="{DynamicResource GlassWarningBrush}" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </ToggleButton>
+                                            </Grid>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
