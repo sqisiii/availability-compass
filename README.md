@@ -16,6 +16,7 @@ Planning a group trip is hard. Coordinating availability across family and frien
 - **Source Integration** - Connect to trip providers via web scraping, APIs, or AI agents with easy extensibility for new sources
 - **Smart Search** - Filter results across multiple sources and calendars with date ranges, search phrases, and source-specific filters
 - **Modern UI** - Glass-style design with light and dark theme support
+- **Interactive Tutorial** - Comprehensive 34-step guided tour for new users learning the application
 
 ## Screenshots
 
@@ -46,6 +47,18 @@ Configure and refresh data from trip providers.
 2. **Configure Sources** - Go to Sources and refresh data from your preferred trip providers. The app scrapes websites or calls APIs to get current offerings.
 
 3. **Search & Book** - Select calendars and sources, apply filters, and search. Calendars can either filter results or mark conflicts on each result card. Click any result to open the booking page.
+
+## Tutorial
+
+First-time users are automatically greeted with an interactive tutorial that guides them through:
+
+- Creating calendars and configuring date entries
+- Refreshing trip sources to get current offerings
+- Performing searches with multiple filters
+- Understanding the difference between filtering and marking conflict modes
+- Finding and booking trips that match group availability
+
+The tutorial can be restarted anytime from the application menu, making it easy to refresh your knowledge or show others how to use the app.
 
 ## Getting Started
 
@@ -85,7 +98,8 @@ This is a WPF application built with **Vertical Slice Architecture** and the **M
 - System.Reactive (Rx.NET)
 - SQLite with Dapper
 - HtmlAgilityPack (web scraping)
-- Material Design In XAML Toolkit
+- Custom "Glass" Design System (glassmorphic UI with theming)
+- Guidely Tutorial Framework (interactive tutorial library)
 - Serilog (structured logging)
 
 ## Extending the Application
