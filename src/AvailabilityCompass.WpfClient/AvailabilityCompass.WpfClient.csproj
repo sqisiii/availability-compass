@@ -54,7 +54,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\AvailabilityCompass.Core\AvailabilityCompass.Core.csproj" />
-        <ProjectReference Include="..\Guidely.WPF\Guidely.WPF.csproj" />
+        <PackageReference Include="Guidely.WPF" Version="1.0.0" />
     </ItemGroup>
 
     <ItemGroup>

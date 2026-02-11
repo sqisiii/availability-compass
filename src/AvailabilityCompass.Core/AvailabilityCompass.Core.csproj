@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Guidely.Core\Guidely.Core.csproj" />
+        <PackageReference Include="Guidely.Core" Version="1.0.0" />
     </ItemGroup>
 
 </Project>
