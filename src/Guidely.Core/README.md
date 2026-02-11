@@ -13,8 +13,8 @@ A powerful, framework-agnostic tutorial state machine library for .NET applicati
 - **Skippable Steps** - Steps that require user action can show alternate content and a Next button when their goal is already achieved, with configurable skip targets
 - **Group-to-View Mapping** - Map tutorial groups to application views/pages for intelligent restart-from-current-view behavior
 - **Persistence Ready** - Implement `ITutorialPersistence` to save/restore tutorial progress across sessions
-- **Framework Agnostic** - Core logic works with any .NET UI framework (WPF, MAUI, Avalonia, Blazor)
-- **Dependency Injection** - First-class support for Microsoft.Extensions.DependencyInjection
+- **Framework Agnostic** - Core logic works with any .NET UI framework (WPF, more coming soon)
+- **Dependency Injection** - Support for Microsoft.Extensions.DependencyInjection
 - **Auto-Start on First Run** - Optionally start the tutorial automatically when no persisted state exists
 
 ## Use Cases
@@ -30,6 +30,32 @@ A powerful, framework-agnostic tutorial state machine library for .NET applicati
 <PackageReference Include="Guidely.Core" Version="1.0.0" />
 ```
 
+Or via .NET CLI:
+
+```bash
+dotnet add package Guidely.Core
+```
+
+## Requirements
+
+### Framework Requirements
+
+- **.NET 10.0** or later
+
+### NuGet Dependencies
+
+Guidely.Core has the following dependencies (automatically installed with the package):
+
+- **CommunityToolkit.Mvvm** (8.0+) - MVVM infrastructure for ViewModels and reactive properties
+- **Microsoft.Extensions.DependencyInjection.Abstractions** (8.0+) - Dependency injection support
+
+### UI Framework Integration
+
+Guidely.Core is framework-agnostic and provides only the core tutorial state machine. To display tutorials in your application, you'll need a framework-specific UI package:
+
+- **WPF**: Install `Guidely.WPF` for overlay controls and tutorial UI
+- **MAUI/Avalonia**: Coming soon
+
 ## Quick Start
 
 ### 1. Define Your Context
@@ -40,7 +66,9 @@ Create a record inheriting from `TutorialContextBase` to track application state
 public record MyAppContext : TutorialContextBase
 {
     public bool HasCompletedSetup { get; init; }
+    public bool HasData { get; init; }
     public bool IsFeatureEnabled { get; init; }
+    public string CurrentPage { get; init; } = string.Empty;
 }
 ```
 
@@ -50,6 +78,7 @@ public record MyAppContext : TutorialContextBase
 public enum MyTrigger
 {
     SetupCompleted,
+    DataLoaded,
     FeatureEnabled
 }
 
@@ -62,7 +91,24 @@ public enum MyGroup
 }
 ```
 
-### 3. Create Tutorial Steps
+### 3. Define Step IDs
+
+Use static string constants for compile-time validation:
+
+```csharp
+public static class StepIds
+{
+    public const string Welcome = nameof(Welcome);
+    public const string Setup = nameof(Setup);
+    public const string LoadData = nameof(LoadData);
+    public const string Features = nameof(Features);
+    public const string Complete = nameof(Complete);
+}
+```
+
+### 4. Create Tutorial Steps
+
+**Basic step:**
 
 ```csharp
 [TutorialStep(StepIds.Welcome,
@@ -76,27 +122,83 @@ public class WelcomeStep : ITutorialStepContent
 }
 ```
 
-### 4. Configure Transitions
+**Step with user action and auto-advance:**
+
+```csharp
+[TutorialStep(StepIds.Setup,
+    Group = MyGroup.Setup,
+    Position = TooltipPosition.Right,
+    RequiresUserAction = true,
+    ClickThroughMode = ClickThroughMode.TargetOnly,
+    Order = 0)]
+[TutorialTarget("SetupButton")]
+[AutoAdvanceOn(MyTrigger.SetupCompleted)]
+public class SetupStep : ITutorialStepContent
+{
+    public string Title => "Complete Setup";
+    public string Description => "Click the Setup button to configure your account.";
+}
+```
+
+**Skippable step:**
+
+```csharp
+[TutorialStep(StepIds.LoadData,
+    Group = MyGroup.Setup,
+    RequiresUserAction = true,
+    ClickThroughMode = ClickThroughMode.TargetOnly,
+    Order = 1)]
+[TutorialTarget("LoadButton")]
+[AutoAdvanceOn(MyTrigger.DataLoaded)]
+public class LoadDataStep : ITutorialStepContent, ITutorialStepSkippable<MyAppContext>
+{
+    public string Title => "Load Data";
+    public string Description => "Click Load to fetch your data.";
+
+    // Skip if data already exists
+    public bool CanSkip(MyAppContext context) => context.HasData;
+    public string SkipTitle => "Data Already Loaded";
+    public string SkipDescription => "You already have data. Click Next to continue.";
+}
+```
+
+### 5. Configure Transitions
+
+Create a static class with transition configuration:
 
 ```csharp
 public static class TutorialSetup
 {
     public static void ConfigureTransitions(TransitionBuilder<MyAppContext> builder)
     {
+        // Conditional transition
         builder.From(StepIds.Welcome)
             .GoToIf(StepIds.Features, ctx => ctx.HasCompletedSetup)
             .GoTo(StepIds.Setup);
 
+        // Simple transition
         builder.From(StepIds.Setup)
-            .GoTo(StepIds.Features);
+            .GoTo(StepIds.LoadData);
 
+        // Skip transition for skippable step
+        builder.From(StepIds.LoadData)
+            .SkipTo(StepIds.Features)      // Where Next goes when CanSkip returns true
+            .GoTo(StepIds.Features);       // Normal transition after auto-advance
+
+        // Custom back target
         builder.From(StepIds.Features)
+            .BackTo(StepIds.Welcome)       // Override default back navigation
             .GoTo(StepIds.Complete);
+
+        // Disable back navigation
+        builder.From(StepIds.Complete)
+            .DisableBack()
+            .GoTo(StepIds.Complete);       // Stay on last step
     }
 }
 ```
 
-### 5. Register Services
+### 6. Register Services
 
 ```csharp
 services.AddGuidely<MyAppContext, MyTrigger, MyGroup>(builder =>
@@ -105,7 +207,41 @@ services.AddGuidely<MyAppContext, MyTrigger, MyGroup>(builder =>
     builder.ConfigureTransitions(TutorialSetup.ConfigureTransitions);
     builder.SetStartStep(StepIds.Welcome);
     builder.EnableAutoStart(); // Optional: auto-start tutorial on first run
+
+    // Map groups to views for restart-from-current-view
+    builder.MapGroupToView(MyGroup.Setup, ctx => ctx.CurrentPage == "Setup");
+    builder.MapGroupToView(MyGroup.Features, ctx => ctx.CurrentPage == "Features");
 });
+```
+
+### 7. Initialize and Update Context
+
+Initialize the tutorial service on application startup:
+
+```csharp
+// In your application startup (e.g., MainViewModel, App.xaml.cs)
+await tutorialService.InitializeAsync();
+
+// Set initial context based on current app state
+tutorialService.UpdateContext(ctx => ctx with
+{
+    HasCompletedSetup = true,
+    CurrentPage = "Dashboard"
+});
+```
+
+Update context as the application state changes:
+
+```csharp
+// Update context when app state changes
+tutorialService.UpdateContext(ctx => ctx with
+{
+    HasData = true
+});
+
+// Or combine with trigger firing for auto-advance
+tutorialService.FireTrigger(MyTrigger.SetupCompleted,
+    ctx => ctx with { HasCompletedSetup = true });
 ```
 
 ## Core Concepts
@@ -314,7 +450,7 @@ public enum MyGroup
 Main service interface for controlling the tutorial.
 
 | Property                 | Type                    | Description                                                                              |
-| ------------------------ | ----------------------- | ---------------------------------------------------------------------------------------- |
+|--------------------------|-------------------------|------------------------------------------------------------------------------------------|
 | `CurrentStepId`          | `string`                | ID of the current step                                                                   |
 | `CurrentStep`            | `TutorialStepMetadata?` | Metadata for the current step                                                            |
 | `CurrentGroup`           | `TGroup`                | Group of the current step                                                                |
@@ -327,7 +463,7 @@ Main service interface for controlling the tutorial.
 | `IsCurrentStepSkippable` | `bool`                  | Whether the current step can be skipped                                                  |
 
 | Method                                 | Description                                                    |
-| -------------------------------------- | -------------------------------------------------------------- |
+|----------------------------------------|----------------------------------------------------------------|
 | `InitializeAsync()`                    | Load persisted state and initialize                            |
 | `StartTutorial()`                      | Start or restart the tutorial                                  |
 | `AdvanceStep()`                        | Move to the next step                                          |
@@ -345,7 +481,7 @@ Main service interface for controlling the tutorial.
 #### [TutorialStep]
 
 | Property             | Type               | Default  | Description                                     |
-| -------------------- | ------------------ | -------- | ----------------------------------------------- |
+|----------------------|--------------------|----------|-------------------------------------------------|
 | `Id`                 | `string`           | Required | Unique step identifier                          |
 | `Group`              | `object?`          | `null`   | Group enum value (e.g., `MyGroup.Introduction`) |
 | `Position`           | `TooltipPosition`  | `Bottom` | Tooltip position relative to target             |
@@ -363,6 +499,8 @@ Specifies which UI element(s) to highlight. Can be applied multiple times for di
 ```
 
 **Multiple Elements with Same Target Name**: When multiple UI elements share the same target name (e.g., buttons in an ItemsControl/ListView template), all matching elements will be highlighted simultaneously. This is useful for highlighting all instances of a repeated element.
+
+WPF example:
 
 ```xml
 <!-- All Refresh buttons in the list will be highlighted -->
@@ -457,7 +595,7 @@ services.AddGuidely<MyAppContext, MyTrigger, MyGroup>(builder =>
 #### Builder Methods
 
 | Method                             | Description                                                        |
-| ---------------------------------- | ------------------------------------------------------------------ |
+|------------------------------------|--------------------------------------------------------------------|
 | `ScanStepsFromAssembly(assembly)`  | Scans an assembly for step classes marked with `[TutorialStep]`    |
 | `ConfigureTransitions(action)`     | Configures transitions between steps using `TransitionBuilder`     |
 | `SetStartStep(stepId)`             | Sets the starting step ID                                          |
