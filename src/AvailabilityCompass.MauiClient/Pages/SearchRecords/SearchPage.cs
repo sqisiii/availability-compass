@@ -85,8 +85,6 @@ public class SearchPage : ContentPage
         return header;
     }
 
-    #region Filter Area
-
     private View BuildFilterArea()
     {
         return new VerticalStackLayout
@@ -412,10 +410,6 @@ public class SearchPage : ContentPage
             .Bind(Button.CommandProperty, nameof(SearchViewModel.SearchCommand));
     }
 
-    #endregion
-
-    #region Results Area
-
     private View BuildResultsArea()
     {
         return new Grid
@@ -655,6 +649,4 @@ public class SearchPage : ContentPage
             .Bind(IsVisibleProperty, nameof(SearchViewModel.HasSearched),
                 converter: _inverseBool);
     }
-
-    #endregion
 }
