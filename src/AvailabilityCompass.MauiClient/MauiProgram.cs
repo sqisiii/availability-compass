@@ -56,7 +56,8 @@ public static class MauiProgram
         builder.Services.AddSearch();
         builder.Services.AddSource();
 
-        // Register bootstrapper
+        // Register pages and bootstrapper
+        builder.Services.AddPages();
         builder.Services.AddSingleton<MauiBootstrapper>();
 
 #if DEBUG
