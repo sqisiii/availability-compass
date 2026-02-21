@@ -1,5 +1,5 @@
 ﻿using System.Data;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 
 namespace AvailabilityCompass.Core.Shared.Database;
 
@@ -25,6 +25,6 @@ public class SqliteDbConnectionFactory : IDbConnectionFactory
     /// <returns>An instance of <see cref="IDbConnection"/> representing the SQLite database connection.</returns>
     public IDbConnection Connect()
     {
-        return new SQLiteConnection(_connectionString);
+        return new SqliteConnection(_connectionString);
     }
 }
