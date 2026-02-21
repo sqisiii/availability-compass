@@ -13,7 +13,6 @@ public class AppShell : Shell
         tabBar.Items.Add(new ShellContent
         {
             Title = "Search",
-            Icon = "search.png",
             ContentTemplate = new DataTemplate(typeof(SearchPage)),
             Route = "search"
         });
