@@ -1,6 +1,7 @@
 using AvailabilityCompass.Core.Features.ManageSources;
 using AvailabilityCompass.MauiClient.Shared.Converters;
 using CommunityToolkit.Maui.Markup;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Controls.Shapes;
 
 namespace AvailabilityCompass.MauiClient.Pages.ManageSources;
@@ -8,6 +9,9 @@ namespace AvailabilityCompass.MauiClient.Pages.ManageSources;
 public class ManageSourcesPage : ContentPage
 {
     private readonly ManageSourcesViewModel _vm;
+#if WINDOWS
+    private Microsoft.UI.Xaml.FrameworkElement? _windowContent;
+#endif
 
     public ManageSourcesPage(ManageSourcesViewModel vm)
     {
@@ -15,8 +19,13 @@ public class ManageSourcesPage : ContentPage
         BindingContext = vm;
         Title = "Manage Sources";
 
-        Shell.SetPresentationMode(this, PresentationMode.ModalAnimated);
-
+        ToolbarItems.Add(new ToolbarItem
+        {
+            Text = "← Back",
+            Order = ToolbarItemOrder.Primary,
+            Priority = 0,
+            Command = new AsyncRelayCommand(() => Shell.Current.GoToAsync(".."))
+        });
         ToolbarItems.Add(new ToolbarItem
         {
             Text = "Refresh All",
@@ -41,7 +50,36 @@ public class ManageSourcesPage : ContentPage
     {
         base.OnNavigatedTo(args);
         _ = _vm.LoadDataAsync(CancellationToken.None);
+#if WINDOWS
+        var nativeWindow = Window?.Handler?.PlatformView as Microsoft.UI.Xaml.Window;
+        _windowContent = nativeWindow?.Content as Microsoft.UI.Xaml.FrameworkElement;
+        if (_windowContent != null)
+            _windowContent.KeyDown += OnWindowKeyDown;
+#endif
     }
+
+    protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
+    {
+        base.OnNavigatedFrom(args);
+#if WINDOWS
+        if (_windowContent != null)
+        {
+            _windowContent.KeyDown -= OnWindowKeyDown;
+            _windowContent = null;
+        }
+#endif
+    }
+
+#if WINDOWS
+    private void OnWindowKeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+    {
+        if (e.Key == Windows.System.VirtualKey.Escape)
+        {
+            e.Handled = true;
+            _ = Shell.Current.GoToAsync("..");
+        }
+    }
+#endif
 
     private View BuildSourceCard()
     {

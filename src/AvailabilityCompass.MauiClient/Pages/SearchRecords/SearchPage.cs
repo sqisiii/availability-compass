@@ -2,6 +2,7 @@ using AvailabilityCompass.Core.Features.SearchRecords;
 using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 using AvailabilityCompass.MauiClient.Shared.Converters;
 using CommunityToolkit.Maui.Markup;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Layouts;
 
@@ -17,6 +18,17 @@ public class SearchPage : ContentPage
         _vm = vm;
         BindingContext = vm;
         Title = "Availability Compass";
+
+        ToolbarItems.Add(new ToolbarItem
+        {
+            Text = "Sources",
+            Command = new AsyncRelayCommand(() => Shell.Current.GoToAsync("manage-sources"))
+        });
+        ToolbarItems.Add(new ToolbarItem
+        {
+            Text = "Calendars",
+            Command = new AsyncRelayCommand(() => Shell.Current.GoToAsync("manage-calendars"))
+        });
 
         Content = new Grid
         {
