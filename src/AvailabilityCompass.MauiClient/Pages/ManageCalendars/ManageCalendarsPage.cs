@@ -1,7 +1,6 @@
 using AvailabilityCompass.Core.Features.ManageCalendars;
 using AvailabilityCompass.MauiClient.Controls.Calendar;
 using CommunityToolkit.Maui.Markup;
-using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Controls.Shapes;
 
 namespace AvailabilityCompass.MauiClient.Pages.ManageCalendars;
@@ -23,12 +22,10 @@ public class ManageCalendarsPage : ContentPage
         BindingContext = vm;
         Title = "Manage Calendars";
 
-        ToolbarItems.Add(new ToolbarItem
+        Shell.SetBackButtonBehavior(this, new BackButtonBehavior
         {
-            Text = "← Back",
-            Order = ToolbarItemOrder.Primary,
-            Priority = 0,
-            Command = new AsyncRelayCommand(() => Shell.Current.GoToAsync(".."))
+            IsVisible = true,
+            IsEnabled = true
         });
 
         Content = new Grid

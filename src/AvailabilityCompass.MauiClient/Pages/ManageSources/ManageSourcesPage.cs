@@ -1,7 +1,6 @@
 using AvailabilityCompass.Core.Features.ManageSources;
 using AvailabilityCompass.MauiClient.Shared.Converters;
 using CommunityToolkit.Maui.Markup;
-using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Controls.Shapes;
 
 namespace AvailabilityCompass.MauiClient.Pages.ManageSources;
@@ -19,13 +18,12 @@ public class ManageSourcesPage : ContentPage
         BindingContext = vm;
         Title = "Manage Sources";
 
-        ToolbarItems.Add(new ToolbarItem
+        Shell.SetBackButtonBehavior(this, new BackButtonBehavior
         {
-            Text = "← Back",
-            Order = ToolbarItemOrder.Primary,
-            Priority = 0,
-            Command = new AsyncRelayCommand(() => Shell.Current.GoToAsync(".."))
+            IsVisible = true,
+            IsEnabled = true
         });
+
         ToolbarItems.Add(new ToolbarItem
         {
             Text = "Refresh All",
