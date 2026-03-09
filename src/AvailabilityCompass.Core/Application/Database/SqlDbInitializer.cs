@@ -1,4 +1,4 @@
-﻿using AvailabilityCompass.Core.Shared.Database;
+using AvailabilityCompass.Core.Shared.Database;
 using Dapper;
 
 namespace AvailabilityCompass.Core.Application.Database;
@@ -20,8 +20,12 @@ public class SqlDbInitializer : IDbInitializer
     {
         //Sqlite doesn't have a DateTime type, so we need to register a custom type handler for DateOnly
         SqlMapper.AddTypeHandler(new SqliteDateOnlyTypeHandler());
-        //Guid is stored as Blob(16) so a custom type handler is needed
+
+        // Guid is stored as BLOB(16), so override Dapper's built-in Guid type map.
+        SqlMapper.RemoveTypeMap(typeof(Guid));
+        SqlMapper.RemoveTypeMap(typeof(Guid?));
         SqlMapper.AddTypeHandler(new SqliteGuidTypeHandler());
+
         await PrepareSourceTablesAsync();
         await PrepareCalendarTablesAsync();
         await PrepareSettingsTableAsync();
