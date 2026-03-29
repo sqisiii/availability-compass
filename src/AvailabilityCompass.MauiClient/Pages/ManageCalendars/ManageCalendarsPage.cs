@@ -11,6 +11,7 @@ public class ManageCalendarsPage : ContentPage
     private static readonly Color RecurringDateColor = Color.FromArgb("#E9967A");
 
     private readonly ManageCalendarsViewModel _vm;
+    private readonly Timer _reservedDatesDebouncer;
     private CalendarView? _calendarView;
 #if WINDOWS
     private Microsoft.UI.Xaml.FrameworkElement? _windowContent;
@@ -38,7 +39,14 @@ public class ManageCalendarsPage : ContentPage
             }
         };
 
-        vm.ReservedDates.CollectionChanged += (_, _) => UpdateCalendarDecorations();
+        // Debounce: CalculateReservedDays() fires Clear + N x Add, each raising
+        // CollectionChanged. Only react once after the batch settles.
+        _reservedDatesDebouncer = new Timer(_ => Dispatcher.Dispatch(() =>
+        {
+            UpdateCalendarDecorations();
+            _calendarView?.ClearSelection();
+        }));
+        vm.ReservedDates.CollectionChanged += OnReservedDatesChanged;
     }
 
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
@@ -56,6 +64,8 @@ public class ManageCalendarsPage : ContentPage
     protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
     {
         base.OnNavigatedFrom(args);
+        _vm.ReservedDates.CollectionChanged -= OnReservedDatesChanged;
+        _reservedDatesDebouncer.Dispose();
 #if WINDOWS
         if (_windowContent != null)
         {
@@ -75,6 +85,9 @@ public class ManageCalendarsPage : ContentPage
         }
     }
 #endif
+
+    private void OnReservedDatesChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) =>
+        _reservedDatesDebouncer.Change(50, Timeout.Infinite);
 
     private void UpdateCalendarDecorations()
     {
