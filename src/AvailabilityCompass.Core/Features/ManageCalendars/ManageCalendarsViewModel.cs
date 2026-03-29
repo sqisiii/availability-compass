@@ -59,7 +59,7 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
     private CalendarViewModel? _selectedCalendar;
 
     [ObservableProperty]
-    private IList? _selectedDates;
+    private IList? _selectedDates = new List<DateTime>();
 
     public ManageCalendarsViewModel(
         IMediator mediator,
@@ -373,7 +373,7 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
                 else
                 {
                     // Compute HasCalendars based on whether deletion happened
-                    // Calendars collection not yet updated, so check count - 1 if deleted
+                    // a Calendars collection not yet updated, so check count - 1 if deleted
                     var wasDeleted = _calendarCrud.WasCalendarDeleted;
                     var hasCalendarsAfter = wasDeleted ? Calendars.Count > 1 : Calendars.Count > 0;
 
@@ -395,29 +395,30 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
         // Forward property change notifications to maintain XAML bindings
         OnPropertyChanged(e.PropertyName);
 
-        // Re-evaluate save command when validation state changes
-        if (e.PropertyName == nameof(IDateEntryEditorController.HasErrors))
+        switch (e.PropertyName)
         {
-            SaveEntryCommand.NotifyCanExecuteChanged();
-        }
+            // Re-evaluate the save command when the validation state changes
+            case nameof(IDateEntryEditorController.HasErrors):
+                SaveEntryCommand.NotifyCanExecuteChanged();
+                break;
+            // Fire tutorial trigger when the editor opens or closes
+            case nameof(IDateEntryEditorController.IsEditorOpen) when IsEditorOpen:
+                _tutorialViewModel.FireTrigger(
+                    AppTutorialTrigger.EditorOpened,
+                    ctx => ctx with { IsEditorOpen = true });
+                break;
+            case nameof(IDateEntryEditorController.IsEditorOpen) when !IsEditorOpen:
+            {
+                // Compute HasCalendarEntries based on whether deletion happened
+                // DateEntries collection not yet updated, so check count - 1 if deleted
+                var wasDeleted = _dateEntryEditor.WasEntryDeleted;
+                var hasEntriesAfter = wasDeleted ? DateEntries.Count > 1 : DateEntries.Count > 0;
 
-        // Fire tutorial trigger when editor opens or closes
-        if (e.PropertyName == nameof(IDateEntryEditorController.IsEditorOpen) && IsEditorOpen)
-        {
-            _tutorialViewModel.FireTrigger(
-                AppTutorialTrigger.EditorOpened,
-                ctx => ctx with { IsEditorOpen = true });
-        }
-        else if (e.PropertyName == nameof(IDateEntryEditorController.IsEditorOpen) && !IsEditorOpen)
-        {
-            // Compute HasCalendarEntries based on whether deletion happened
-            // DateEntries collection not yet updated, so check count - 1 if deleted
-            var wasDeleted = _dateEntryEditor.WasEntryDeleted;
-            var hasEntriesAfter = wasDeleted ? DateEntries.Count > 1 : DateEntries.Count > 0;
-
-            _tutorialViewModel.FireTrigger(
-                AppTutorialTrigger.EditorClosed,
-                ctx => ctx with { IsEditorOpen = false, HasCalendarEntries = hasEntriesAfter });
+                _tutorialViewModel.FireTrigger(
+                    AppTutorialTrigger.EditorClosed,
+                    ctx => ctx with { IsEditorOpen = false, HasCalendarEntries = hasEntriesAfter });
+                break;
+            }
         }
     }
 
