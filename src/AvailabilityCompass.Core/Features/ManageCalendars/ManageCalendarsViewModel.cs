@@ -442,26 +442,38 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
 
     private void SubscribeToEvents(IEventBus eventBus)
     {
+        // MediatR handlers use ConfigureAwait(false), so EventBus.Publish runs on a
+        // thread-pool thread. WPF's ItemsControl auto-marshals CollectionChanged to
+        // the UI thread, but MAUI's BindableLayout does not — ObserveOn ensures the
+        // handlers that modify ObservableCollections always run on the UI thread.
+        var syncContext = SynchronizationContext.Current!;
+
         _addCalendarFormExpandedSubscription = eventBus.Listen<AddCalendarFormExpandedEvent>()
             .Subscribe(_ => _tutorialViewModel.FireTrigger(
                 AppTutorialTrigger.CalendarFormExpanded,
                 ctx => ctx with { IsAddCalendarExpanded = true }));
         _calendarAddedSubscription = eventBus.Listen<CalendarAddedEvent>()
+            .ObserveOn(syncContext)
             .SelectMany(evt => Observable.FromAsync(ct => OnCalendarAdded(evt, ct)))
             .Subscribe();
         _calendarDeletedSubscription = eventBus.Listen<CalendarDeletedEvent>()
+            .ObserveOn(syncContext)
             .SelectMany(_ => Observable.FromAsync(OnCalendarDeleted))
             .Subscribe();
         _calendarUpdatedSubscription = eventBus.Listen<CalendarUpdatedEvent>()
+            .ObserveOn(syncContext)
             .SelectMany(_ => Observable.FromAsync(OnCalendarUpdated))
             .Subscribe();
         _dateEntryAddedSubscription = eventBus.Listen<DateEntryAddedEvent>()
+            .ObserveOn(syncContext)
             .SelectMany(evt => Observable.FromAsync(ct => OnDateEntryAdded(evt.CalendarId, ct)))
             .Subscribe();
         _dateEntryDeletedSubscription = eventBus.Listen<DateEntryDeletedEvent>()
+            .ObserveOn(syncContext)
             .SelectMany(evt => Observable.FromAsync(ct => OnDateEntryChanged(evt.CalendarId, ct)))
             .Subscribe();
         _dateEntryUpdatedSubscription = eventBus.Listen<DateEntryUpdatedEvent>()
+            .ObserveOn(syncContext)
             .SelectMany(evt => Observable.FromAsync(ct => OnDateEntryChanged(evt.CalendarId, ct)))
             .Subscribe();
     }
