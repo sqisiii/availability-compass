@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using AvailabilityCompass.Core.Features.ManageCalendars;
 using AvailabilityCompass.MauiClient.Controls.Calendar;
 using CommunityToolkit.Maui.Markup;
@@ -86,7 +87,7 @@ public class ManageCalendarsPage : ContentPage
     }
 #endif
 
-    private void OnReservedDatesChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) =>
+    private void OnReservedDatesChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
         _reservedDatesDebouncer.Change(50, Timeout.Infinite);
 
     private void UpdateCalendarDecorations()
@@ -101,8 +102,6 @@ public class ManageCalendarsPage : ContentPage
 
         _calendarView.Decorations = decorations;
     }
-
-    #region Delete Confirmation Overlay
 
     private static View BuildDeleteConfirmationOverlay()
     {
@@ -154,9 +153,6 @@ public class ManageCalendarsPage : ContentPage
             .Bind(IsVisibleProperty, nameof(ManageCalendarsViewModel.IsDeleteConfirmationOpen));
     }
 
-    #endregion
-
-    #region Main Content
 
     private View BuildMainContent()
     {
@@ -497,9 +493,6 @@ public class ManageCalendarsPage : ContentPage
             .Bind(IsVisibleProperty, nameof(ManageCalendarsViewModel.IsCalendarSelected));
     }
 
-    #endregion
-
-    #region Editor Overlay
 
     private View BuildEditorOverlay()
     {
@@ -648,6 +641,4 @@ public class ManageCalendarsPage : ContentPage
             }
         };
     }
-
-    #endregion
 }
