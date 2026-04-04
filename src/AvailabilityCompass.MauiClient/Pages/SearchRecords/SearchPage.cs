@@ -2,7 +2,6 @@ using AvailabilityCompass.Core.Features.SearchRecords;
 using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 using AvailabilityCompass.MauiClient.Controls;
 using AvailabilityCompass.MauiClient.Messages;
-using AvailabilityCompass.MauiClient.Shared.Converters;
 using CommunityToolkit.Maui.Markup;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -13,7 +12,6 @@ namespace AvailabilityCompass.MauiClient.Pages.SearchRecords;
 
 public class SearchPage : ContentPage
 {
-    private readonly InverseBoolConverter _inverseBool = new();
     private readonly SearchViewModel _vm;
 
     public SearchPage(SearchViewModel vm)
@@ -447,7 +445,8 @@ public class SearchPage : ContentPage
                 BackgroundColor = Colors.DodgerBlue,
                 TextColor = Colors.White
             }
-            .Bind(Button.CommandProperty, nameof(SearchViewModel.SearchCommand));
+            .Bind(Button.CommandProperty, nameof(SearchViewModel.SearchCommand))
+            .Bind(IsEnabledProperty, nameof(SearchViewModel.SourceSelected));
     }
 
     private View BuildResultsArea()
@@ -458,9 +457,32 @@ public class SearchPage : ContentPage
             {
                 BuildResultsList(),
                 BuildNoResultsView(),
-                BuildEmptyStateView()
+                BuildEmptyStateView(),
+                BuildSearchingView()
             }
         };
+    }
+
+    private static View BuildSearchingView()
+    {
+        return new VerticalStackLayout
+            {
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.Center,
+                Spacing = 12,
+                Children =
+                {
+                    new ActivityIndicator { Color = Colors.DodgerBlue, HeightRequest = 40, WidthRequest = 40 }
+                        .Bind(ActivityIndicator.IsRunningProperty, nameof(SearchViewModel.ResultsState),
+                            converter: new FuncConverter<SearchResultsState, bool>(s => s == SearchResultsState.Searching)),
+                    new Label
+                    {
+                        Text = "Searching...", FontSize = 16, HorizontalOptions = LayoutOptions.Center, Opacity = 0.6
+                    }
+                }
+            }
+            .Bind(IsVisibleProperty, nameof(SearchViewModel.ResultsState),
+                converter: new FuncConverter<SearchResultsState, bool>(s => s == SearchResultsState.Searching));
     }
 
     private View BuildResultsList()
@@ -478,14 +500,16 @@ public class SearchPage : ContentPage
                     new CollectionView
                         {
                             ItemTemplate = new DataTemplate(BuildResultCard),
-                            SelectionMode = SelectionMode.None
+                            SelectionMode = SelectionMode.None,
+                            ItemSizingStrategy = ItemSizingStrategy.MeasureFirstItem
                         }
                         .Bind(ItemsView.ItemsSourceProperty, nameof(SearchViewModel.Results))
                         .Margins(8, 0, 8)
                         .Row(1)
                 }
             }
-            .Bind(IsVisibleProperty, nameof(SearchViewModel.HasResults));
+            .Bind(IsVisibleProperty, nameof(SearchViewModel.ResultsState),
+                converter: new FuncConverter<SearchResultsState, bool>(s => s == SearchResultsState.Results));
     }
 
     private static View BuildSortBar()
@@ -663,7 +687,8 @@ public class SearchPage : ContentPage
                     }
                 }
             }
-            .Bind(IsVisibleProperty, nameof(SearchViewModel.ShowNoResults));
+            .Bind(IsVisibleProperty, nameof(SearchViewModel.ResultsState),
+                converter: new FuncConverter<SearchResultsState, bool>(s => s == SearchResultsState.NoResults));
     }
 
     private View BuildEmptyStateView()
@@ -686,8 +711,8 @@ public class SearchPage : ContentPage
                     }
                 }
             }
-            .Bind(IsVisibleProperty, nameof(SearchViewModel.HasSearched),
-                converter: _inverseBool);
+            .Bind(IsVisibleProperty, nameof(SearchViewModel.ResultsState),
+                converter: new FuncConverter<SearchResultsState, bool>(s => s == SearchResultsState.EmptyState));
     }
 
     private class FormElementTemplateSelector : DataTemplateSelector

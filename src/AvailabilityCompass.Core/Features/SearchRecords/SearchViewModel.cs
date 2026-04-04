@@ -58,10 +58,6 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
     [DateValidation]
     private string? _endDate;
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowNoResults))]
-    private bool _hasSearched;
-
     private bool _initialDataLoaded;
 
     [ObservableProperty]
@@ -72,6 +68,9 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
 
     [ObservableProperty]
     private bool _isSourcesSectionExpanded;
+
+    [ObservableProperty]
+    private SearchResultsState _resultsState = SearchResultsState.EmptyState;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(FiltersSummary))]
@@ -121,11 +120,6 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
         _tutorialViewModel = tutorialViewModel;
         Sources.CollectionChanged += SourcesOnCollectionChanged;
         Calendars.CollectionChanged += CalendarsOnCollectionChanged;
-        Results.CollectionChanged += (_, _) =>
-        {
-            OnPropertyChanged(nameof(HasResults));
-            OnPropertyChanged(nameof(ShowNoResults));
-        };
 
         // MediatR handlers use ConfigureAwait(false), so EventBus.Publish runs on a
         // thread-pool thread. MAUI's BindableLayout does not auto-marshal CollectionChanged
@@ -165,10 +159,6 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
     public List<ResultColumnDefinition> Columns { get; } = [];
     public RangeObservableCollection<Dictionary<string, object>> Results { get; } = [];
     public List<string> SortOptions { get; } = ["Date", "Source", "Title"];
-
-    public bool HasResults => Results.Count > 0;
-
-    public bool ShowNoResults => HasSearched && !HasResults;
 
     public string CalendarsSummary => GetCalendarsSummary();
     public string SourcesSummary => GetSourcesSummary();
@@ -212,7 +202,7 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
 
     private async Task OnFilterDataChanged(CancellationToken ct)
     {
-        HasSearched = false;
+        ResultsState = SearchResultsState.EmptyState;
         Results.Clear();
         await LoadCalendarsAsync(ct);
         await LoadSourcesAsync(ct);
@@ -317,12 +307,21 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
         IsSourcesSectionExpanded = false;
         IsFiltersSectionExpanded = false;
 
-        await _searchCommandFactory.Create().ExecuteAsync();
-        HasSearched = true;
+        ResultsState = SearchResultsState.Searching;
+        try
+        {
+            await _searchCommandFactory.Create().ExecuteAsync();
+            ResultsState = Results.Count > 0 ? SearchResultsState.Results : SearchResultsState.NoResults;
 
-        _tutorialViewModel?.FireTrigger(
-            AppTutorialTrigger.SearchPerformed,
-            ctx => ctx with { HasSearchResults = Results.Count > 0 });
+            _tutorialViewModel?.FireTrigger(
+                AppTutorialTrigger.SearchPerformed,
+                ctx => ctx with { HasSearchResults = Results.Count > 0 });
+        }
+        catch
+        {
+            ResultsState = SearchResultsState.NoResults;
+            throw;
+        }
     }
 
     [RelayCommand]

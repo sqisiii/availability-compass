@@ -50,8 +50,15 @@ public class SearchCommand : ISearchCommand
 
         var searchResponse = await SearchAsync(query);
 
-        var calendarOverlapSummaries = BuildCalendarOverlapSummaries(selectedCalendarsWithEntries);
-        ProcessSearchResponse(searchResponse, calendarOverlapSummaries);
+        var selectedCalendarsInfo = _viewModel.Value.Calendars
+            .Where(c => c.IsSelected && c.IsMarkOnly)
+            .Select(c => (c.Id, c.Name))
+            .ToList();
+
+        var calendarOverlapSummaries = await Task.Run(() =>
+            BuildCalendarOverlapSummaries(selectedCalendarsWithEntries, selectedCalendarsInfo));
+
+        await ProcessSearchResponse(searchResponse, calendarOverlapSummaries);
     }
 
     private async Task<SearchSourcesResponse> SearchAsync(SearchSourcesQuery query)
@@ -159,7 +166,7 @@ public class SearchCommand : ISearchCommand
         }
     }
 
-    private void ProcessSearchResponse(
+    private async Task ProcessSearchResponse(
         SearchSourcesResponse searchResponse,
         IReadOnlyDictionary<Guid, CalendarOverlapData> calendarOverlapSummaries)
     {
@@ -171,28 +178,34 @@ public class SearchCommand : ISearchCommand
             return;
         }
 
-        AddDefaultColumns();
-        AddSearchResults(searchResponse.SourceDataItems, calendarOverlapSummaries);
+        var sourceLookup = _viewModel.Value.Sources.ToDictionary(
+            s => s.SourceId,
+            s => (s.Name, s.Language, s.IconPath));
+
+        var (results, columns) = await Task.Run(() =>
+            PrepareSearchResults(searchResponse.SourceDataItems, calendarOverlapSummaries, sourceLookup));
+
+        _viewModel.Value.Columns.AddRange(columns);
+        _viewModel.Value.Results.ReplaceAll(results);
         _viewModel.Value.OnUpdateColumns();
 
         _eventBus.Publish(new SearchResultsFoundEvent());
     }
 
-    private void AddDefaultColumns()
-    {
-        _viewModel.Value.Columns.Add(new ResultColumnDefinition("Source", "SourceName"));
-        _viewModel.Value.Columns.Add(new ResultColumnDefinition("Title", "Title"));
-        _viewModel.Value.Columns.Add(new ResultColumnDefinition("Start Date", "StartDate"));
-        _viewModel.Value.Columns.Add(new ResultColumnDefinition("End Date", "EndDate"));
-    }
-
-    private void AddSearchResults(
+    private static (List<Dictionary<string, object>> Results, List<ResultColumnDefinition> Columns) PrepareSearchResults(
         IReadOnlyCollection<SearchSourcesResponse.SourceDataItem> sourceDataItems,
-        IReadOnlyDictionary<Guid, CalendarOverlapData> calendarOverlapSummaries)
+        IReadOnlyDictionary<Guid, CalendarOverlapData> calendarOverlapSummaries,
+        Dictionary<string, (string Name, string Language, string IconPath)> sourceLookup)
     {
-        var sourceLookup = _viewModel.Value.Sources.ToDictionary(
-            s => s.SourceId,
-            s => new { s.Name, s.Language, s.IconPath });
+        var results = new List<Dictionary<string, object>>(sourceDataItems.Count);
+        var columns = new List<ResultColumnDefinition>
+        {
+            new("Source", "SourceName"),
+            new("Title", "Title"),
+            new("Start Date", "StartDate"),
+            new("End Date", "EndDate")
+        };
+        var knownColumnProperties = new HashSet<string> { "SourceName", "Title", "StartDate", "EndDate", "Url" };
 
         foreach (var sourceDataItem in sourceDataItems)
         {
@@ -205,37 +218,34 @@ public class SearchCommand : ISearchCommand
 
             var singleSourceResults = new Dictionary<string, object>
             {
-                { "SourceName", sourceInfo?.Name ?? sourceDataItem.SourceId },
-                { "SourceLanguage", sourceInfo?.Language ?? string.Empty },
-                { "SourceIconPath", sourceInfo?.IconPath ?? string.Empty },
+                { "SourceName", sourceInfo.Name },
+                { "SourceLanguage", sourceInfo.Language },
+                { "SourceIconPath", sourceInfo.IconPath },
                 { "Title", sourceDataItem.Title },
                 { "Url", sourceDataItem.Url ?? string.Empty },
                 { "StartDate", sourceDataItem.StartDate.ToString("yyyy-MM-dd") },
                 { "EndDate", sourceDataItem.EndDate.ToString("yyyy-MM-dd") }
             };
 
-            AddAdditionalData(singleSourceResults, sourceDataItem.AdditionalData);
-            AddCalendarOverlaps(singleSourceResults, sourceDataItem, calendarOverlapSummaries);
-            _viewModel.Value.Results.Add(singleSourceResults);
-        }
-
-        _viewModel.Value.Columns.Add(new ResultColumnDefinition("URL", "Url"));
-    }
-
-    private void AddAdditionalData(Dictionary<string, object> singleSourceResults, Dictionary<string, object?> additionalData)
-    {
-        foreach (var (key, value) in additionalData)
-        {
-            if (_viewModel.Value.Columns.All(columnDefinition => columnDefinition.PropertyName != key))
+            foreach (var (key, value) in sourceDataItem.AdditionalData)
             {
-                _viewModel.Value.Columns.Add(new ResultColumnDefinition(key, key));
+                if (knownColumnProperties.Add(key))
+                {
+                    columns.Add(new ResultColumnDefinition(key, key));
+                }
+
+                singleSourceResults.Add(key, value ?? string.Empty);
             }
 
-            singleSourceResults.Add(key, value ?? string.Empty);
+            AddCalendarOverlaps(singleSourceResults, sourceDataItem, calendarOverlapSummaries);
+            results.Add(singleSourceResults);
         }
+
+        columns.Add(new ResultColumnDefinition("URL", "Url"));
+        return (results, columns);
     }
 
-    private void AddCalendarOverlaps(
+    private static void AddCalendarOverlaps(
         Dictionary<string, object> singleSourceResults,
         SearchSourcesResponse.SourceDataItem sourceDataItem,
         IReadOnlyDictionary<Guid, CalendarOverlapData> calendarOverlapSummaries)
@@ -271,16 +281,16 @@ public class SearchCommand : ISearchCommand
         singleSourceResults["HasCalendarOverlaps"] = true;
     }
 
-    private IReadOnlyDictionary<Guid, CalendarOverlapData> BuildCalendarOverlapSummaries(List<CalendarDto> calendars)
+    private static IReadOnlyDictionary<Guid, CalendarOverlapData> BuildCalendarOverlapSummaries(
+        List<CalendarDto> calendars,
+        List<(Guid Id, string Name)> selectedCalendarsInfo)
     {
-        var selectedCalendars = _viewModel.Value.Calendars
-            .Where(c => c.IsSelected && c.IsMarkOnly)
-            .ToDictionary(c => c.Id, c => c.Name);
-
-        if (selectedCalendars.Count == 0)
+        if (selectedCalendarsInfo.Count == 0)
         {
             return new Dictionary<Guid, CalendarOverlapData>();
         }
+
+        var selectedCalendars = selectedCalendarsInfo.ToDictionary(c => c.Id, c => c.Name);
 
         var result = new Dictionary<Guid, CalendarOverlapData>();
         foreach (var calendar in calendars.Where(c => selectedCalendars.ContainsKey(c.CalendarId)))
@@ -297,7 +307,7 @@ public class SearchCommand : ISearchCommand
         return result;
     }
 
-    private HashSet<DateOnly> GetConflictDates(CalendarDto calendar)
+    private static HashSet<DateOnly> GetConflictDates(CalendarDto calendar)
     {
         var conflictDates = new HashSet<DateOnly>();
 

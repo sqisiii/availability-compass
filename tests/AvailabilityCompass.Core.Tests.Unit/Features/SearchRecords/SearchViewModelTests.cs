@@ -340,24 +340,13 @@ public class SearchViewModelTests
     }
 
     [Fact]
-    public void HasResults_WhenResultsEmpty_ShouldReturnFalse()
+    public void ResultsState_WhenNewlyCreated_ShouldBeEmptyState()
     {
         // Arrange
         var sut = CreateViewModel();
 
         // Act & Assert
-        sut.HasResults.ShouldBeFalse();
-    }
-
-    [Fact]
-    public void HasResults_WhenResultsNotEmpty_ShouldReturnTrue()
-    {
-        // Arrange
-        var sut = CreateViewModel();
-        sut.Results.Add(new Dictionary<string, object> { { "Title", "Test" } });
-
-        // Act & Assert
-        sut.HasResults.ShouldBeTrue();
+        sut.ResultsState.ShouldBe(SearchResultsState.EmptyState);
     }
 
     [Fact]
