@@ -1,8 +1,11 @@
 using AvailabilityCompass.Core.Features.SearchRecords;
 using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
+using AvailabilityCompass.MauiClient.Controls;
+using AvailabilityCompass.MauiClient.Messages;
 using AvailabilityCompass.MauiClient.Shared.Converters;
 using CommunityToolkit.Maui.Markup;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Layouts;
 
@@ -30,7 +33,7 @@ public class SearchPage : ContentPage
             Command = new AsyncRelayCommand(() => Shell.Current.GoToAsync("manage-calendars"))
         });
 
-        Content = new ScrollView
+        var scrollView = new ScrollView
         {
             Content = new VerticalStackLayout
             {
@@ -41,6 +44,8 @@ public class SearchPage : ContentPage
                 }
             }
         };
+        scrollView.Scrolled += (_, _) => WeakReferenceMessenger.Default.Send(new CloseDropdownsMessage());
+        Content = scrollView;
     }
 
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
@@ -90,6 +95,7 @@ public class SearchPage : ContentPage
         var tapGesture = new TapGestureRecognizer();
         tapGesture.Tapped += (_, _) =>
         {
+            WeakReferenceMessenger.Default.Send(new CloseDropdownsMessage());
             var prop = typeof(SearchViewModel).GetProperty(expandedProperty);
             if (prop is null) return;
             var current = (bool)(prop.GetValue(_vm) ?? false);
@@ -245,6 +251,10 @@ public class SearchPage : ContentPage
             }
             .Bind(IsVisibleProperty, nameof(SearchViewModel.IsSourcesSectionExpanded));
 
+        var dismissTap = new TapGestureRecognizer();
+        dismissTap.Tapped += (_, _) => WeakReferenceMessenger.Default.Send(new CloseDropdownsMessage());
+        content.GestureRecognizers.Add(dismissTap);
+
         return new VerticalStackLayout
         {
             Children = { header, content }
@@ -357,157 +367,6 @@ public class SearchPage : ContentPage
                     .Bind(Label.TextProperty, nameof(FormElement.Label))
             }
         };
-    }
-
-    private static View BuildMultiSelectFormElement()
-    {
-        var layout = new VerticalStackLayout { Spacing = 4 };
-
-        layout.Children.Add(
-            new Label { FontSize = 12, Opacity = 0.7 }
-                .Bind(Label.TextProperty, nameof(FormElement.Label)));
-
-        var optionsList = new ScrollView
-        {
-            MaximumHeightRequest = 200
-        };
-
-        var summaryLabel = new Label
-        {
-            FontSize = 13,
-            TextColor = Colors.Gray,
-            LineBreakMode = LineBreakMode.TailTruncation,
-            MaxLines = 1,
-            Text = "..."
-        };
-
-        var chevronLabel = new Label
-        {
-            Text = "▼",
-            FontSize = 12,
-            VerticalTextAlignment = TextAlignment.Center
-        };
-
-        var clearButton = new Label
-        {
-            Text = "✕",
-            FontSize = 14,
-            TextColor = Colors.Gray,
-            VerticalTextAlignment = TextAlignment.Center,
-            IsVisible = false
-        };
-
-        var optionsContainer = new Border
-        {
-            StrokeShape = new RoundRectangle { CornerRadius = 8 },
-            Stroke = Colors.LightGray,
-            BackgroundColor = Color.FromArgb("#F5F5F5"),
-            Padding = new Thickness(4),
-            IsVisible = false,
-            Content = optionsList
-        };
-
-        var header = new Border
-        {
-            StrokeShape = new RoundRectangle { CornerRadius = 8 },
-            Stroke = Colors.LightGray,
-            BackgroundColor = Colors.White,
-            Padding = new Thickness(12, 8),
-            Content = new Grid
-            {
-                ColumnDefinitions =
-                {
-                    new ColumnDefinition(GridLength.Star),
-                    new ColumnDefinition(GridLength.Auto),
-                    new ColumnDefinition(GridLength.Auto)
-                },
-                ColumnSpacing = 8,
-                Children =
-                {
-                    summaryLabel.Column(0),
-                    clearButton.Column(1),
-                    chevronLabel.Column(2)
-                }
-            }
-        };
-
-        var headerTap = new TapGestureRecognizer();
-        headerTap.Tapped += (_, _) =>
-        {
-            optionsContainer.IsVisible = !optionsContainer.IsVisible;
-            chevronLabel.Text = optionsContainer.IsVisible ? "▲" : "▼";
-        };
-        header.GestureRecognizers.Add(headerTap);
-
-        var clearTap = new TapGestureRecognizer();
-        clearTap.Tapped += (_, _) =>
-        {
-            if (header.BindingContext is not FormElement fe) return;
-            foreach (var option in fe.Options)
-                option.IsSelected = false;
-        };
-        clearButton.GestureRecognizers.Add(clearTap);
-
-        var itemsLayout = new VerticalStackLayout { Spacing = 0 };
-        itemsLayout.SetBinding(BindableLayout.ItemsSourceProperty, nameof(FormElement.Options));
-        BindableLayout.SetItemTemplate(itemsLayout, new DataTemplate(() =>
-        {
-            var row = new HorizontalStackLayout
-            {
-                Spacing = 4,
-                Padding = new Thickness(8, 4),
-                Children =
-                {
-                    new CheckBox { VerticalOptions = LayoutOptions.Center }
-                        .Bind(CheckBox.IsCheckedProperty, nameof(FormElementSelectOption.IsSelected),
-                            mode: BindingMode.TwoWay),
-                    new Label { FontSize = 13, VerticalTextAlignment = TextAlignment.Center }
-                        .Bind(Label.TextProperty, nameof(FormElementSelectOption.Name))
-                }
-            };
-            return row;
-        }));
-
-        optionsList.Content = itemsLayout;
-
-        // Update summary and clear button when options change
-        void UpdateSummary(FormElement fe)
-        {
-            var selected = fe.Options.Where(o => o.IsSelected).Select(o => o.Name).ToList();
-            if (selected.Count == 0)
-            {
-                summaryLabel.Text = "...";
-                clearButton.IsVisible = false;
-                return;
-            }
-
-            clearButton.IsVisible = true;
-            var text = string.Empty;
-            foreach (var name in selected)
-            {
-                var next = text.Length == 0 ? name : text + ", " + name;
-                if (next.Length > 50)
-                {
-                    text += "...";
-                    break;
-                }
-
-                text = next;
-            }
-
-            summaryLabel.Text = text;
-        }
-
-        layout.BindingContextChanged += (_, _) =>
-        {
-            if (layout.BindingContext is not FormElement fe) return;
-            UpdateSummary(fe);
-            fe.Options.CollectionChanged += (_, _) => UpdateSummary(fe);
-        };
-
-        layout.Children.Add(header);
-        layout.Children.Add(optionsContainer);
-        return layout;
     }
 
     private View BuildFiltersSection()
@@ -834,7 +693,7 @@ public class SearchPage : ContentPage
     private class FormElementTemplateSelector : DataTemplateSelector
     {
         private readonly DataTemplate _checkBoxTemplate = new(BuildCheckBoxFormElement);
-        private readonly DataTemplate _multiSelectTemplate = new(BuildMultiSelectFormElement);
+        private readonly DataTemplate _multiSelectTemplate = new(() => new MultiSelectDropdown());
         private readonly DataTemplate _textBoxTemplate = new(BuildTextBoxFormElement);
 
         protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
