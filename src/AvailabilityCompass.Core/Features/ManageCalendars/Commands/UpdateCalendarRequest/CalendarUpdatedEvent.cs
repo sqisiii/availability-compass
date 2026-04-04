@@ -3,6 +3,7 @@
 /// <summary>
 /// Event published when a calendar is updated in the database.
 /// </summary>
-public class CalendarUpdatedEvent
-{
-}
+public record CalendarUpdatedEvent(
+    Guid CalendarId,
+    string Name,
+    bool IsOnly);

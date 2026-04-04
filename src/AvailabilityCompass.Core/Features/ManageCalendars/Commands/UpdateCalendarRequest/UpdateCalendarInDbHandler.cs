@@ -31,11 +31,12 @@ public class UpdateCalendarInDbHandler : IRequestHandler<UpdateCalendarInDbReque
 
             // language=SQLite
             await connection.ExecuteAsync(
-                "UPDATE Calendar SET Name = @Name, IsOnly = @IsOnly, ChangeDate = @ChangeDate WHERE CalendarId = @CalendarId",
-                new { request.CalendarId, request.Name, request.IsOnly, ChangeDate = changeDate }
-            ).ConfigureAwait(false);
+                    "UPDATE Calendar SET Name = @Name, IsOnly = @IsOnly, ChangeDate = @ChangeDate WHERE CalendarId = @CalendarId",
+                    new { request.CalendarId, request.Name, request.IsOnly, ChangeDate = changeDate }
+                )
+                .ConfigureAwait(false);
 
-            _eventBus.Publish(new CalendarUpdatedEvent());
+            _eventBus.Publish(new CalendarUpdatedEvent(request.CalendarId, request.Name, request.IsOnly));
             return new UpdateCalendarInDbResponse(true);
         }
         catch (Exception ex)

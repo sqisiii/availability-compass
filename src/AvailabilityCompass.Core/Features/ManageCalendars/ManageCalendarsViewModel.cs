@@ -462,7 +462,7 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
             .Subscribe();
         _calendarUpdatedSubscription = eventBus.Listen<CalendarUpdatedEvent>()
             .ObserveOn(syncContext)
-            .SelectMany(_ => Observable.FromAsync(OnCalendarUpdated))
+            .SelectMany(evt => Observable.FromAsync(ct => OnCalendarUpdated(evt, ct)))
             .Subscribe();
         _dateEntryAddedSubscription = eventBus.Listen<DateEntryAddedEvent>()
             .ObserveOn(syncContext)
@@ -492,9 +492,16 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
         await LoadCalendars(ct);
     }
 
-    private async Task OnCalendarUpdated(CancellationToken ct)
+    private Task OnCalendarUpdated(CalendarUpdatedEvent evt, CancellationToken ct)
     {
-        await LoadCalendars(ct);
+        var existing = Calendars.FirstOrDefault(c => c.CalendarId == evt.CalendarId);
+        if (existing is not null)
+        {
+            existing.Name = evt.Name;
+            existing.IsOnly = evt.IsOnly;
+        }
+
+        return Task.CompletedTask;
     }
 
     private async Task OnDateEntryChanged(Guid calendarId, CancellationToken ct)
