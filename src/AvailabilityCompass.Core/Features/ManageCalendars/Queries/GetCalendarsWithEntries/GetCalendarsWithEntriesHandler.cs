@@ -54,7 +54,7 @@ public class GetCalendarsWithEntriesHandler : IRequestHandler<GetCalendarsWithEn
 
                         return calendarEntry;
                     },
-                    param: new { request.CalendarIds },
+                    param: new { CalendarIds = request.CalendarIds.Select(id => id.ToByteArray()).ToList() },
                     splitOn: "DateEntryId")
                 .ConfigureAwait(false);
 

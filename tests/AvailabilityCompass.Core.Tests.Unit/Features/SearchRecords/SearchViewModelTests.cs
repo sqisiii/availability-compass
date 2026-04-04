@@ -34,13 +34,13 @@ public class SearchViewModelTests
     public SearchViewModelTests()
     {
         _eventBus.ListenToAll().Returns(Observable.Empty<object>());
-        _eventBus.Listen<CalendarAddedEvent>().Returns(Observable.Never<CalendarAddedEvent>());
-        _eventBus.Listen<CalendarUpdatedEvent>().Returns(Observable.Never<CalendarUpdatedEvent>());
-        _eventBus.Listen<CalendarDeletedEvent>().Returns(Observable.Never<CalendarDeletedEvent>());
-        _eventBus.Listen<DateEntryAddedEvent>().Returns(Observable.Never<DateEntryAddedEvent>());
-        _eventBus.Listen<DateEntryUpdatedEvent>().Returns(Observable.Never<DateEntryUpdatedEvent>());
-        _eventBus.Listen<DateEntryDeletedEvent>().Returns(Observable.Never<DateEntryDeletedEvent>());
-        _eventBus.Listen<SourcesDataChangedEvent>().Returns(Observable.Never<SourcesDataChangedEvent>());
+        _eventBus.Listen<CalendarAddedEvent>().Returns(Observable.Empty<CalendarAddedEvent>());
+        _eventBus.Listen<CalendarUpdatedEvent>().Returns(Observable.Empty<CalendarUpdatedEvent>());
+        _eventBus.Listen<CalendarDeletedEvent>().Returns(Observable.Empty<CalendarDeletedEvent>());
+        _eventBus.Listen<DateEntryAddedEvent>().Returns(Observable.Empty<DateEntryAddedEvent>());
+        _eventBus.Listen<DateEntryUpdatedEvent>().Returns(Observable.Empty<DateEntryUpdatedEvent>());
+        _eventBus.Listen<DateEntryDeletedEvent>().Returns(Observable.Empty<DateEntryDeletedEvent>());
+        _eventBus.Listen<SourcesDataChangedEvent>().Returns(Observable.Empty<SourcesDataChangedEvent>());
         _dateTimeProvider.Now.Returns(DateTime.Now);
     }
 

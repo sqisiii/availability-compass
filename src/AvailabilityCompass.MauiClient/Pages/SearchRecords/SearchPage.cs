@@ -653,15 +653,28 @@ public class SearchPage : ContentPage
         conflictsLayout.SetBinding(BindableLayout.ItemsSourceProperty, "[CalendarOverlaps]");
 
         BindableLayout.SetItemTemplate(conflictsLayout, new DataTemplate(() =>
-            new HorizontalStackLayout
+            new VerticalStackLayout
             {
-                Spacing = 6,
+                Spacing = 2,
                 Children =
                 {
-                    new Label { Text = "!", FontSize = 12, TextColor = Colors.OrangeRed, FontAttributes = FontAttributes.Bold },
-                    new Label { FontSize = 12, TextColor = Colors.OrangeRed }
-                        .Bind(Label.TextProperty, nameof(CalendarOverlapSummary.CalendarName)),
-                    new Label { FontSize = 12, Opacity = 0.7 }
+                    new HorizontalStackLayout
+                    {
+                        Spacing = 6,
+                        Children =
+                        {
+                            new Label { Text = "!", FontSize = 12, TextColor = Colors.OrangeRed, FontAttributes = FontAttributes.Bold },
+                            new Label { FontSize = 12, TextColor = Colors.OrangeRed, FontAttributes = FontAttributes.Bold }
+                                .Bind(Label.TextProperty, nameof(CalendarOverlapSummary.CalendarName))
+                        }
+                    },
+                    new Label
+                        {
+                            FontSize = 11,
+                            TextColor = Colors.OrangeRed,
+                            Opacity = 0.85,
+                            LineBreakMode = LineBreakMode.WordWrap
+                        }
                         .Bind(Label.TextProperty, nameof(CalendarOverlapSummary.ConflictSummary))
                 }
             }));
