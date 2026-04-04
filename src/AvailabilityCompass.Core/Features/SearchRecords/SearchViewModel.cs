@@ -127,6 +127,11 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
             OnPropertyChanged(nameof(ShowNoResults));
         };
 
+        // MediatR handlers use ConfigureAwait(false), so EventBus.Publish runs on a
+        // thread-pool thread. MAUI's BindableLayout does not auto-marshal CollectionChanged
+        // to the UI thread — ObserveOn ensures handlers that modify ObservableCollections
+        // always run on the UI thread.
+        var syncContext = SynchronizationContext.Current!;
         _calendarAddedSubscription = Observable.Merge(
                 eventBus.Listen<CalendarAddedEvent>().Select(_ => Unit.Default),
                 eventBus.Listen<CalendarUpdatedEvent>().Select(_ => Unit.Default),
@@ -135,9 +140,12 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
                 eventBus.Listen<DateEntryUpdatedEvent>().Select(_ => Unit.Default),
                 eventBus.Listen<DateEntryDeletedEvent>().Select(_ => Unit.Default),
                 eventBus.Listen<SourcesDataChangedEvent>().Select(_ => Unit.Default))
+            .ObserveOn(syncContext)
             .SelectMany(_ => Observable.FromAsync(OnFilterDataChanged))
             .Subscribe();
     }
+
+    public bool IsInitialDataLoaded => _initialDataLoaded;
 
     public bool SourcesAvailable => Sources.Any(s => s.ChangeAt > DateTime.MinValue);
     public bool SourcesUnAvailable => !SourcesAvailable;

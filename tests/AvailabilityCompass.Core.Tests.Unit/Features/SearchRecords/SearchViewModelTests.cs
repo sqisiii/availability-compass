@@ -1,6 +1,15 @@
 using System.Reactive.Linq;
+using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarRequest;
+using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddDateEntryRequest;
+using AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteCalendarRequest;
+using AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteDateEntryRequest;
+using AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateCalendarRequest;
+using AvailabilityCompass.Core.Features.ManageCalendars.Commands.UpdateDateEntryRequest;
+using AvailabilityCompass.Core.Features.ManageSources.Commands.ReplaceSourceDataRequest;
 using AvailabilityCompass.Core.Features.SearchRecords;
 using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
+using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetCalendars;
+using AvailabilityCompass.Core.Features.SearchRecords.Queries.GetSources;
 using AvailabilityCompass.Core.Features.SearchRecords.Search;
 using AvailabilityCompass.Core.Shared;
 using AvailabilityCompass.Core.Shared.EventBus;
@@ -25,6 +34,13 @@ public class SearchViewModelTests
     public SearchViewModelTests()
     {
         _eventBus.ListenToAll().Returns(Observable.Empty<object>());
+        _eventBus.Listen<CalendarAddedEvent>().Returns(Observable.Never<CalendarAddedEvent>());
+        _eventBus.Listen<CalendarUpdatedEvent>().Returns(Observable.Never<CalendarUpdatedEvent>());
+        _eventBus.Listen<CalendarDeletedEvent>().Returns(Observable.Never<CalendarDeletedEvent>());
+        _eventBus.Listen<DateEntryAddedEvent>().Returns(Observable.Never<DateEntryAddedEvent>());
+        _eventBus.Listen<DateEntryUpdatedEvent>().Returns(Observable.Never<DateEntryUpdatedEvent>());
+        _eventBus.Listen<DateEntryDeletedEvent>().Returns(Observable.Never<DateEntryDeletedEvent>());
+        _eventBus.Listen<SourcesDataChangedEvent>().Returns(Observable.Never<SourcesDataChangedEvent>());
         _dateTimeProvider.Now.Returns(DateTime.Now);
     }
 
@@ -342,6 +358,33 @@ public class SearchViewModelTests
 
         // Act & Assert
         sut.HasResults.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void IsInitialDataLoaded_WhenNewlyCreated_ShouldReturnFalse()
+    {
+        // Arrange
+        var sut = CreateViewModel();
+
+        // Act & Assert
+        sut.IsInitialDataLoaded.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task IsInitialDataLoaded_AfterLoadDataAsync_ShouldReturnTrue()
+    {
+        // Arrange
+        _mediator.Send(Arg.Any<GetCalendarsForFilteringQuery>(), Arg.Any<CancellationToken>())
+            .Returns(new GetCalendarsForFilteringResponse([], true));
+        _mediator.Send(Arg.Any<GetSourcesForFilteringQuery>(), Arg.Any<CancellationToken>())
+            .Returns(new GetSourcesForFilteringResponse());
+        var sut = CreateViewModel();
+
+        // Act
+        await sut.LoadDataAsync(CancellationToken.None);
+
+        // Assert
+        sut.IsInitialDataLoaded.ShouldBeTrue();
     }
 
     [Fact]
