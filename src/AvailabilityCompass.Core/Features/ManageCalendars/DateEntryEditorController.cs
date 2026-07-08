@@ -289,8 +289,17 @@ public partial class DateEntryEditorController : ObservableValidator, IDateEntry
         if (entry.IsRecurring && entry.Frequency.HasValue)
         {
             var currentStart = entry.StartDate;
-            for (var i = 0; i <= entry.NumberOfRepetitions; i++)
+            // Clamp persisted values too — validation only covers newly entered data.
+            var repetitions = Math.Min(entry.NumberOfRepetitions, DateEntryLimits.MaxRepetitions);
+            for (var i = 0; i <= repetitions; i++)
             {
+                // Occurrences only move forward, so once past the target date no
+                // later repetition can match (also bounds pathological repetition counts).
+                if (entry.Frequency.Value > 0 && currentStart > date)
+                {
+                    return false;
+                }
+
                 var periodEnd = currentStart.AddDays(entry.Duration - 1);
                 if (date >= currentStart && date <= periodEnd)
                 {

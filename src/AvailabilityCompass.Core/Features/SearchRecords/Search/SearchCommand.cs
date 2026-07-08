@@ -362,19 +362,26 @@ public class SearchCommand : ISearchCommand
         }
 
         var currentRecurringDate = dateEntry.StartDate;
-        for (var i = 0; i <= dateEntry.NumberOfRepetitions; i++)
+        // Clamp persisted values too — validation only covers newly entered data.
+        var repetitions = Math.Min(dateEntry.NumberOfRepetitions, DateEntryLimits.MaxRepetitions);
+        for (var i = 0; i <= repetitions && result.Count < DateEntryLimits.MaxExpandedDatesPerEntry; i++)
         {
             var durationDate = currentRecurringDate;
-            for (var j = 0; j < dateEntry.Duration; j++)
+            for (var j = 0; j < dateEntry.Duration && result.Count < DateEntryLimits.MaxExpandedDatesPerEntry; j++)
             {
                 result.Add(durationDate);
                 durationDate = durationDate.AddDays(1);
             }
 
-            if (dateEntry.Frequency is not null)
+            // A non-positive frequency would re-add the same dates; an advance past
+            // DateOnly.MaxValue would throw.
+            if (dateEntry.Frequency is not ({ } frequency and > 0)
+                || currentRecurringDate.DayNumber + frequency > DateOnly.MaxValue.DayNumber)
             {
-                currentRecurringDate = currentRecurringDate.AddDays(dateEntry.Frequency.Value);
+                break;
             }
+
+            currentRecurringDate = currentRecurringDate.AddDays(frequency);
         }
 
         return result;

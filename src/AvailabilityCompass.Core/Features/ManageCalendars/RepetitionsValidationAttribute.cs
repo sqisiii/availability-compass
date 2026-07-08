@@ -20,8 +20,12 @@ public class RepetitionsValidationAttribute : ValidationAttribute
             return new ValidationResult("Required");
         }
 
-        return repetitions < 0
-            ? new ValidationResult("Must be 0 or greater")
-            : ValidationResult.Success;
+        return repetitions switch
+        {
+            < 0 => new ValidationResult("Must be 0 or greater"),
+            > DateEntryLimits.MaxRepetitions =>
+                new ValidationResult($"Must be {DateEntryLimits.MaxRepetitions} or fewer"),
+            _ => ValidationResult.Success
+        };
     }
 }

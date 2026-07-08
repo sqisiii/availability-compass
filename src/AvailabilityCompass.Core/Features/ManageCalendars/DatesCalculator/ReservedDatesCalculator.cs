@@ -127,21 +127,28 @@ public class ReservedDatesCalculator : IReservedDatesCalculator
     {
         List<DateOnly> result = [];
         var currentDate = startDate;
+        // Clamp persisted values too — validation only covers newly entered data.
+        var repetitions = Math.Min(numberOfRepetitions, DateEntryLimits.MaxRepetitions);
 
-        for (var i = 0; i <= numberOfRepetitions; i++)
+        for (var i = 0; i <= repetitions && result.Count < DateEntryLimits.MaxExpandedDatesPerEntry; i++)
         {
             var durationDate = currentDate;
 
-            for (var j = 0; j < duration; j++)
+            for (var j = 0; j < duration && result.Count < DateEntryLimits.MaxExpandedDatesPerEntry; j++)
             {
                 result.Add(durationDate);
                 durationDate = durationDate.AddDays(1);
             }
 
-            if (frequency is not null)
+            // A non-positive frequency would re-add the same dates; an advance past
+            // DateOnly.MaxValue would throw.
+            if (frequency is not ({ } step and > 0)
+                || currentDate.DayNumber + step > DateOnly.MaxValue.DayNumber)
             {
-                currentDate = currentDate.AddDays(frequency.Value);
+                break;
             }
+
+            currentDate = currentDate.AddDays(step);
         }
 
         return result;

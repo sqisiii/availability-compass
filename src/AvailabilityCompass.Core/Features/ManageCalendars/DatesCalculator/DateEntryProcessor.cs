@@ -41,14 +41,16 @@ public class DateEntryProcessor : IDateProcessor
     private static void ProcessRecurring(DateEntryViewModel dateEntry, List<CategorizedDate> result)
     {
         var currentDate = dateEntry.StartDate;
-        var numberOfRepetitions = dateEntry.NumberOfRepetitions;
+        // Clamp persisted values too — validation only covers newly entered data.
+        var numberOfRepetitions = Math.Min(dateEntry.NumberOfRepetitions, DateEntryLimits.MaxRepetitions);
+        var added = 0;
 
-        for (var i = 0; i <= numberOfRepetitions; i++)
+        for (var i = 0; i <= numberOfRepetitions && added < DateEntryLimits.MaxExpandedDatesPerEntry; i++)
         {
             var durationDate = currentDate;
             var duration = dateEntry.Duration;
 
-            for (var j = 0; j < duration; j++)
+            for (var j = 0; j < duration && added < DateEntryLimits.MaxExpandedDatesPerEntry; j++)
             {
                 result.Add(new CategorizedDate(
                     durationDate.ToDateTime(TimeOnly.MinValue),
@@ -56,12 +58,18 @@ public class DateEntryProcessor : IDateProcessor
                     dateEntry.Description));
 
                 durationDate = durationDate.AddDays(1);
+                added++;
             }
 
-            if (dateEntry.Frequency is not null)
+            // A non-positive frequency would re-add the same dates; an advance past
+            // DateOnly.MaxValue would throw.
+            if (dateEntry.Frequency is not ({ } frequency and > 0)
+                || currentDate.DayNumber + frequency > DateOnly.MaxValue.DayNumber)
             {
-                currentDate = currentDate.AddDays(dateEntry.Frequency.Value);
+                break;
             }
+
+            currentDate = currentDate.AddDays(frequency);
         }
     }
 }
