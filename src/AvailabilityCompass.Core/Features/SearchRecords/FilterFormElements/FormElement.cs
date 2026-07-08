@@ -14,7 +14,8 @@ public partial class FormElement : ObservableObject
 
     public string Label { get; set; } = string.Empty;
     public FormElementType Type { get; set; }
-    public FullyObservableCollection<FormElementSelectOption> Options { get; set; } = [];
+    public FullyObservableCollection<FormElementSelectOption> Options { get; set; } =
+        new(nameof(FormElementSelectOption.IsSelected));
 
     public ObservableCollection<string> SelectedOptions { get; } = [];
 }

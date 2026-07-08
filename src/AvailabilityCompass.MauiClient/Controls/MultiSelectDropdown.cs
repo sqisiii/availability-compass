@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 using AvailabilityCompass.MauiClient.Messages;
 using CommunityToolkit.Maui.Markup;
@@ -12,6 +13,7 @@ public class MultiSelectDropdown : ContentView, IRecipient<CloseDropdownsMessage
     private readonly Label _clearButton;
     private readonly Border _optionsContainer;
     private readonly Label _summaryLabel;
+    private FormElement? _boundElement;
 
     public MultiSelectDropdown()
     {
@@ -124,9 +126,13 @@ public class MultiSelectDropdown : ContentView, IRecipient<CloseDropdownsMessage
 
         BindingContextChanged += (_, _) =>
         {
-            if (BindingContext is not FormElement fe) return;
-            UpdateSummary(fe);
-            fe.Options.CollectionChanged += (_, _) => UpdateSummary(fe);
+            // Unhook the previous element first — the subscription is a strong reference
+            // that otherwise keeps every discarded dropdown instance alive.
+            UnhookOptions();
+            _boundElement = BindingContext as FormElement;
+            if (_boundElement is null) return;
+            UpdateSummary(_boundElement);
+            _boundElement.Options.CollectionChanged += OnOptionsCollectionChanged;
         };
 
         layout.Children.Add(header);
@@ -152,7 +158,29 @@ public class MultiSelectDropdown : ContentView, IRecipient<CloseDropdownsMessage
     {
         base.OnHandlerChanging(args);
         if (args.NewHandler is null)
+        {
             WeakReferenceMessenger.Default.Unregister<CloseDropdownsMessage>(this);
+            UnhookOptions();
+        }
+    }
+
+    private void UnhookOptions()
+    {
+        if (_boundElement is null)
+        {
+            return;
+        }
+
+        _boundElement.Options.CollectionChanged -= OnOptionsCollectionChanged;
+        _boundElement = null;
+    }
+
+    private void OnOptionsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (_boundElement is not null)
+        {
+            UpdateSummary(_boundElement);
+        }
     }
 
     private void ToggleDropdown()

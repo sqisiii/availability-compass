@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
@@ -12,10 +12,17 @@ namespace AvailabilityCompass.Core.Shared;
 public sealed class FullyObservableCollection<T> : ObservableCollection<T>
     where T : INotifyPropertyChanged
 {
+    private readonly string[] _observedItemProperties;
     private readonly SynchronizationContext _syncContext;
 
-    public FullyObservableCollection()
+    /// <param name="observedItemProperties">
+    /// When provided, only changes to these item properties are escalated to collection-level
+    /// Replace events. Without a filter every item property change (e.g. a periodic timer tick)
+    /// forces consumers to rebuild views bound to the collection.
+    /// </param>
+    public FullyObservableCollection(params string[] observedItemProperties)
     {
+        _observedItemProperties = observedItemProperties;
         _syncContext = SynchronizationContext.Current ?? new SynchronizationContext();
         CollectionChanged += FullObservableCollectionCollectionChanged;
     }
@@ -34,6 +41,18 @@ public sealed class FullyObservableCollection<T> : ObservableCollection<T>
         {
             Add(item);
         }
+    }
+
+    protected override void ClearItems()
+    {
+        // Clear() raises Reset with no OldItems, so the handlers must be detached
+        // here or every cleared item stays subscribed forever.
+        foreach (var item in Items)
+        {
+            item.PropertyChanged -= ItemPropertyChanged;
+        }
+
+        base.ClearItems();
     }
 
     private void FullObservableCollectionCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -59,6 +78,14 @@ public sealed class FullyObservableCollection<T> : ObservableCollection<T>
     {
         if (sender == null)
             return;
+
+        // Null/empty property name means "everything changed" and is always escalated.
+        if (_observedItemProperties.Length > 0
+            && !string.IsNullOrEmpty(e.PropertyName)
+            && !_observedItemProperties.Contains(e.PropertyName))
+        {
+            return;
+        }
 
         var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, sender, sender, IndexOf((T)sender));
         if (args.NewStartingIndex == -1 || args.OldStartingIndex == -1)
