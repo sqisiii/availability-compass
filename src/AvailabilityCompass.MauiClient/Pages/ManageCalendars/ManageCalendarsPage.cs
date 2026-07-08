@@ -12,9 +12,11 @@ public class ManageCalendarsPage : ContentPage
     private static readonly Color RecurringDateColor = Color.FromArgb("#E9967A");
 
     private readonly ManageCalendarsViewModel _vm;
-    private readonly Timer _reservedDatesDebouncer;
+    private Timer? _reservedDatesDebouncer;
+    private bool _isPageActive;
     private CalendarView? _calendarView;
 #if WINDOWS
+    private bool _isClosing;
     private Microsoft.UI.Xaml.FrameworkElement? _windowContent;
 #endif
 
@@ -40,20 +42,28 @@ public class ManageCalendarsPage : ContentPage
             }
         };
 
-        // Debounce: CalculateReservedDays() fires Clear + N x Add, each raising
-        // CollectionChanged. Only react once after the batch settles.
-        _reservedDatesDebouncer = new Timer(_ => Dispatcher.Dispatch(() =>
-        {
-            UpdateCalendarDecorations();
-            _calendarView?.ClearSelection();
-        }));
-        vm.ReservedDates.CollectionChanged += OnReservedDatesChanged;
     }
 
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
         _ = _vm.LoadDataAsync(CancellationToken.None);
+
+        // Symmetric with OnNavigatedFrom, which also runs when another page is pushed
+        // on top — returning here must restore the subscription and debounce timer,
+        // otherwise the calendar decorations stop updating for this page instance.
+        _isPageActive = true;
+        // Debounce: CalculateReservedDays() fires Clear + N x Add, each raising
+        // CollectionChanged. Only react once after the batch settles.
+        _reservedDatesDebouncer ??= new Timer(_ => Dispatcher.Dispatch(() =>
+        {
+            if (!_isPageActive) return;
+            UpdateCalendarDecorations();
+            _calendarView?.ClearSelection();
+        }));
+        _vm.ReservedDates.CollectionChanged -= OnReservedDatesChanged;
+        _vm.ReservedDates.CollectionChanged += OnReservedDatesChanged;
+        UpdateCalendarDecorations();
 #if WINDOWS
         var nativeWindow = Window?.Handler?.PlatformView as Microsoft.UI.Xaml.Window;
         _windowContent = nativeWindow?.Content as Microsoft.UI.Xaml.FrameworkElement;
@@ -65,8 +75,10 @@ public class ManageCalendarsPage : ContentPage
     protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
     {
         base.OnNavigatedFrom(args);
+        _isPageActive = false;
         _vm.ReservedDates.CollectionChanged -= OnReservedDatesChanged;
-        _reservedDatesDebouncer.Dispose();
+        _reservedDatesDebouncer?.Dispose();
+        _reservedDatesDebouncer = null;
 #if WINDOWS
         if (_windowContent != null)
         {
@@ -82,13 +94,34 @@ public class ManageCalendarsPage : ContentPage
         if (e.Key == Windows.System.VirtualKey.Escape)
         {
             e.Handled = true;
+            if (e.KeyStatus.WasKeyDown)
+                return;
+
+            // Close an open overlay instead of dismissing the whole page mid-edit.
+            if (_vm.IsEditorOpen)
+            {
+                _vm.CancelEditCommand.Execute(null);
+                return;
+            }
+
+            if (_vm.IsDeleteConfirmationOpen)
+            {
+                _vm.CancelDeleteCalendarCommand.Execute(null);
+                return;
+            }
+
+            // Guard against a second press racing the in-flight pop.
+            if (_isClosing)
+                return;
+
+            _isClosing = true;
             _ = Shell.Current.GoToAsync("..");
         }
     }
 #endif
 
     private void OnReservedDatesChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
-        _reservedDatesDebouncer.Change(50, Timeout.Infinite);
+        _reservedDatesDebouncer?.Change(50, Timeout.Infinite);
 
     private void UpdateCalendarDecorations()
     {

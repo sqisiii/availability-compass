@@ -8,11 +8,20 @@ public class App : Application
 {
     private readonly AppViewModel _appViewModel;
     private readonly MauiBootstrapper _bootstrapper;
+    private bool _initialized;
 
     public App(MauiBootstrapper bootstrapper, AppViewModel appViewModel)
     {
         _bootstrapper = bootstrapper;
         _appViewModel = appViewModel;
+
+        // Rx pipelines and fire-and-forget loads swallow exceptions into unobserved
+        // tasks; without this hook those failures leave no trace in the logs.
+        TaskScheduler.UnobservedTaskException += (_, e) =>
+        {
+            Log.Error(e.Exception, "Unobserved task exception");
+            e.SetObserved();
+        };
 
         LoadResources();
     }
@@ -24,6 +33,14 @@ public class App : Application
 
         shell.Loaded += async (_, _) =>
         {
+            // Loaded fires again when the platform view reattaches (e.g. Android
+            // activity recreation); initialization must run only once.
+            if (_initialized)
+            {
+                return;
+            }
+
+            _initialized = true;
             try
             {
                 await _bootstrapper.RunAsync();

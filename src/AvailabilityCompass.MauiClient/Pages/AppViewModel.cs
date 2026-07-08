@@ -5,6 +5,7 @@ using AvailabilityCompass.Core.Features.SearchRecords;
 using AvailabilityCompass.Core.Features.Tutorial;
 using AvailabilityCompass.Core.Shared;
 using AvailabilityCompass.Core.Shared.Navigation;
+using AvailabilityCompass.MauiClient.Shared.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Guidely.Core;
@@ -13,7 +14,6 @@ namespace AvailabilityCompass.MauiClient.Pages;
 
 public partial class AppViewModel : ObservableObject, IDisposable
 {
-    private readonly INavigationService<IDialogViewModel> _dialogNavigationService;
     private readonly INavigationStore<IDialogViewModel> _dialogNavigationStore;
     private readonly ManageCalendarsViewModel _manageCalendarsViewModel;
     private readonly ManageSourcesViewModel _manageSourcesViewModel;
@@ -25,7 +25,6 @@ public partial class AppViewModel : ObservableObject, IDisposable
 
     public AppViewModel(
         INavigationStore<IDialogViewModel> dialogNavigationStore,
-        INavigationService<IDialogViewModel> dialogNavigationService,
         IThemeService themeService,
         SearchViewModel searchViewModel,
         ManageSourcesViewModel manageSourcesViewModel,
@@ -33,7 +32,6 @@ public partial class AppViewModel : ObservableObject, IDisposable
         TutorialViewModel<AvailabilityCompassContext, AppTutorialTrigger, AppTutorialGroup> tutorialViewModel)
     {
         _dialogNavigationStore = dialogNavigationStore;
-        _dialogNavigationService = dialogNavigationService;
         _themeService = themeService;
         SearchViewModel = searchViewModel;
         _manageSourcesViewModel = manageSourcesViewModel;
@@ -71,7 +69,7 @@ public partial class AppViewModel : ObservableObject, IDisposable
 
         if (!HasAnySourceData())
         {
-            await Shell.Current.GoToAsync("manage-sources");
+            await NavigationGate.GoToAsync("manage-sources");
         }
     }
 
@@ -137,12 +135,12 @@ public partial class AppViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task OnOpenCalendarsAsync()
     {
-        await Shell.Current.GoToAsync("manage-calendars");
+        await NavigationGate.GoToAsync("manage-calendars");
     }
 
     [RelayCommand]
     private async Task OnOpenSourcesAsync()
     {
-        await Shell.Current.GoToAsync("manage-sources");
+        await NavigationGate.GoToAsync("manage-sources");
     }
 }

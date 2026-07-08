@@ -31,11 +31,13 @@ public class CalendarView : ContentView
         BindableProperty.Create(nameof(FirstDayOfWeek), typeof(DayOfWeek), typeof(CalendarView),
             DayOfWeek.Monday, propertyChanged: (b, _, _) => ((CalendarView)b).Render());
 
+    private readonly List<(DateOnly Date, Border Cell, Label Label)> _dayCells = [];
     private readonly Grid _dayGrid;
     private readonly Label _monthLabel;
 
     private readonly HashSet<DateOnly> _selectedDates = [];
 
+    private Dictionary<DateOnly, CalendarDateDecoration> _decorationMap = [];
     private DateOnly _displayMonth;
 
     public CalendarView()
@@ -136,9 +138,15 @@ public class CalendarView : ContentView
         Render();
     }
 
+    /// <summary>
+    /// Full grid rebuild — only needed when the structure changes (month navigation,
+    /// first day of week). Selection and decoration changes go through
+    /// <see cref="RestyleCells"/>, which updates the existing cells in place.
+    /// </summary>
     private void Render()
     {
         _monthLabel.Text = _displayMonth.ToString("MMMM yyyy");
+        _dayCells.Clear();
         _dayGrid.Children.Clear();
         _dayGrid.RowDefinitions.Clear();
 
@@ -160,8 +168,7 @@ public class CalendarView : ContentView
             _dayGrid.Children.Add(headerLabel);
         }
 
-        // Build decoration lookup
-        var decorationMap = BuildDecorationMap();
+        _decorationMap = BuildDecorationMap();
 
         // Calendar days
         var firstDay = _displayMonth;
@@ -180,7 +187,7 @@ public class CalendarView : ContentView
         for (var day = 1; day <= daysInMonth; day++)
         {
             var date = new DateOnly(firstDay.Year, firstDay.Month, day);
-            var cell = CreateDayCell(date, today, decorationMap);
+            var cell = CreateDayCell(date, today);
 
             Grid.SetColumn(cell, col);
             Grid.SetRow(cell, row);
@@ -195,11 +202,51 @@ public class CalendarView : ContentView
         }
     }
 
-    private View CreateDayCell(DateOnly date, DateOnly today, Dictionary<DateOnly, CalendarDateDecoration> decorationMap)
+    /// <summary>
+    /// Recomputes decoration/selection styling on the existing cells.
+    /// </summary>
+    private void RestyleCells()
+    {
+        _decorationMap = BuildDecorationMap();
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        foreach (var (date, cell, label) in _dayCells)
+        {
+            StyleCell(date, cell, label, today);
+        }
+    }
+
+    private View CreateDayCell(DateOnly date, DateOnly today)
+    {
+        var label = new Label
+        {
+            Text = date.Day.ToString(),
+            FontSize = 13,
+            HorizontalTextAlignment = TextAlignment.Center,
+            VerticalTextAlignment = TextAlignment.Center
+        };
+
+        var cell = new Border
+        {
+            StrokeShape = new RoundRectangle { CornerRadius = 6 },
+            Padding = 2,
+            Content = label
+        };
+
+        StyleCell(date, cell, label, today);
+
+        var tapGesture = new TapGestureRecognizer();
+        tapGesture.Tapped += (_, _) => OnDateTapped(date);
+        cell.GestureRecognizers.Add(tapGesture);
+
+        _dayCells.Add((date, cell, label));
+        return cell;
+    }
+
+    private void StyleCell(DateOnly date, Border cell, Label label, DateOnly today)
     {
         var isSelected = _selectedDates.Contains(date);
         var isToday = date == today;
-        var hasDecoration = decorationMap.TryGetValue(date, out var decoration);
+        var hasDecoration = _decorationMap.TryGetValue(date, out var decoration);
 
         Color bgColor;
         Color textColor;
@@ -225,36 +272,18 @@ public class CalendarView : ContentView
             textColor = Colors.Black;
         }
 
-        var label = new Label
-        {
-            Text = date.Day.ToString(),
-            FontSize = 13,
-            FontAttributes = hasDecoration ? FontAttributes.Bold : FontAttributes.None,
-            HorizontalTextAlignment = TextAlignment.Center,
-            VerticalTextAlignment = TextAlignment.Center,
-            TextColor = textColor
-        };
-
-        var cell = new Border
-        {
-            StrokeShape = new RoundRectangle { CornerRadius = 6 },
-            StrokeThickness = isSelected ? 2 : hasDecoration ? 1 : 0,
-            Stroke = isSelected ? SelectedColor : hasDecoration ? decoration!.Color : Colors.Transparent,
-            BackgroundColor = bgColor,
-            Padding = 2,
-            Content = label
-        };
-
-        var tapGesture = new TapGestureRecognizer();
-        tapGesture.Tapped += (_, _) => OnDateTapped(date, hasDecoration);
-        cell.GestureRecognizers.Add(tapGesture);
-
-        return cell;
+        label.FontAttributes = hasDecoration ? FontAttributes.Bold : FontAttributes.None;
+        label.TextColor = textColor;
+        cell.StrokeThickness = isSelected ? 2 : hasDecoration ? 1 : 0;
+        cell.Stroke = isSelected ? SelectedColor : hasDecoration ? decoration!.Color : Colors.Transparent;
+        cell.BackgroundColor = bgColor;
     }
 
-    private void OnDateTapped(DateOnly date, bool hasDecoration)
+    private void OnDateTapped(DateOnly date)
     {
-        if (hasDecoration)
+        // Decoration state is looked up at tap time — it may have changed since the
+        // cell was created, because restyles no longer recreate the tap handlers.
+        if (_decorationMap.ContainsKey(date))
         {
             // Clicking a decorated date fires the DateClickedCommand
             DateClickedCommand?.Execute(date.ToDateTime(TimeOnly.MinValue));
@@ -268,7 +297,7 @@ public class CalendarView : ContentView
         }
 
         SyncSelectedDates();
-        Render();
+        RestyleCells();
     }
 
     private void SyncSelectedDates()
@@ -288,7 +317,7 @@ public class CalendarView : ContentView
     {
         _selectedDates.Clear();
         SyncSelectedDates();
-        Render();
+        RestyleCells();
     }
 
     private Dictionary<DateOnly, CalendarDateDecoration> BuildDecorationMap()
@@ -335,11 +364,11 @@ public class CalendarView : ContentView
         if (newValue is INotifyCollectionChanged newCollection)
             newCollection.CollectionChanged += calendar.OnDecorationsCollectionChanged;
 
-        calendar.Render();
+        calendar.RestyleCells();
     }
 
     private void OnDecorationsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        Render();
+        RestyleCells();
     }
 }
