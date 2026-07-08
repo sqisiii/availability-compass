@@ -37,16 +37,18 @@ public class Bootstrapper
 
     /// <summary>
     /// Runs the bootstrapper to initialize and start the application.
+    /// Must be awaited on the UI thread — blocking with .Wait() deadlocks against
+    /// mediator handlers, whose continuations post back to the dispatcher.
     /// </summary>
-    public void Run()
+    public async Task RunAsync()
     {
         Introduce();
-        _dbInitializer.InitializeAsync().Wait();
+        await _dbInitializer.InitializeAsync();
 
         // Load a saved theme before showing the window
-        _themeService.LoadThemeAsync().Wait();
+        await _themeService.LoadThemeAsync();
 
-        _mainViewModel.InitializeAsync().Wait();
+        await _mainViewModel.InitializeAsync();
         _mainWindow.Show();
     }
 

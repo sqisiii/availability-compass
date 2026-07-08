@@ -64,13 +64,19 @@ public partial class App
             .Build();
     }
 
-    protected override void OnStartup(StartupEventArgs e)
+    protected override async void OnStartup(StartupEventArgs e)
     {
-        base.OnStartup(e);
-
-        //can't be done in any other way (without using GetRequiredService anty-pattern)
-        var bootstrapper = _host.Services.GetRequiredService<Bootstrapper>();
-        bootstrapper.Run();
+        try
+        {
+            base.OnStartup(e);
+            //can't be done in any other way (without using GetRequiredService anty-pattern)
+            var bootstrapper = _host.Services.GetRequiredService<Bootstrapper>();
+            await bootstrapper.RunAsync();
+        }
+        catch (Exception ex)
+        {
+            LogAndShowError(ex);
+        }
     }
 
     protected override async void OnExit(ExitEventArgs e)
