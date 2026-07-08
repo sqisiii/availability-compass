@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Guidely.Core;
 using MediatR;
+using Serilog;
 
 namespace AvailabilityCompass.Core.Features.ManageSources;
 
@@ -19,7 +20,6 @@ namespace AvailabilityCompass.Core.Features.ManageSources;
 /// </summary>
 public partial class ManageSourcesViewModel : ObservableValidator, IPageViewModel, IDialogViewModel
 {
-    private readonly CancellationTokenSource _cancellationTokenSource = new();
     private readonly INavigationService<IDialogViewModel> _dialogNavigationService;
     private readonly IMediator _mediator;
     private readonly HashSet<string> _refreshingSourceIds = [];
@@ -29,6 +29,9 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
 
     [ObservableProperty]
     private bool _isDialogOpen;
+
+    [ObservableProperty]
+    private bool _isRefreshing;
 
     public ManageSourcesViewModel(
         ISourceServiceFactory sourceServiceFactory,
@@ -57,22 +60,32 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
         await LoadSourcesMetaDataAsync(ct);
     }
 
-    [RelayCommand]
+    [RelayCommand(IncludeCancelCommand = true)]
     private async Task OnRefreshAllSourcesAsync(CancellationToken ct)
     {
         var tasks = Sources
             .Where(source => source.IsEnabled)
-            .Select(source => RefreshSourceData(source.SourceId, _cancellationTokenSource.Token))
+            .Select(source => RefreshSourceData(source.SourceId, ct))
             .ToList();
 
         await Task.WhenAll(tasks);
     }
 
 
-    [RelayCommand(CanExecute = nameof(CanRefreshSource))]
+    [RelayCommand(CanExecute = nameof(CanRefreshSource), IncludeCancelCommand = true)]
     private async Task OnRefreshSource(string sourceId, CancellationToken ct)
     {
         await RefreshSourceData(sourceId, ct);
+    }
+
+    /// <summary>
+    /// Cancels any running refresh (single or all).
+    /// </summary>
+    [RelayCommand]
+    private void OnCancelRefresh()
+    {
+        RefreshAllSourcesCancelCommand.Execute(null);
+        RefreshSourceCancelCommand.Execute(null);
     }
 
     private async Task RefreshSourceData(string sourceId, CancellationToken ct)
@@ -84,22 +97,42 @@ public partial class ManageSourcesViewModel : ObservableValidator, IPageViewMode
 
         _tutorialViewModel.FireTrigger(AppTutorialTrigger.SourceRefreshStarted);
 
+        IsRefreshing = true;
         RefreshSourceCommand.NotifyCanExecuteChanged();
         RefreshAllSourcesCommand.NotifyCanExecuteChanged();
         var sourceService = _sourceServiceFactory.GetService(sourceId);
         sourceService.RefreshProgressChanged += SourceServiceOnRefreshProgressChanged;
-        await sourceService.RefreshSourceDataAsync(ct);
-        sourceService.RefreshProgressChanged -= SourceServiceOnRefreshProgressChanged;
+        try
+        {
+            await sourceService.RefreshSourceDataAsync(ct);
+            await UpdateSourceMetaDataAsync(sourceId, ct);
 
-        await UpdateSourceMetaDataAsync(sourceId, ct);
-
-        _tutorialViewModel.FireTrigger(
-            AppTutorialTrigger.SourceRefreshed,
-            ctx => ctx with { HasRefreshedSource = true });
-
-        _refreshingSourceIds.Remove(sourceId);
-        RefreshSourceCommand.NotifyCanExecuteChanged();
-        RefreshAllSourcesCommand.NotifyCanExecuteChanged();
+            _tutorialViewModel.FireTrigger(
+                AppTutorialTrigger.SourceRefreshed,
+                ctx => ctx with { HasRefreshedSource = true });
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            // Cancelled by the user; nothing to log.
+        }
+        catch (Exception ex)
+        {
+            // Includes HttpClient timeouts: TaskCanceledException without the command
+            // token cancelled means the request timed out, not that the user cancelled.
+            Log.Error(ex, "Refreshing source {SourceId} failed", sourceId);
+        }
+        finally
+        {
+            // Without this cleanup a failed refresh leaks the progress handler on the
+            // singleton service and leaves the source's refresh button disabled forever.
+            sourceService.RefreshProgressChanged -= SourceServiceOnRefreshProgressChanged;
+            var source = Sources.FirstOrDefault(s => s.SourceId == sourceId);
+            source?.ProgressPercent = 0;
+            _refreshingSourceIds.Remove(sourceId);
+            IsRefreshing = _refreshingSourceIds.Count > 0;
+            RefreshSourceCommand.NotifyCanExecuteChanged();
+            RefreshAllSourcesCommand.NotifyCanExecuteChanged();
+        }
     }
 
     private async Task UpdateSourceMetaDataAsync(string sourceId, CancellationToken ct)

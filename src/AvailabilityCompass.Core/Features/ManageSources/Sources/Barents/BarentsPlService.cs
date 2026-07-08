@@ -86,7 +86,7 @@ public sealed class BarentsPlService : SourceServiceBase
                 ReportProgress((double)(index + 1) / tripsData.Count * 100);
             }
         }
-        catch (Exception e)
+        catch (Exception e) when (e is not OperationCanceledException)
         {
             Log.Error(e, "Error while parsing data from Barents PL");
         }
@@ -174,7 +174,7 @@ public sealed class BarentsPlService : SourceServiceBase
                 }
             }
         }
-        catch (Exception e)
+        catch (Exception e) when (e is not OperationCanceledException)
         {
             Log.Error(e, "Error while extracting trip data from Barents PL");
         }

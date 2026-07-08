@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using AvailabilityCompass.Core.Features.ManageSources;
 using AvailabilityCompass.MauiClient.Shared.Converters;
 using CommunityToolkit.Maui.Markup;
@@ -7,8 +8,10 @@ namespace AvailabilityCompass.MauiClient.Pages.ManageSources;
 
 public class ManageSourcesPage : ContentPage
 {
+    private readonly ToolbarItem _cancelToolbarItem;
     private readonly ManageSourcesViewModel _vm;
 #if WINDOWS
+    private bool _isClosing;
     private Microsoft.UI.Xaml.FrameworkElement? _windowContent;
 #endif
 
@@ -30,6 +33,12 @@ public class ManageSourcesPage : ContentPage
             Command = vm.RefreshAllSourcesCommand
         });
 
+        _cancelToolbarItem = new ToolbarItem
+        {
+            Text = "Cancel",
+            Command = vm.CancelRefreshCommand
+        };
+
         Content = new CollectionView
             {
                 ItemsLayout = new GridItemsLayout(2, ItemsLayoutOrientation.Vertical)
@@ -48,6 +57,8 @@ public class ManageSourcesPage : ContentPage
     {
         base.OnNavigatedTo(args);
         _ = _vm.LoadDataAsync(CancellationToken.None);
+        _vm.PropertyChanged += OnViewModelPropertyChanged;
+        UpdateCancelToolbarItem();
 #if WINDOWS
         var nativeWindow = Window?.Handler?.PlatformView as Microsoft.UI.Xaml.Window;
         _windowContent = nativeWindow?.Content as Microsoft.UI.Xaml.FrameworkElement;
@@ -59,6 +70,7 @@ public class ManageSourcesPage : ContentPage
     protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
     {
         base.OnNavigatedFrom(args);
+        _vm.PropertyChanged -= OnViewModelPropertyChanged;
 #if WINDOWS
         if (_windowContent != null)
         {
@@ -68,12 +80,39 @@ public class ManageSourcesPage : ContentPage
 #endif
     }
 
+    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ManageSourcesViewModel.IsRefreshing))
+        {
+            UpdateCancelToolbarItem();
+        }
+    }
+
+    private void UpdateCancelToolbarItem()
+    {
+        switch (_vm.IsRefreshing)
+        {
+            // ToolbarItem has no IsVisible, so the Cancel action is added/removed instead.
+            case true when !ToolbarItems.Contains(_cancelToolbarItem):
+                ToolbarItems.Add(_cancelToolbarItem);
+                break;
+            case false:
+                ToolbarItems.Remove(_cancelToolbarItem);
+                break;
+        }
+    }
+
 #if WINDOWS
     private void OnWindowKeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
     {
         if (e.Key == Windows.System.VirtualKey.Escape)
         {
             e.Handled = true;
+            // Guard against key auto-repeat and a second press racing the in-flight pop.
+            if (_isClosing || e.KeyStatus.WasKeyDown)
+                return;
+
+            _isClosing = true;
             _ = Shell.Current.GoToAsync("..");
         }
     }

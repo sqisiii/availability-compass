@@ -62,7 +62,7 @@ public sealed class HoryzontyService : SourceServiceBase
                 ReportProgress((double)(index + 1) / trips.Count * 100);
             }
         }
-        catch (Exception e)
+        catch (Exception e) when (e is not OperationCanceledException)
         {
             Log.Error(e, "Error while parsing data from Horyzonty");
         }
@@ -142,7 +142,7 @@ public sealed class HoryzontyService : SourceServiceBase
                 tours.Add(tour);
             }
         }
-        catch (Exception e)
+        catch (Exception e) when (e is not OperationCanceledException)
         {
             Log.Error(e, "Error while extracting trip data from Horyzonty");
         }

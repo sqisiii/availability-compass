@@ -92,7 +92,7 @@ public sealed class RowerzystaPodroznikService : SourceServiceBase
                 ReportProgress((double)(index + 1) / tripsData.Count * 100);
             }
         }
-        catch (Exception e)
+        catch (Exception e) when (e is not OperationCanceledException)
         {
             Log.Error(e, "Error while parsing data from RowerzystaPodroznik");
         }
@@ -232,7 +232,7 @@ public sealed class RowerzystaPodroznikService : SourceServiceBase
             };
             tours.Add(tour);
         }
-        catch (Exception e)
+        catch (Exception e) when (e is not OperationCanceledException)
         {
             Log.Error(e, "Error while extracting trip data from RowerzystaPodroznik");
         }

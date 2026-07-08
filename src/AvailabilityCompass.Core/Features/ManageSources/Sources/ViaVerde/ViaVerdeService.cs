@@ -109,7 +109,7 @@ public sealed class ViaVerdeService : SourceServiceBase
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             Log.Error(ex, "Error while parsing data from ViaVerde");
         }
