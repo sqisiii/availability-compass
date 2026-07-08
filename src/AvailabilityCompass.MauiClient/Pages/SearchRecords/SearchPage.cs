@@ -2,6 +2,7 @@ using AvailabilityCompass.Core.Features.SearchRecords;
 using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 using AvailabilityCompass.MauiClient.Controls;
 using AvailabilityCompass.MauiClient.Messages;
+using AvailabilityCompass.MauiClient.Shared.Navigation;
 using CommunityToolkit.Maui.Markup;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -23,37 +24,37 @@ public class SearchPage : ContentPage
         ToolbarItems.Add(new ToolbarItem
         {
             Text = "Sources",
-            Command = new AsyncRelayCommand(() => Shell.Current.GoToAsync("manage-sources"))
+            Command = new AsyncRelayCommand(() => NavigationGate.GoToAsync("manage-sources"))
         });
         ToolbarItems.Add(new ToolbarItem
         {
             Text = "Calendars",
-            Command = new AsyncRelayCommand(() => Shell.Current.GoToAsync("manage-calendars"))
+            Command = new AsyncRelayCommand(() => NavigationGate.GoToAsync("manage-calendars"))
         });
 
-        var scrollView = new ScrollView
+        // The filter area sits in an Auto row and the results in a Star row: nesting the
+        // results CollectionView in a page-level ScrollView gave it unbounded height,
+        // which disables virtualization and realizes every result card at once.
+        Content = new Grid
         {
-            Content = new VerticalStackLayout
+            RowDefinitions =
             {
-                Children =
-                {
-                    BuildFilterArea(),
-                    BuildResultsArea()
-                }
+                new RowDefinition(GridLength.Auto),
+                new RowDefinition(GridLength.Star)
+            },
+            Children =
+            {
+                BuildFilterArea().Row(0),
+                BuildResultsArea().Row(1)
             }
         };
-        scrollView.Scrolled += (_, _) => WeakReferenceMessenger.Default.Send(new CloseDropdownsMessage());
-        Content = scrollView;
     }
 
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        if (!_vm.IsInitialDataLoaded)
-        {
-            return;
-        }
-
+        // The view model no-ops once loaded; calling it unconditionally lets a failed
+        // startup load retry instead of leaving the page empty for the whole session.
         _ = _vm.LoadDataAsync(CancellationToken.None);
     }
 
@@ -129,7 +130,8 @@ public class SearchPage : ContentPage
             nameof(SearchViewModel.CalendarsSummary),
             nameof(SearchViewModel.IsCalendarsSectionExpanded));
 
-        var content = new VerticalStackLayout
+        var content = WrapSectionContent(
+            new VerticalStackLayout
             {
                 Padding = new Thickness(16, 0, 16, 12),
                 Spacing = 8,
@@ -138,13 +140,28 @@ public class SearchPage : ContentPage
                     BuildCalendarChips(),
                     BuildCalendarModeChips()
                 }
-            }
-            .Bind(IsVisibleProperty, nameof(SearchViewModel.IsCalendarsSectionExpanded));
+            },
+            nameof(SearchViewModel.IsCalendarsSectionExpanded));
 
         return new VerticalStackLayout
         {
             Children = { header, content }
         };
+    }
+
+    /// <summary>
+    /// Bounds an expanded section so tall content scrolls internally instead of
+    /// pushing the results area off screen (the filter area lives in an Auto row).
+    /// </summary>
+    private static View WrapSectionContent(View content, string expandedProperty)
+    {
+        var scroll = new ScrollView
+        {
+            Content = content,
+            MaximumHeightRequest = 360
+        };
+        scroll.Scrolled += (_, _) => WeakReferenceMessenger.Default.Send(new CloseDropdownsMessage());
+        return scroll.Bind(IsVisibleProperty, expandedProperty);
     }
 
     private View BuildCalendarChips()
@@ -237,21 +254,22 @@ public class SearchPage : ContentPage
             nameof(SearchViewModel.SourcesSummary),
             nameof(SearchViewModel.IsSourcesSectionExpanded));
 
-        var content = new VerticalStackLayout
+        var innerContent = new VerticalStackLayout
+        {
+            Padding = new Thickness(16, 0, 16, 12),
+            Spacing = 8,
+            Children =
             {
-                Padding = new Thickness(16, 0, 16, 12),
-                Spacing = 8,
-                Children =
-                {
-                    BuildSourceChips(),
-                    BuildSourceFormGroups()
-                }
+                BuildSourceChips(),
+                BuildSourceFormGroups()
             }
-            .Bind(IsVisibleProperty, nameof(SearchViewModel.IsSourcesSectionExpanded));
+        };
 
         var dismissTap = new TapGestureRecognizer();
         dismissTap.Tapped += (_, _) => WeakReferenceMessenger.Default.Send(new CloseDropdownsMessage());
-        content.GestureRecognizers.Add(dismissTap);
+        innerContent.GestureRecognizers.Add(dismissTap);
+
+        var content = WrapSectionContent(innerContent, nameof(SearchViewModel.IsSourcesSectionExpanded));
 
         return new VerticalStackLayout
         {
@@ -424,12 +442,11 @@ public class SearchPage : ContentPage
                         }
                     }
                 }
-            }
-            .Bind(IsVisibleProperty, nameof(SearchViewModel.IsFiltersSectionExpanded));
+            };
 
         return new VerticalStackLayout
         {
-            Children = { header, content }
+            Children = { header, WrapSectionContent(content, nameof(SearchViewModel.IsFiltersSectionExpanded)) }
         };
     }
 
@@ -566,9 +583,11 @@ public class SearchPage : ContentPage
     {
         if (sender is not View view) return;
         if (view.BindingContext is not Dictionary<string, object> result) return;
-        if (result.TryGetValue("Url", out var url) && url is string urlStr && !string.IsNullOrEmpty(urlStr))
+        // TryCreate: a relative/malformed stored Url must not crash the tap handler.
+        if (result.TryGetValue("Url", out var url) && url is string urlStr
+            && Uri.TryCreate(urlStr, UriKind.Absolute, out var uri))
         {
-            _ = Launcher.OpenAsync(new Uri(urlStr));
+            _ = Launcher.OpenAsync(uri);
         }
     }
 
