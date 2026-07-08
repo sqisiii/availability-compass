@@ -8,7 +8,9 @@ namespace AvailabilityCompass.Core.Shared.EventBus;
 /// </summary>
 public class EventBus : IEventBus
 {
-    private readonly ISubject<object> _subject = new Subject<object>();
+    // Synchronize: handlers publish from thread-pool threads, and concurrent OnNext
+    // on a bare Subject violates the Rx serialization contract.
+    private readonly ISubject<object> _subject = Subject.Synchronize(new Subject<object>());
 
     /// <inheritdoc />
     public void Publish<TEvent>(TEvent evt)

@@ -134,8 +134,10 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
                 eventBus.Listen<DateEntryUpdatedEvent>().Select(_ => Unit.Default),
                 eventBus.Listen<DateEntryDeletedEvent>().Select(_ => Unit.Default),
                 eventBus.Listen<SourcesDataChangedEvent>().Select(_ => Unit.Default))
+            // Bursts of events (multi-date save, refresh-all) collapse into one reload.
+            .Throttle(TimeSpan.FromMilliseconds(300))
             .ObserveOn(syncContext)
-            .SelectMany(_ => Observable.FromAsync(OnFilterDataChanged))
+            .SelectManySafe((_, ct) => OnFilterDataChanged(ct), "Search filter reload failed")
             .Subscribe();
     }
 
@@ -150,9 +152,13 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
 
     public IObservable<List<ResultColumnDefinition>> ColumnObservable => _columnSubject.AsObservable();
 
-    public FullyObservableCollection<SourceFilterViewModel> Sources { get; } = [];
+    // Only IsSelected changes matter to the collection-level handlers; escalating every
+    // item property change (e.g. the LastUpdated timer ticks) rebuilds the filter form UI.
+    public FullyObservableCollection<SourceFilterViewModel> Sources { get; } =
+        new(nameof(SourceFilterViewModel.IsSelected));
 
-    public FullyObservableCollection<CalendarFilterViewModel> Calendars { get; } = [];
+    public FullyObservableCollection<CalendarFilterViewModel> Calendars { get; } =
+        new(nameof(CalendarFilterViewModel.IsSelected));
 
     public ObservableCollection<FormGroup> FormGroups { get; } = [];
 
@@ -185,27 +191,60 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
     public string Icon => "SearchWeb";
     public string Name => "Search";
 
+    private bool _loadInProgress;
+
     public async Task LoadDataAsync(CancellationToken ct)
     {
-        if (_initialDataLoaded)
+        // Once loaded there is nothing to do on re-entry: EventBus subscriptions keep the
+        // filters fresh, and re-running the last search here froze the UI on every
+        // navigation back to the page.
+        if (_initialDataLoaded || _loadInProgress)
         {
-            Results.Clear();
-            await Task.Delay(100, ct);
-            await OnSearch();
             return;
         }
 
-        await LoadCalendarsAsync(ct);
-        await LoadSourcesAsync(ct);
-        _initialDataLoaded = true;
+        _loadInProgress = true;
+        try
+        {
+            await LoadCalendarsAsync(ct);
+            await LoadSourcesAsync(ct);
+            _initialDataLoaded = true;
+        }
+        finally
+        {
+            _loadInProgress = false;
+        }
     }
+
+    private bool _filterReloadInProgress;
+    private bool _filterReloadPending;
 
     private async Task OnFilterDataChanged(CancellationToken ct)
     {
-        ResultsState = SearchResultsState.EmptyState;
-        Results.Clear();
-        await LoadCalendarsAsync(ct);
-        await LoadSourcesAsync(ct);
+        // Serialize reloads: interleaved runs corrupt the form-element subscriptions.
+        // A reload requested mid-run is coalesced into one follow-up pass.
+        if (_filterReloadInProgress)
+        {
+            _filterReloadPending = true;
+            return;
+        }
+
+        _filterReloadInProgress = true;
+        try
+        {
+            do
+            {
+                _filterReloadPending = false;
+                ResultsState = SearchResultsState.EmptyState;
+                Results.Clear();
+                await LoadCalendarsAsync(ct);
+                await LoadSourcesAsync(ct);
+            } while (_filterReloadPending);
+        }
+        finally
+        {
+            _filterReloadInProgress = false;
+        }
     }
 
     // ReSharper disable once UnusedParameterInPartialMethod
@@ -392,7 +431,15 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
             .ToHashSet();
 
         var getSourcesForFilteringDto = await _mediator.Send(new GetSourcesForFilteringQuery(), ct);
+        var replacedSources = Sources.ToList();
         Sources.Clear();
+        // Stops the replaced view models' 60s timers; otherwise every reload leaks
+        // a batch of timers that keep the dead instances rooted forever.
+        foreach (var replacedSource in replacedSources)
+        {
+            replacedSource.Dispose();
+        }
+
         _formGroups.Clear();
         foreach (var source in getSourcesForFilteringDto.Sources)
         {

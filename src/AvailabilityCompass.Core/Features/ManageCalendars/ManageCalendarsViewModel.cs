@@ -159,7 +159,12 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
     public string? FrequencyError => _dateEntryEditor.FrequencyError;
     public string? RepetitionsError => _dateEntryEditor.RepetitionsError;
 
-    public FullyObservableCollection<CalendarViewModel> Calendars { get; } = [];
+    // Only selection changes matter to CalendarsOnCollectionChanged; escalating every item
+    // property change (e.g., a rename) re-ran the full DateEntries rebuild + reserved-dates
+    // expansion redundantly.
+    public FullyObservableCollection<CalendarViewModel> Calendars { get; } =
+        new(nameof(CalendarViewModel.IsSelected));
+
     public ObservableCollection<DateEntryViewModel> DateEntries { get; } = [];
     public ObservableCollection<CategorizedDate> ReservedDates { get; set; } = [];
 
@@ -454,27 +459,32 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
                 ctx => ctx with { IsAddCalendarExpanded = true }));
         _calendarAddedSubscription = eventBus.Listen<CalendarAddedEvent>()
             .ObserveOn(syncContext)
-            .SelectMany(evt => Observable.FromAsync(ct => OnCalendarAdded(evt, ct)))
+            .SelectManySafe(OnCalendarAdded, "Calendar added handler failed")
             .Subscribe();
         _calendarDeletedSubscription = eventBus.Listen<CalendarDeletedEvent>()
             .ObserveOn(syncContext)
-            .SelectMany(_ => Observable.FromAsync(OnCalendarDeleted))
+            .SelectManySafe((_, ct) => OnCalendarDeleted(ct), "Calendar deleted handler failed")
             .Subscribe();
         _calendarUpdatedSubscription = eventBus.Listen<CalendarUpdatedEvent>()
             .ObserveOn(syncContext)
-            .SelectMany(evt => Observable.FromAsync(ct => OnCalendarUpdated(evt, ct)))
+            .SelectManySafe(OnCalendarUpdated, "Calendar updated handler failed")
             .Subscribe();
+        // Saving N selected dates publishes N events in a burst; Throttle collapses
+        // them into a single reload instead of N full reload cascades.
         _dateEntryAddedSubscription = eventBus.Listen<DateEntryAddedEvent>()
+            .Throttle(TimeSpan.FromMilliseconds(300))
             .ObserveOn(syncContext)
-            .SelectMany(evt => Observable.FromAsync(ct => OnDateEntryAdded(evt.CalendarId, ct)))
+            .SelectManySafe((evt, ct) => OnDateEntryAdded(evt.CalendarId, ct), "Date entry added handler failed")
             .Subscribe();
         _dateEntryDeletedSubscription = eventBus.Listen<DateEntryDeletedEvent>()
+            .Throttle(TimeSpan.FromMilliseconds(300))
             .ObserveOn(syncContext)
-            .SelectMany(evt => Observable.FromAsync(ct => OnDateEntryChanged(evt.CalendarId, ct)))
+            .SelectManySafe((evt, ct) => OnDateEntryChanged(evt.CalendarId, ct), "Date entry deleted handler failed")
             .Subscribe();
         _dateEntryUpdatedSubscription = eventBus.Listen<DateEntryUpdatedEvent>()
+            .Throttle(TimeSpan.FromMilliseconds(300))
             .ObserveOn(syncContext)
-            .SelectMany(evt => Observable.FromAsync(ct => OnDateEntryChanged(evt.CalendarId, ct)))
+            .SelectManySafe((evt, ct) => OnDateEntryChanged(evt.CalendarId, ct), "Date entry updated handler failed")
             .Subscribe();
     }
 
@@ -529,12 +539,15 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
     private async Task LoadCalendars(Guid? newSelectedCalendarId, CancellationToken ct)
     {
         var previouslySelectedCalendarId = SelectedCalendar?.CalendarId;
-        Calendars.Clear();
         var calendarResponse = await _mediator.Send(new GetCalendarsQuery(), ct);
         if (calendarResponse.Calendars is null)
         {
             return;
         }
+
+        // Clear only after the query returns: clearing before the await let an
+        // overlapping load display duplicated calendars.
+        Calendars.Clear();
 
         foreach (var calendar in calendarResponse.Calendars)
         {
@@ -554,6 +567,13 @@ public sealed partial class ManageCalendarsViewModel : ObservableValidator, IPag
 
     private async Task RefreshDateEntriesAsync(Guid calendarId, CancellationToken ct)
     {
+        // Events are throttled, so a delayed event can arrive after the user switched
+        // calendars — refreshing then would fill the new calendar with the old one's entries.
+        if (SelectedCalendar?.CalendarId != calendarId)
+        {
+            return;
+        }
+
         var response = await _mediator.Send(new GetDateEntriesQuery(calendarId), ct);
         if (response.IsSuccess)
         {
