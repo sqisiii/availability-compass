@@ -35,8 +35,9 @@ public abstract class SourceServiceBase : ISourceService
     /// </summary>
     public async Task<IEnumerable<SourceDataItem>> RefreshSourceDataAsync(CancellationToken ct)
     {
-        var trips = await ExtractSourceDataAsync(ct);
-        await Mediator.Send(new ReplaceSourceDataInDbRequest(trips), ct);
+        // ConfigureAwait(false) keeps the DB replace transaction off the caller's (UI) thread.
+        var trips = await ExtractSourceDataAsync(ct).ConfigureAwait(false);
+        await Mediator.Send(new ReplaceSourceDataInDbRequest(trips), ct).ConfigureAwait(false);
         return trips;
     }
 

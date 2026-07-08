@@ -26,10 +26,19 @@ public class SqlDbInitializer : IDbInitializer
         SqlMapper.RemoveTypeMap(typeof(Guid?));
         SqlMapper.AddTypeHandler(new SqliteGuidTypeHandler());
 
+        await EnableWriteAheadLoggingAsync();
         await PrepareSourceTablesAsync();
         await PrepareCalendarTablesAsync();
         await PrepareSettingsTableAsync();
         await PrepareDisabledSourcesTableAsync();
+    }
+
+    private async Task EnableWriteAheadLoggingAsync()
+    {
+        // WAL is persistent per database file; readers no longer block on writers
+        // during the bulk source-refresh transactions.
+        using var database = _sqliteDbConnectionFactory.Connect();
+        await database.ExecuteAsync("PRAGMA journal_mode=WAL;");
     }
 
     private async Task PrepareSourceTablesAsync()

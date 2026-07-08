@@ -1,4 +1,5 @@
-﻿using AvailabilityCompass.Core.Features.Tutorial;
+﻿using AvailabilityCompass.Core.Application.Mediator;
+using AvailabilityCompass.Core.Features.Tutorial;
 using AvailabilityCompass.Core.Features.Tutorial.Steps;
 using AvailabilityCompass.Core.Shared.EventBus;
 using Guidely.Core.DependencyInjection;
@@ -18,8 +19,15 @@ public static class CoreExtensions
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddCore(this IServiceCollection services)
     {
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CoreExtensions).Assembly));
+        services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssembly(typeof(CoreExtensions).Assembly);
+            cfg.AddOpenBehavior(typeof(BackgroundThreadBehavior<,>));
+        });
         services.AddHttpClient();
+        // Default is 100s; on flaky mobile networks a stalled scrape request must fail fast.
+        services.ConfigureHttpClientDefaults(builder =>
+            builder.ConfigureHttpClient(client => client.Timeout = TimeSpan.FromSeconds(30)));
         services.AddSingleton<IEventBus, EventBus>();
 
         // Register Guidely tutorial services
