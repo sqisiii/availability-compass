@@ -1,4 +1,5 @@
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddCalendarRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.AddDateEntryRequest;
 using AvailabilityCompass.Core.Features.ManageCalendars.Commands.DeleteCalendarRequest;
@@ -377,6 +378,112 @@ public class SearchViewModelTests
     }
 
     [Fact]
+    public async Task CalendarAddedEvent_ReloadsCalendars_WhenCalendarIsAdded()
+    {
+        // Arrange
+        var previousContext = SynchronizationContext.Current;
+        SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
+        try
+        {
+            var calendarAdded = new Subject<CalendarAddedEvent>();
+            var calendarId = Guid.NewGuid();
+            _eventBus.Listen<CalendarAddedEvent>().Returns(calendarAdded);
+            _mediator.Send(Arg.Any<GetCalendarsForFilteringQuery>(), Arg.Any<CancellationToken>())
+                .Returns(new GetCalendarsForFilteringResponse(
+                    [new GetCalendarsForFilteringResponse.CalendarDto
+                    {
+                        Id = calendarId,
+                        Name = "New calendar",
+                        IsOnly = true
+                    }],
+                    true));
+            _mediator.Send(Arg.Any<GetSourcesForFilteringQuery>(), Arg.Any<CancellationToken>())
+                .Returns(new GetSourcesForFilteringResponse());
+            _calendarFactory.Create(Arg.Any<IEnumerable<GetCalendarsForFilteringResponse.CalendarDto>>())
+                .Returns(callInfo => callInfo.Arg<IEnumerable<GetCalendarsForFilteringResponse.CalendarDto>>()
+                    .Select(calendar => new CalendarFilterViewModel(calendar.Id)
+                    {
+                        Name = calendar.Name,
+                        IsOnly = calendar.IsOnly
+                    }));
+
+            var sut = CreateViewModel();
+
+            // Act
+            calendarAdded.OnNext(new CalendarAddedEvent(calendarId));
+
+            // Assert
+            await WaitForAsync(() => sut.Calendars.Any(calendar => calendar.Id == calendarId));
+            sut.Calendars.ShouldContain(calendar => calendar.Id == calendarId && calendar.Name == "New calendar");
+        }
+        finally
+        {
+            SynchronizationContext.SetSynchronizationContext(previousContext);
+        }
+    }
+
+    [Fact]
+    public async Task SourcesDataChangedEvent_ReloadsSources_WhenSourceIsRefreshed()
+    {
+        // Arrange
+        var previousContext = SynchronizationContext.Current;
+        SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
+        try
+        {
+            var sourcesDataChanged = new Subject<SourcesDataChangedEvent>();
+            _eventBus.Listen<SourcesDataChangedEvent>().Returns(sourcesDataChanged);
+            _mediator.Send(Arg.Any<GetCalendarsForFilteringQuery>(), Arg.Any<CancellationToken>())
+                .Returns(new GetCalendarsForFilteringResponse([], true));
+
+            var response = new GetSourcesForFilteringResponse();
+            response.Sources.Add(new GetSourcesForFilteringResponse.Source
+            {
+                SourceId = "test-source",
+                Name = "Test Source",
+                Language = "EN",
+                HasTrips = true
+            });
+            _mediator.Send(Arg.Any<GetSourcesForFilteringQuery>(), Arg.Any<CancellationToken>())
+                .Returns(response);
+            _sourceFactory.Create(Arg.Any<GetSourcesForFilteringResponse.Source>())
+                .Returns(callInfo =>
+                {
+                    var source = callInfo.Arg<GetSourcesForFilteringResponse.Source>();
+                    return new SourceFilterViewModel(_dateTimeProvider)
+                    {
+                        SourceId = source.SourceId,
+                        Name = source.Name,
+                        Language = source.Language,
+                        HasTrips = source.HasTrips,
+                        IsActive = source.IsEnabled
+                    };
+                });
+            _formElementFactory.CreateFormElement(Arg.Any<GetSourcesForFilteringResponse.Source>())
+                .Returns(callInfo =>
+                {
+                    var source = callInfo.Arg<GetSourcesForFilteringResponse.Source>();
+                    return new FormGroup { SourceId = source.SourceId, Title = source.Name };
+                });
+
+            var sut = CreateViewModel();
+
+            // Act
+            sourcesDataChanged.OnNext(new SourcesDataChangedEvent());
+
+            // Assert
+            await WaitForAsync(() => sut.Sources.Any(source => source.SourceId == "test-source"));
+            sut.Sources.ShouldContain(source =>
+                source.SourceId == "test-source" &&
+                source.Name == "Test Source" &&
+                source.IsInteractable);
+        }
+        finally
+        {
+            SynchronizationContext.SetSynchronizationContext(previousContext);
+        }
+    }
+
+    [Fact]
     public void Dispose_ShouldNotThrow()
     {
         // Arrange
@@ -397,4 +504,18 @@ public class SearchViewModelTests
         null!,
         null!,
         null!);
+
+    private static async Task WaitForAsync(Func<bool> condition)
+    {
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+        while (!condition())
+        {
+            if (cts.IsCancellationRequested)
+            {
+                condition().ShouldBeTrue();
+            }
+
+            await Task.Delay(25, CancellationToken.None);
+        }
+    }
 }

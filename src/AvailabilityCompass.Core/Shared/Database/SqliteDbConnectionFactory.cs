@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using AvailabilityCompass.Core.Application.Database;
 using Microsoft.Data.Sqlite;
 
 namespace AvailabilityCompass.Core.Shared.Database;
@@ -25,6 +26,7 @@ public class SqliteDbConnectionFactory : IDbConnectionFactory
     /// <returns>An instance of <see cref="IDbConnection"/> representing the SQLite database connection.</returns>
     public IDbConnection Connect()
     {
+        SqliteDapperTypeHandlers.EnsureRegistered();
         return new SqliteConnection(_connectionString);
     }
 }

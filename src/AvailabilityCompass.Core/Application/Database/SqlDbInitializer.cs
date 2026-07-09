@@ -1,3 +1,4 @@
+using System.Data;
 using AvailabilityCompass.Core.Shared.Database;
 using Dapper;
 
@@ -18,17 +19,12 @@ public class SqlDbInitializer : IDbInitializer
     /// <inheritdoc />
     public async Task InitializeAsync()
     {
-        //Sqlite doesn't have a DateTime type, so we need to register a custom type handler for DateOnly
-        SqlMapper.AddTypeHandler(new SqliteDateOnlyTypeHandler());
-
-        // Guid is stored as BLOB(16), so override Dapper's built-in Guid type map.
-        SqlMapper.RemoveTypeMap(typeof(Guid));
-        SqlMapper.RemoveTypeMap(typeof(Guid?));
-        SqlMapper.AddTypeHandler(new SqliteGuidTypeHandler());
+        SqliteDapperTypeHandlers.EnsureRegistered();
 
         await EnableWriteAheadLoggingAsync();
         await PrepareSourceTablesAsync();
         await PrepareCalendarTablesAsync();
+        await NormalizeGuidStorageAsync();
         await PrepareSettingsTableAsync();
         await PrepareDisabledSourcesTableAsync();
     }
@@ -109,6 +105,58 @@ public class SqlDbInitializer : IDbInitializer
         await database.ExecuteAsync(createDateEntryTable);
     }
 
+    private async Task NormalizeGuidStorageAsync()
+    {
+        using var database = _sqliteDbConnectionFactory.Connect();
+        database.Open();
+        await database.ExecuteAsync("PRAGMA foreign_keys=OFF;");
+
+        using var transaction = database.BeginTransaction();
+        await NormalizeGuidColumnAsync(database, transaction, "Calendar", "CalendarId");
+        await NormalizeGuidColumnAsync(database, transaction, "DateEntry", "CalendarId");
+        await NormalizeGuidColumnAsync(database, transaction, "DateEntry", "Id");
+        transaction.Commit();
+
+        await database.ExecuteAsync("PRAGMA foreign_keys=ON;");
+    }
+
+    private static async Task NormalizeGuidColumnAsync(
+        IDbConnection database,
+        IDbTransaction transaction,
+        string tableName,
+        string columnName)
+    {
+        string selectSql = $"""
+                            SELECT rowid AS RowId, {columnName} AS Value
+                            FROM {tableName}
+                            WHERE typeof({columnName}) = 'text';
+                            """;
+
+        var legacyValues = await database.QueryAsync<LegacyGuidValue>(selectSql, transaction: transaction)
+            .ConfigureAwait(false);
+
+        foreach (LegacyGuidValue legacyValue in legacyValues)
+        {
+            if (!Guid.TryParse(legacyValue.Value, out Guid guid))
+            {
+                throw new DataException(
+                    $"Invalid GUID value in {tableName}.{columnName} at rowid {legacyValue.RowId}.");
+            }
+
+            string updateSql = $"""
+                                UPDATE {tableName}
+                                SET {columnName} = @Value
+                                WHERE rowid = @RowId;
+                                """;
+
+            await database.ExecuteAsync(
+                    updateSql,
+                    new { Value = guid.ToByteArray(), legacyValue.RowId },
+                    transaction)
+                .ConfigureAwait(false);
+        }
+    }
+
     private async Task PrepareSettingsTableAsync()
     {
         // language=SQLite
@@ -136,5 +184,11 @@ public class SqlDbInitializer : IDbInitializer
             """;
         using var database = _sqliteDbConnectionFactory.Connect();
         await database.ExecuteAsync(createDisabledSourcesTable);
+    }
+
+    private sealed class LegacyGuidValue
+    {
+        public long RowId { get; init; }
+        public string Value { get; init; } = string.Empty;
     }
 }

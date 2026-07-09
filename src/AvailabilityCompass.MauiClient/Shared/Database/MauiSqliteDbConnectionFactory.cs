@@ -1,4 +1,5 @@
 using System.Data;
+using AvailabilityCompass.Core.Application.Database;
 using AvailabilityCompass.Core.Shared.Database;
 using Microsoft.Data.Sqlite;
 
@@ -17,6 +18,7 @@ public class MauiSqliteDbConnectionFactory : IDbConnectionFactory
 
     public IDbConnection Connect()
     {
+        SqliteDapperTypeHandlers.EnsureRegistered();
         return new SqliteConnection(_connectionString);
     }
 }

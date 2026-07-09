@@ -1,6 +1,7 @@
 using System.Collections.Specialized;
 using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 using AvailabilityCompass.MauiClient.Messages;
+using AvailabilityCompass.MauiClient.Shared.Theme;
 using CommunityToolkit.Maui.Markup;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Maui.Controls.Shapes;
@@ -22,7 +23,7 @@ public class MultiSelectDropdown : ContentView, IRecipient<CloseDropdownsMessage
         var layout = new VerticalStackLayout { Spacing = 4 };
 
         layout.Children.Add(
-            new Label { FontSize = 12, Opacity = 0.7 }
+            SearchTheme.MutedLabel(new Label { FontSize = 12, Opacity = 0.7 })
                 .Bind(Label.TextProperty, nameof(FormElement.Label)));
 
         var optionsList = new ScrollView
@@ -33,11 +34,11 @@ public class MultiSelectDropdown : ContentView, IRecipient<CloseDropdownsMessage
         _summaryLabel = new Label
         {
             FontSize = 13,
-            TextColor = Colors.Gray,
             LineBreakMode = LineBreakMode.TailTruncation,
             MaxLines = 1,
             Text = "..."
         };
+        SearchTheme.MutedLabel(_summaryLabel);
 
         _chevronLabel = new Label
         {
@@ -46,30 +47,28 @@ public class MultiSelectDropdown : ContentView, IRecipient<CloseDropdownsMessage
             VerticalTextAlignment = TextAlignment.Center
         };
 
+        SearchTheme.PrimaryLabel(_chevronLabel);
+
         _clearButton = new Label
         {
             Text = "✕",
             FontSize = 14,
-            TextColor = Colors.Gray,
             VerticalTextAlignment = TextAlignment.Center,
             IsVisible = false
         };
+        SearchTheme.MutedLabel(_clearButton);
 
-        _optionsContainer = new Border
+        _optionsContainer = SearchTheme.OptionsPanel(new Border
         {
             StrokeShape = new RoundRectangle { CornerRadius = 8 },
-            Stroke = Colors.LightGray,
-            BackgroundColor = Color.FromArgb("#F5F5F5"),
             Padding = new Thickness(4),
             IsVisible = false,
             Content = optionsList
-        };
+        });
 
-        var header = new Border
+        var header = SearchTheme.InputBorder(new Border
         {
             StrokeShape = new RoundRectangle { CornerRadius = 8 },
-            Stroke = Colors.LightGray,
-            BackgroundColor = Colors.White,
             Padding = new Thickness(12, 8),
             Content = new Grid
             {
@@ -87,7 +86,7 @@ public class MultiSelectDropdown : ContentView, IRecipient<CloseDropdownsMessage
                     _chevronLabel.Column(2)
                 }
             }
-        };
+        });
 
         var headerTap = new TapGestureRecognizer();
         headerTap.Tapped += (_, _) => ToggleDropdown();
@@ -115,7 +114,7 @@ public class MultiSelectDropdown : ContentView, IRecipient<CloseDropdownsMessage
                     new CheckBox { VerticalOptions = LayoutOptions.Center }
                         .Bind(CheckBox.IsCheckedProperty, nameof(FormElementSelectOption.IsSelected),
                             mode: BindingMode.TwoWay),
-                    new Label { FontSize = 13, VerticalTextAlignment = TextAlignment.Center }
+                    SearchTheme.PrimaryLabel(new Label { FontSize = 13, VerticalTextAlignment = TextAlignment.Center })
                         .Bind(Label.TextProperty, nameof(FormElementSelectOption.Name))
                 }
             };

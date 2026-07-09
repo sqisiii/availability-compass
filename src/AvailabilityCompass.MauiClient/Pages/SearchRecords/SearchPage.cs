@@ -3,6 +3,7 @@ using AvailabilityCompass.Core.Features.SearchRecords.FilterFormElements;
 using AvailabilityCompass.MauiClient.Controls;
 using AvailabilityCompass.MauiClient.Messages;
 using AvailabilityCompass.MauiClient.Shared.Navigation;
+using AvailabilityCompass.MauiClient.Shared.Theme;
 using CommunityToolkit.Maui.Markup;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -35,7 +36,7 @@ public class SearchPage : ContentPage
         // The filter area sits in an Auto row and the results in a Star row: nesting the
         // results CollectionView in a page-level ScrollView gave it unbounded height,
         // which disables virtualization and realizes every result card at once.
-        Content = new Grid
+        Content = SearchTheme.Panel(new Grid
         {
             RowDefinitions =
             {
@@ -47,15 +48,7 @@ public class SearchPage : ContentPage
                 BuildFilterArea().Row(0),
                 BuildResultsArea().Row(1)
             }
-        };
-    }
-
-    protected override void OnNavigatedTo(NavigatedToEventArgs args)
-    {
-        base.OnNavigatedTo(args);
-        // The view model no-ops once loaded; calling it unconditionally lets a failed
-        // startup load retry instead of leaving the page empty for the whole session.
-        _ = _vm.LoadDataAsync(CancellationToken.None);
+        });
     }
 
     private View BuildSectionHeader(string title, string summaryProperty, string expandedProperty)
@@ -71,20 +64,20 @@ public class SearchPage : ContentPage
             },
             Children =
             {
-                new Label
+                SearchTheme.PrimaryLabel(new Label
                     {
                         Text = title, FontAttributes = FontAttributes.Bold, FontSize = 14, VerticalTextAlignment = TextAlignment.Center
-                    }
+                    })
                     .Column(0),
-                new Label
+                SearchTheme.MutedLabel(new Label
                     {
                         FontSize = 12, Opacity = 0.6, VerticalTextAlignment = TextAlignment.Center,
                         LineBreakMode = LineBreakMode.TailTruncation
-                    }
+                    })
                     .Bind(Label.TextProperty, summaryProperty)
                     .Column(1)
                     .Margins(8),
-                new Label { FontSize = 14, VerticalTextAlignment = TextAlignment.Center }
+                SearchTheme.PrimaryLabel(new Label { FontSize = 14, VerticalTextAlignment = TextAlignment.Center })
                     .Bind(Label.TextProperty, expandedProperty,
                         converter: new FuncConverter<bool, string>(expanded => expanded ? "▲" : "▼"))
                     .Column(2)
@@ -107,21 +100,20 @@ public class SearchPage : ContentPage
 
     private View BuildFilterArea()
     {
-        return new VerticalStackLayout
+        return SearchTheme.Panel(new VerticalStackLayout
         {
             Spacing = 0,
-            BackgroundColor = Color.FromArgb("#F8F8F8"),
             Children =
             {
                 BuildCalendarsSection(),
-                new BoxView { HeightRequest = 1, Color = Colors.LightGray },
+                SearchTheme.Divider(new BoxView { HeightRequest = 1 }),
                 BuildSourcesSection(),
-                new BoxView { HeightRequest = 1, Color = Colors.LightGray },
+                SearchTheme.Divider(new BoxView { HeightRequest = 1 }),
                 BuildFiltersSection(),
-                new BoxView { HeightRequest = 1, Color = Colors.LightGray },
+                SearchTheme.Divider(new BoxView { HeightRequest = 1 }),
                 BuildSearchButton()
             }
-        };
+        });
     }
 
     private View BuildCalendarsSection()
@@ -190,9 +182,9 @@ public class SearchPage : ContentPage
                         new CheckBox { VerticalOptions = LayoutOptions.Center }
                             .Bind(CheckBox.IsCheckedProperty, nameof(CalendarFilterViewModel.IsSelected),
                                 mode: BindingMode.TwoWay),
-                        new Label { FontSize = 13, VerticalTextAlignment = TextAlignment.Center }
+                        SearchTheme.PrimaryLabel(new Label { FontSize = 13, VerticalTextAlignment = TextAlignment.Center })
                             .Bind(Label.TextProperty, nameof(CalendarFilterViewModel.Name)),
-                        new Label { FontSize = 11, Opacity = 0.6, VerticalTextAlignment = TextAlignment.Center }
+                        SearchTheme.MutedLabel(new Label { FontSize = 11, Opacity = 0.6, VerticalTextAlignment = TextAlignment.Center })
                             .Bind(Label.TextProperty, nameof(CalendarFilterViewModel.Type))
                     }
                 }
@@ -219,12 +211,12 @@ public class SearchPage : ContentPage
                         Spacing = 4,
                         Children =
                         {
-                            new Label
+                            SearchTheme.AvailableLabel(new Label
                             {
-                                Text = "Available:", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = Colors.Green,
+                                Text = "Available:", FontSize = 12, FontAttributes = FontAttributes.Bold,
                                 VerticalTextAlignment = TextAlignment.Center
-                            },
-                            new Label { FontSize = 12, Opacity = 0.7, VerticalTextAlignment = TextAlignment.Center }
+                            }),
+                            SearchTheme.MutedLabel(new Label { FontSize = 12, Opacity = 0.7, VerticalTextAlignment = TextAlignment.Center })
                                 .Bind(Label.TextProperty, nameof(SearchViewModel.AvailableDaysSummary))
                         }
                     }
@@ -234,12 +226,12 @@ public class SearchPage : ContentPage
                         Spacing = 4,
                         Children =
                         {
-                            new Label
+                            SearchTheme.WarningLabel(new Label
                             {
-                                Text = "Blocked:", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = Colors.OrangeRed,
+                                Text = "Blocked:", FontSize = 12, FontAttributes = FontAttributes.Bold,
                                 VerticalTextAlignment = TextAlignment.Center
-                            },
-                            new Label { FontSize = 12, Opacity = 0.7, VerticalTextAlignment = TextAlignment.Center }
+                            }),
+                            SearchTheme.MutedLabel(new Label { FontSize = 12, Opacity = 0.7, VerticalTextAlignment = TextAlignment.Center })
                                 .Bind(Label.TextProperty, nameof(SearchViewModel.BlockedDaysSummary))
                         }
                     }
@@ -305,7 +297,7 @@ public class SearchPage : ContentPage
                         new CheckBox { VerticalOptions = LayoutOptions.Center }
                             .Bind(CheckBox.IsCheckedProperty, nameof(SourceFilterViewModel.IsSelected),
                                 mode: BindingMode.TwoWay),
-                        new Label { FontSize = 12, VerticalTextAlignment = TextAlignment.Center }
+                        SearchTheme.PrimaryLabel(new Label { FontSize = 12, VerticalTextAlignment = TextAlignment.Center })
                             .Bind(Label.TextProperty, nameof(SourceFilterViewModel.Name))
                     }
                 }
@@ -336,7 +328,7 @@ public class SearchPage : ContentPage
                 Spacing = 8,
                 Children =
                 {
-                    new Label { FontAttributes = FontAttributes.Bold, FontSize = 13 }
+                    SearchTheme.PrimaryLabel(new Label { FontAttributes = FontAttributes.Bold, FontSize = 13 })
                         .Bind(Label.TextProperty, nameof(FormGroup.Title))
                 }
             };
@@ -359,9 +351,9 @@ public class SearchPage : ContentPage
             Spacing = 4,
             Children =
             {
-                new Label { FontSize = 12, Opacity = 0.7 }
+                SearchTheme.MutedLabel(new Label { FontSize = 12, Opacity = 0.7 })
                     .Bind(Label.TextProperty, nameof(FormElement.Label)),
-                new Entry { FontSize = 14 }
+                SearchTheme.SearchEntry(new Entry { FontSize = 14 })
                     .Bind(Entry.TextProperty, nameof(FormElement.TextValue), BindingMode.TwoWay)
             }
         };
@@ -379,7 +371,7 @@ public class SearchPage : ContentPage
                         converter: new FuncConverter<string, bool>(
                             s => string.Equals(s, "true", StringComparison.OrdinalIgnoreCase),
                             b => b ? "true" : "false")),
-                new Label { FontSize = 13, VerticalTextAlignment = TextAlignment.Center }
+                SearchTheme.PrimaryLabel(new Label { FontSize = 13, VerticalTextAlignment = TextAlignment.Center })
                     .Bind(Label.TextProperty, nameof(FormElement.Label))
             }
         };
@@ -402,8 +394,8 @@ public class SearchPage : ContentPage
                         Spacing = 4,
                         Children =
                         {
-                            new Label { Text = "Search phrase", FontSize = 12, Opacity = 0.7 },
-                            new Entry { Placeholder = "Search in results...", FontSize = 14 }
+                            SearchTheme.MutedLabel(new Label { Text = "Search phrase", FontSize = 12, Opacity = 0.7 }),
+                            SearchTheme.SearchEntry(new Entry { Placeholder = "Search in results...", FontSize = 14 })
                                 .Bind(Entry.TextProperty, nameof(SearchViewModel.SearchPhrase), BindingMode.TwoWay)
                         }
                     },
@@ -422,8 +414,8 @@ public class SearchPage : ContentPage
                                     Spacing = 4,
                                     Children =
                                     {
-                                        new Label { Text = "Start date", FontSize = 12, Opacity = 0.7 },
-                                        new Entry { Placeholder = "yyyy-MM-dd", FontSize = 14, Keyboard = Keyboard.Numeric }
+                                        SearchTheme.MutedLabel(new Label { Text = "Start date", FontSize = 12, Opacity = 0.7 }),
+                                        SearchTheme.SearchEntry(new Entry { Placeholder = "yyyy-MM-dd", FontSize = 14, Keyboard = Keyboard.Numeric })
                                             .Bind(Entry.TextProperty, nameof(SearchViewModel.StartDate), BindingMode.TwoWay)
                                     }
                                 }
@@ -433,8 +425,8 @@ public class SearchPage : ContentPage
                                     Spacing = 4,
                                     Children =
                                     {
-                                        new Label { Text = "End date", FontSize = 12, Opacity = 0.7 },
-                                        new Entry { Placeholder = "yyyy-MM-dd", FontSize = 14, Keyboard = Keyboard.Numeric }
+                                        SearchTheme.MutedLabel(new Label { Text = "End date", FontSize = 12, Opacity = 0.7 }),
+                                        SearchTheme.SearchEntry(new Entry { Placeholder = "yyyy-MM-dd", FontSize = 14, Keyboard = Keyboard.Numeric })
                                             .Bind(Entry.TextProperty, nameof(SearchViewModel.EndDate), BindingMode.TwoWay)
                                     }
                                 }
@@ -452,23 +444,21 @@ public class SearchPage : ContentPage
 
     private View BuildSearchButton()
     {
-        return new Button
+        return SearchTheme.PrimaryButton(new Button
             {
                 Text = "SEARCH",
                 FontAttributes = FontAttributes.Bold,
                 Margin = new Thickness(16, 8, 16, 12),
                 HeightRequest = 48,
-                CornerRadius = 8,
-                BackgroundColor = Colors.DodgerBlue,
-                TextColor = Colors.White
-            }
+                CornerRadius = 8
+            })
             .Bind(Button.CommandProperty, nameof(SearchViewModel.SearchCommand))
             .Bind(IsEnabledProperty, nameof(SearchViewModel.SourceSelected));
     }
 
     private View BuildResultsArea()
     {
-        return new Grid
+        return SearchTheme.Panel(new Grid
         {
             Children =
             {
@@ -477,7 +467,7 @@ public class SearchPage : ContentPage
                 BuildEmptyStateView(),
                 BuildSearchingView()
             }
-        };
+        });
     }
 
     private static View BuildSearchingView()
@@ -489,13 +479,13 @@ public class SearchPage : ContentPage
                 Spacing = 12,
                 Children =
                 {
-                    new ActivityIndicator { Color = Colors.DodgerBlue, HeightRequest = 40, WidthRequest = 40 }
+                    new ActivityIndicator { Color = SearchTheme.Accent, HeightRequest = 40, WidthRequest = 40 }
                         .Bind(ActivityIndicator.IsRunningProperty, nameof(SearchViewModel.ResultsState),
                             converter: new FuncConverter<SearchResultsState, bool>(s => s == SearchResultsState.Searching)),
-                    new Label
+                    SearchTheme.MutedLabel(new Label
                     {
                         Text = "Searching...", FontSize = 16, HorizontalOptions = LayoutOptions.Center, Opacity = 0.6
-                    }
+                    })
                 }
             }
             .Bind(IsVisibleProperty, nameof(SearchViewModel.ResultsState),
@@ -537,8 +527,8 @@ public class SearchPage : ContentPage
             Spacing = 8,
             Children =
             {
-                new Label { Text = "Sort by:", FontSize = 13, VerticalTextAlignment = TextAlignment.Center },
-                new Picker { FontSize = 13, WidthRequest = 120 }
+                SearchTheme.PrimaryLabel(new Label { Text = "Sort by:", FontSize = 13, VerticalTextAlignment = TextAlignment.Center }),
+                SearchTheme.SearchPicker(new Picker { FontSize = 13, WidthRequest = 120 })
                     .Bind(Picker.ItemsSourceProperty, nameof(SearchViewModel.SortOptions))
                     .Bind(Picker.SelectedItemProperty, nameof(SearchViewModel.SelectedSortOption), BindingMode.TwoWay)
             }
@@ -547,10 +537,9 @@ public class SearchPage : ContentPage
 
     private View BuildResultCard()
     {
-        var card = new Border
+        var card = SearchTheme.Card(new Border
         {
             StrokeShape = new RoundRectangle { CornerRadius = 10 },
-            Stroke = Colors.LightGray,
             StrokeThickness = 1,
             Padding = 12,
             Margin = new Thickness(0, 4),
@@ -566,7 +555,7 @@ public class SearchPage : ContentPage
                     BuildResultConflicts()
                 }
             }
-        };
+        });
 
         card.Bind(Border.StrokeProperty, "[HasCalendarOverlaps]",
             converter: new FuncConverter<object, Color>(val =>
@@ -600,9 +589,9 @@ public class SearchPage : ContentPage
             {
                 new Image { HeightRequest = 18, WidthRequest = 18 }
                     .Bind(Image.SourceProperty, "[SourceIconPath]"),
-                new Label { FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = Colors.DodgerBlue }
+                SearchTheme.AccentLabel(new Label { FontSize = 12, FontAttributes = FontAttributes.Bold })
                     .Bind(Label.TextProperty, "[SourceName]"),
-                new Label { FontSize = 11, Opacity = 0.5 }
+                SearchTheme.MutedLabel(new Label { FontSize = 11, Opacity = 0.5 })
                     .Bind(Label.TextProperty, "[SourceLanguage]")
             }
         };
@@ -619,7 +608,7 @@ public class SearchPage : ContentPage
             },
             Children =
             {
-                new Label { FontSize = 15, FontAttributes = FontAttributes.Bold }
+                SearchTheme.PrimaryLabel(new Label { FontSize = 15, FontAttributes = FontAttributes.Bold })
                     .Bind(Label.TextProperty, "[Destination]")
                     .Column(0),
                 new HorizontalStackLayout
@@ -627,10 +616,10 @@ public class SearchPage : ContentPage
                         Spacing = 4,
                         Children =
                         {
-                            new Label { FontSize = 12, Opacity = 0.7 }
+                            SearchTheme.MutedLabel(new Label { FontSize = 12, Opacity = 0.7 })
                                 .Bind(Label.TextProperty, "[StartDate]"),
-                            new Label { Text = "-", FontSize = 12, Opacity = 0.7 },
-                            new Label { FontSize = 12, Opacity = 0.7 }
+                            SearchTheme.MutedLabel(new Label { Text = "-", FontSize = 12, Opacity = 0.7 }),
+                            SearchTheme.MutedLabel(new Label { FontSize = 12, Opacity = 0.7 })
                                 .Bind(Label.TextProperty, "[EndDate]")
                         }
                     }
@@ -641,7 +630,7 @@ public class SearchPage : ContentPage
 
     private static View BuildResultTitle()
     {
-        return new Label { FontSize = 13, Opacity = 0.8, MaxLines = 2, LineBreakMode = LineBreakMode.TailTruncation }
+        return SearchTheme.PrimaryLabel(new Label { FontSize = 13, Opacity = 0.8, MaxLines = 2, LineBreakMode = LineBreakMode.TailTruncation })
             .Bind(Label.TextProperty, "[Title]");
     }
 
@@ -652,9 +641,9 @@ public class SearchPage : ContentPage
             Spacing = 12,
             Children =
             {
-                new Label { FontSize = 12, Opacity = 0.6 }
+                SearchTheme.MutedLabel(new Label { FontSize = 12, Opacity = 0.6 })
                     .Bind(Label.TextProperty, "[Type]"),
-                new Label { FontSize = 12, FontAttributes = FontAttributes.Bold }
+                SearchTheme.PrimaryLabel(new Label { FontSize = 12, FontAttributes = FontAttributes.Bold })
                     .Bind(Label.TextProperty, "[Price]")
             }
         };
@@ -662,12 +651,11 @@ public class SearchPage : ContentPage
 
     private static View BuildResultConflicts()
     {
-        var conflictsLayout = new VerticalStackLayout
+        var conflictsLayout = SearchTheme.ConflictPanel(new VerticalStackLayout
         {
             Spacing = 4,
-            Padding = new Thickness(8, 6),
-            BackgroundColor = Color.FromArgb("#1AFF4444")
-        };
+            Padding = new Thickness(8, 6)
+        });
 
         conflictsLayout.SetBinding(BindableLayout.ItemsSourceProperty, "[CalendarOverlaps]");
 
@@ -682,18 +670,17 @@ public class SearchPage : ContentPage
                         Spacing = 6,
                         Children =
                         {
-                            new Label { Text = "!", FontSize = 12, TextColor = Colors.OrangeRed, FontAttributes = FontAttributes.Bold },
-                            new Label { FontSize = 12, TextColor = Colors.OrangeRed, FontAttributes = FontAttributes.Bold }
+                            SearchTheme.WarningLabel(new Label { Text = "!", FontSize = 12, FontAttributes = FontAttributes.Bold }),
+                            SearchTheme.WarningLabel(new Label { FontSize = 12, FontAttributes = FontAttributes.Bold })
                                 .Bind(Label.TextProperty, nameof(CalendarOverlapSummary.CalendarName))
                         }
                     },
-                    new Label
+                    SearchTheme.WarningLabel(new Label
                         {
                             FontSize = 11,
-                            TextColor = Colors.OrangeRed,
                             Opacity = 0.85,
                             LineBreakMode = LineBreakMode.WordWrap
-                        }
+                        })
                         .Bind(Label.TextProperty, nameof(CalendarOverlapSummary.ConflictSummary))
                 }
             }));
@@ -712,11 +699,11 @@ public class SearchPage : ContentPage
                 HorizontalOptions = LayoutOptions.Center,
                 Children =
                 {
-                    new Label { Text = "No results found", FontSize = 18, HorizontalOptions = LayoutOptions.Center, Opacity = 0.5 },
-                    new Label
+                    SearchTheme.MutedLabel(new Label { Text = "No results found", FontSize = 18, HorizontalOptions = LayoutOptions.Center, Opacity = 0.5 }),
+                    SearchTheme.MutedLabel(new Label
                     {
                         Text = "Try adjusting your filters", FontSize = 14, HorizontalOptions = LayoutOptions.Center, Opacity = 0.4
-                    }
+                    })
                 }
             }
             .Bind(IsVisibleProperty, nameof(SearchViewModel.ResultsState),
@@ -731,16 +718,16 @@ public class SearchPage : ContentPage
                 HorizontalOptions = LayoutOptions.Center,
                 Children =
                 {
-                    new Label
+                    SearchTheme.PrimaryLabel(new Label
                     {
                         Text = "Availability Compass", FontSize = 24, HorizontalOptions = LayoutOptions.Center,
                         FontAttributes = FontAttributes.Bold
-                    },
-                    new Label
+                    }),
+                    SearchTheme.MutedLabel(new Label
                     {
                         Text = "Select sources and search for availability", FontSize = 14, HorizontalOptions = LayoutOptions.Center,
                         Opacity = 0.5
-                    }
+                    })
                 }
             }
             .Bind(IsVisibleProperty, nameof(SearchViewModel.ResultsState),
