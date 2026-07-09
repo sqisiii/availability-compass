@@ -46,6 +46,7 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
     private readonly IMediator _mediator;
     private readonly ISearchCommandFactory _searchCommandFactory;
     private readonly ISourceFilterViewModelFactory _sourceFilterViewModelFactory;
+    private readonly SynchronizationContext _syncContext;
     private readonly TutorialViewModel<AvailabilityCompassContext, AppTutorialTrigger, AppTutorialGroup>? _tutorialViewModel;
 
 
@@ -65,6 +66,9 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
 
     [ObservableProperty]
     private bool _isFiltersSectionExpanded;
+
+    [ObservableProperty]
+    private bool _isSourceFiltersLoading;
 
     [ObservableProperty]
     private bool _isSourcesSectionExpanded;
@@ -125,7 +129,7 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
         // thread-pool thread. MAUI's BindableLayout does not auto-marshal CollectionChanged
         // to the UI thread — ObserveOn ensures handlers that modify ObservableCollections
         // always run on the UI thread.
-        var syncContext = SynchronizationContext.Current!;
+        _syncContext = SynchronizationContext.Current ?? new SynchronizationContext();
         _calendarAddedSubscription = Observable.Merge(
                 eventBus.Listen<CalendarAddedEvent>().Select(_ => Unit.Default),
                 eventBus.Listen<CalendarUpdatedEvent>().Select(_ => Unit.Default),
@@ -136,7 +140,7 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
                 eventBus.Listen<SourcesDataChangedEvent>().Select(_ => Unit.Default))
             // Bursts of events (multi-date save, refresh-all) collapse into one reload.
             .Throttle(TimeSpan.FromMilliseconds(300))
-            .ObserveOn(syncContext)
+            .ObserveOn(_syncContext)
             .SelectManySafe((_, ct) => OnFilterDataChanged(ct), "Search filter reload failed")
             .Subscribe();
     }
@@ -382,7 +386,6 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
 
     private void SourcesOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        LoadFormGroups();
         SourceSelected = Sources.Any(s => s.IsSelected);
         OnPropertyChanged(nameof(SourcesSummary));
         OnPropertyChanged(nameof(HasSourcesSelected));
@@ -390,6 +393,31 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
         _tutorialViewModel?.FireTrigger(
             AppTutorialTrigger.FilterSelected,
             ctx => ctx with { HasSourceFilterSelected = Sources.Any(s => s.IsSelected) });
+
+        // This fires synchronously from the tapped chip's own IsSelected setter (via
+        // FullyObservableCollection escalating it to a collection-level Replace with the
+        // same item as old and new). Rebuilding FormGroups forces BindableLayout to tear
+        // down and reconstruct filter controls (including MultiSelectDropdown's native
+        // option rows) — doing that inline, in the same dispatcher pass as the checkbox's
+        // own visual update, delays the checkmark render and makes a quick second tap look
+        // like a no-op. Posting it lets the chip's own check state commit first; setting
+        // IsSourceFiltersLoading before the post lets a skeleton show in the meantime.
+        if (e.Action == NotifyCollectionChangedAction.Replace
+            && e.NewItems?.Count == 1
+            && e.NewItems[0] is SourceFilterViewModel toggledSource)
+        {
+            IsSourceFiltersLoading = true;
+            _syncContext.Post(_ =>
+            {
+                UpdateFormGroupFor(toggledSource);
+                IsSourceFiltersLoading = false;
+            }, null);
+        }
+        else
+        {
+            // Bulk change (initial load / source list refresh): every group is stale.
+            _syncContext.Post(_ => LoadFormGroups(), null);
+        }
     }
 
     private void CalendarsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -418,6 +446,28 @@ public sealed partial class SearchViewModel : ObservableValidator, IPageViewMode
         foreach (var formGroup in _formGroups.Where(f => selectedSources.Contains(f.SourceId)))
         {
             FormGroups.Add(formGroup);
+        }
+    }
+
+    // Adds/removes only the toggled source's own panel instead of LoadFormGroups()'s
+    // clear-and-rebuild-everything, so selecting a 4th source doesn't also tear down and
+    // reconstruct the 3 panels already on screen. Preserves _formGroups' display order.
+    private void UpdateFormGroupFor(SourceFilterViewModel source)
+    {
+        var formGroup = _formGroups.FirstOrDefault(f => f.SourceId == source.SourceId);
+        if (formGroup is null) return;
+
+        if (source.IsSelected)
+        {
+            if (FormGroups.Contains(formGroup)) return;
+            var insertIndex = _formGroups
+                .TakeWhile(f => f != formGroup)
+                .Count(f => FormGroups.Contains(f));
+            FormGroups.Insert(insertIndex, formGroup);
+        }
+        else
+        {
+            FormGroups.Remove(formGroup);
         }
     }
 

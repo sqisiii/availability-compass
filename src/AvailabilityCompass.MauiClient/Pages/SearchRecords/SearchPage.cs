@@ -253,6 +253,7 @@ public class SearchPage : ContentPage
             Children =
             {
                 BuildSourceChips(),
+                BuildSourceFormGroupsSkeleton(),
                 BuildSourceFormGroups()
             }
         };
@@ -313,6 +314,23 @@ public class SearchPage : ContentPage
         }));
 
         return layout;
+    }
+
+    // Shown for the one dispatcher tick between a chip toggle and the deferred FormGroups
+    // update landing (see SearchViewModel.SourcesOnCollectionChanged) so the tap gets
+    // immediate visual feedback instead of an apparent no-op while the panel rebuilds.
+    private static View BuildSourceFormGroupsSkeleton()
+    {
+        return new VerticalStackLayout
+            {
+                Spacing = 6,
+                Children =
+                {
+                    SearchTheme.Divider(new BoxView { HeightRequest = 12, WidthRequest = 140, CornerRadius = 4, Opacity = 0.4 }),
+                    SearchTheme.Divider(new BoxView { HeightRequest = 12, WidthRequest = 220, CornerRadius = 4, Opacity = 0.4 })
+                }
+            }
+            .Bind(IsVisibleProperty, nameof(SearchViewModel.IsSourceFiltersLoading));
     }
 
     private static View BuildSourceFormGroups()
